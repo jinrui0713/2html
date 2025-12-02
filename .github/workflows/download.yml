@@ -55,7 +55,7 @@ jobs:
         run: |
           pip install yt-dlp
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg jq
           pip install awscli
       
       - name: Create output directory
@@ -73,8 +73,15 @@ jobs:
           echo "Format: $FORMAT"
           echo "Audio only: $AUDIO_ONLY"
           
-          # Build yt-dlp command
-          YT_CMD="yt-dlp --no-warnings --progress"
+          # Extract video ID from YouTube URL
+          VIDEO_ID=$(echo "$VIDEO_URL" | grep -oP '(?:v=|youtu\.be/|shorts/)([a-zA-Z0-9_-]{11})' | head -1 | sed 's/v=//;s/youtu\.be\///;s/shorts\///')
+          if [ -z "$VIDEO_ID" ]; then
+            VIDEO_ID=$(echo "$VIDEO_URL" | grep -oE '[a-zA-Z0-9_-]{11}')
+          fi
+          echo "Video ID: $VIDEO_ID"
+          
+          # Build yt-dlp command with anti-bot options
+          YT_CMD="yt-dlp --no-warnings --progress --extractor-args 'youtube:player_client=web' --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'"
           
           if [ "$AUDIO_ONLY" = "true" ]; then
             YT_CMD="$YT_CMD -x --audio-format mp3 --audio-quality 0"
@@ -119,18 +126,80 @@ jobs:
           fi
           
           SAFE_TITLE=$(echo "$TITLE" | tr ' ' '_' | tr -cd '[:alnum:]._-')
+          if [ -z "$SAFE_TITLE" ]; then
+            SAFE_TITLE="video_$JOB_ID"
+          fi
           OUTPUT_FILE="downloads/${SAFE_TITLE}.${EXT}"
           
           echo "Output file: $OUTPUT_FILE"
           
-          # Execute download
-          eval "$YT_CMD -o '$OUTPUT_FILE' '$VIDEO_URL'"
+          # Try yt-dlp first
+          DOWNLOAD_SUCCESS=false
+          if eval "$YT_CMD -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>/dev/null; then
+            DOWNLOAD_SUCCESS=true
+            echo "yt-dlp download successful"
+          else
+            echo "yt-dlp failed, trying Invidious fallback..."
+            
+            # Try multiple Invidious instances
+            INVIDIOUS_INSTANCES=(
+              "https://inv.nadeko.net"
+              "https://invidious.nerdvpn.de"
+              "https://invidious.protokolla.fi"
+              "https://iv.ggtyler.dev"
+            )
+            
+            for INSTANCE in "${INVIDIOUS_INSTANCES[@]}"; do
+              echo "Trying Invidious instance: $INSTANCE"
+              
+              # Get video info from Invidious API
+              API_URL="$INSTANCE/api/v1/videos/$VIDEO_ID"
+              VIDEO_INFO=$(curl -s --max-time 10 "$API_URL" 2>/dev/null)
+              
+              if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.formatStreams' > /dev/null 2>&1; then
+                # Find appropriate format based on quality
+                case "$FORMAT" in
+                  "360p")
+                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "360p" or .qualityLabel == "360p") | .url' | head -1)
+                    ;;
+                  "480p")
+                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "480p" or .qualityLabel == "480p") | .url' | head -1)
+                    ;;
+                  "720p")
+                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "720p" or .qualityLabel == "720p") | .url' | head -1)
+                    ;;
+                  *)
+                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
+                    ;;
+                esac
+                
+                # Fallback to first available stream
+                if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
+                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
+                fi
+                
+                if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
+                  echo "Found stream URL, downloading..."
+                  if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
+                    DOWNLOAD_SUCCESS=true
+                    echo "Invidious download successful from $INSTANCE"
+                    
+                    # Get title from API if not already set
+                    if [ "$TITLE" = "video_$JOB_ID" ]; then
+                      TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
+                    fi
+                    break
+                  fi
+                fi
+              fi
+            done
+          fi
           
           # Find the actual output file (might have different extension)
           ACTUAL_FILE=$(ls downloads/ | head -1)
           
-          if [ -z "$ACTUAL_FILE" ]; then
-            echo "Download failed - no file found"
+          if [ -z "$ACTUAL_FILE" ] || [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "Download failed - no file found after all attempts"
             exit 1
           fi
           
