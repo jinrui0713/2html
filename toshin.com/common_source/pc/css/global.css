@@ -1,0 +1,508 @@
+/*=============================================
+ 東進 グローバルヘッダー PC
+=============================================*/
+
+body {
+  font-family: normal;
+  background: url(../img/background.jpg) repeat-x;
+  margin: 0;
+  padding: 0;
+}
+
+
+/*------------------------------------
+ global-header
+------------------------------------*/
+/*クリスマスヘッダーここから*/
+#global-header {
+  background-image: url(../../../resources/header/kirikae.gif);
+  background-size: 440px;
+  background-repeat: repeat-x;
+
+}
+/*クリスマスヘッダーここまで*/
+
+#global-header ul {
+  margin: 0;
+  padding: 0;
+}
+
+#global-header img {
+  border: none;
+}
+
+#global-header .global-header-inner {
+  display: flex;
+}
+
+#global-header .global-header-inner {
+  position: relative;
+  z-index: 100000;
+  width: 1000px;
+  height: 70px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+#global-header .toshin-logo {
+  margin-top: 10px;
+}
+
+#global-header .toshin-logo a {
+  font-size: 10px;
+  letter-spacing: -.5px;
+  display: block;
+  color: #009c88;
+  text-decoration: none;
+}
+
+#global-header .toshin-logo span {
+  font-size: 10px;
+  letter-spacing: -.5px;
+  position: relative;
+  display: block;
+  letter-spacing: -0.06em;
+  background-color: rgba(255,255,255,0.8);
+}
+
+#global-header .global-header-top01 {
+  margin: 16px 0 0 4px;
+  width: 490px;
+}
+
+#global-header .global-header-top01 .header-cv-btn{
+  width: 23%;
+  display: inline-block;
+}
+
+#global-header .global-header-top01 img{
+  width: 100%;
+  height: auto;
+}
+
+#global-header .global-header-top01 a:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+#global-header .global-header-top02 {
+  margin: 14px 0 0 1px;
+}
+
+#global-header .global-header-sns-twitter {
+  margin-bottom: 3px;
+}
+
+#global-header .global-header-sns-twitter,
+#global-header .global-header-sns-facebook {
+  line-height: 1;
+}
+
+#global-header .global-header-share {
+  font-size: 12px;
+  display: flex;
+  box-sizing: border-box;
+  width: 88px;
+  height: 20px;
+  letter-spacing: 0;
+  color: #fff;
+  border-radius: 3px;
+
+  align-items: center;
+  justify-content: space-around;
+}
+
+#global-header .share-twiiter {
+  padding: 5px 7px;
+  background-color: #00aced;
+}
+
+#global-header .share-twiiter img {
+  width: 15px;
+}
+
+#global-header .global-header-sns-facebook {
+  margin-top: 7px;
+}
+
+#global-header .share-facebook {
+  padding: 5px 7px;
+  background-color: #305097;
+}
+
+#global-header .share-facebook img {
+  width: 15px;
+}
+
+#global-header .share-facebook span {
+  position: relative;
+  right: 3px;
+}
+
+#global-header .global-header-top03 {
+  position: absolute;
+  top: 15px;
+  right: 0;
+  background: rgba(255,255,255,0.8);
+}
+
+#global-header .global-header-search {
+  position: absolute;
+  right: 5px;
+  height: 20px;
+}
+
+#global-header .cse-search-box {
+  position: relative;
+}
+
+#global-header .cse-search-input {
+  float: left;
+  margin-left: 5px;
+}
+
+#global-header .cse-branding-form {
+  display: flex;
+}
+
+#global-header .cse-branding-form input[type='text'] {
+  font-size: 12px;
+  position: absolute;
+  right: 105px;
+  width: 215px;
+  height: 25px;
+  padding: 3px 5px;
+  border: 1px solid #ccc;
+  overflow: visible;
+  margin: 0;
+  touch-action: manipulation;
+  background-color: transparent;
+  color: inherit;
+  line-height: inherit;
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-color: #fff;
+}
+
+@media (orientation: portrait){
+  #global-header .cse-branding-form input[type='text'] {
+  right: 120px;
+  width: 180px;
+  }
+}
+
+@media (orientation: landscape){
+  #global-header .cse-branding-form input[type='text'] {
+  right: 120px;
+  width: 180px;
+  }
+}
+
+#global-header .cse-branding-form input[type='submit'] {
+  font-size: 12px;
+  position: relative;
+  right: 5px;
+  height: 25px;
+  cursor: pointer;
+  border: solid 1px #ccc;
+  background-color: transparent;
+  top: -3px;
+  background-color: #fff;
+}
+
+.global-header-sns-twitter{
+  width: 80px !important;
+}
+
+#global-header .global-header-top03 ul {
+  display: flex;
+  margin: 0;
+}
+
+#global-header .global-header-top03 li {
+  list-style: none;
+}
+
+#global-header .global-header-top03 a {
+  font-size: 13px;
+  padding: 0 4px 0 3px;
+  text-decoration: underline;
+  letter-spacing: -0.5px;
+  color: #04c;
+  border-right: solid 1px #04c;
+}
+
+@media (orientation: portrait){
+  #global-header .global-header-top03 a {
+    font-size: 11px;
+  }
+}
+
+#global-header .global-header-top03 a:hover {
+  color: #444444;
+}
+
+#global-header .global-header-top03 li:last-child a {
+  border-right: none;
+}
+
+#global-header .global-header-top03 span a {
+  color: #018368;
+}
+
+#global-header .global-header-top03 span a:hover {
+  color: #02c197;
+}
+
+/* ヘッダー2段目 */
+#global-header .global-header-menu {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  text-align: center;
+  z-index: 99999;
+}
+
+#global-header .global-header-menu-inner {
+  position: relative;
+  width: 1000px;
+  height: 50px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#global-header .global-header-menu .menuItem {
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+#global-header .global-header-menu .pullDown {
+  position: absolute;
+  display: none;
+  padding: 10px 0;
+  color: #060;
+  background: url(../img/pullDown_background.png) repeat-x;
+}
+
+#examsPullDown{
+  width: 530px;
+}
+
+#examsPullDown .menuItem-link{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#examsPullDown .menuItem-link li{
+  width: 170px;
+}
+
+#global-header .global-header-menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#global-header .global-header-menu li {
+  margin: 0 10px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+#global-header .global-header-menu .menuItem-link li {
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 10px 0 -5px;
+  padding: 5px 10px 5px 31px;
+  letter-spacing: 2px;
+  background: url(../img/pullDown_allow_green.png) no-repeat 0 50%;
+}
+
+#global-header .global-header-menu .menuItem-link li a {
+  color: #00765b;
+}
+
+#global-header .global-header-menu .menuItem-link li a:hover {
+  color: #3fa833;
+}
+
+#global-header .global-header-menu .menuItem-link.menuItem-link-iconMiddle li {
+  font-size: 12px;
+  margin: 0 10px 0 25px;
+  padding: 5px 10px 5px 13px;
+  background: url(../img/pullDown_allow_red.png) no-repeat 0 50%;
+}
+
+#global-header .global-header-menu .menuItem-link.menuItem-link-iconTop li {
+  font-size: 12px;
+  line-height: 160%;
+  margin: 0 10px 10px 25px;
+  padding: 0 10px 5px 13px;
+  background: url(../img/pullDown_allow_red.png) no-repeat 0 8px;
+}
+
+#global-header .global-header-menu img {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+#global-header .global-header-menu .season_event {
+  font-family: 'Lucida Grande', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  margin-left: 3px;
+  padding: 1px 2px;
+  letter-spacing: 0;
+  color: #fff;
+  border-radius: 4px;
+}
+
+#global-header .global-header-menu .season_event_new,
+#global-header .global-header-menu .season_event_limit {
+  background-color: #f00;
+}
+
+#global-header .global-header-menu .season_event_recommend {
+  background-color: #f60;
+}
+
+#global-header #hsPullDown {
+  top: 40px;
+  left: 5px;
+}
+
+#global-header .global-header-menu .menuItem-link-request {
+  margin: 5px 20px 10px 20px;
+}
+
+#global-header #esPullDown {
+  top: 40px;
+  left: 131px;
+}
+
+#global-header #moshiPullDown {
+  top: 40px;
+  left: 447px;
+}
+
+#global-header #posPullDown {
+  top: 40px;
+  right: 150px;
+}
+
+#global-header .global-twitter-img {
+  width: 70px;
+  margin-top: 5px;
+}
+
+.global-header-top01 .header-cv-btn:hover{
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.global-header-top01 .experience-menu {
+  background-color: rgb(255 255 255);
+  border-radius: 0 0 5px 5px;
+  left: 603px;
+  position: absolute;
+  top: 55px;
+  transform: translateX(-50%);
+  z-index: 10000000000;
+  width: 310px;
+  display: none;
+  background: url(../img/pullDown_background.png) repeat-x;
+}
+
+.global-header-top01 .experience-menu ul{
+  justify-content: center;
+  padding: 3px;
+}
+
+.global-header-top01 .experience-menu li{
+  line-height: 1.5;
+  padding: 4px 10px;
+}
+
+.global-header-top01 .experience-menu a {
+  display: flex;
+  font-size: 0.9rem;
+  padding: .4em .2em .4em .5em;
+  text-decoration: underline;
+  text-align: start;
+}
+
+/*------------------------------------
+ global-header
+------------------------------------*/
+
+#global-footer {
+  clear: both;
+  color: #444;
+  font-size: 12px;
+  font-family: 'Meiryo', sans-serif;
+  margin: 10px 0;
+  line-height: 150%;
+  text-align: center;
+}
+
+#global-footer .footer-banner {
+  font-size: 13.2px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#global-footer .footer-banner li {
+  display: inline-block;
+  margin: 5px 0;
+}
+
+#global-footer .footer-banner li a {
+  color: #1a0dab;
+  font-size: 14px;
+  padding: 0 5px;
+  text-decoration: underline;
+}
+
+#global-footer .footer-banner li a:hover {
+  color: #ff6819;
+}
+
+#global-footer .footer-link {
+  font-size: 12px;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#global-footer .footer-link li {
+  display: inline-block;
+  margin: 5px 0;
+  padding: 0 8px;
+}
+
+#global-footer .footer-link li:not(:last-of-type) {
+  border-right: 1px solid #444;
+}
+
+#global-footer .footer-link li a {
+  color: #444;
+  font-size: 12px;
+  margin: 0 0 5px 0;
+  text-decoration: underline;
+}
+
+#global-footer .footer-copyright {
+  font-size: 12px;
+  line-height: 150%;
+  margin: 15px 0 0 0;
+  text-align: center;
+}
+
+#global-footer .footer-copyright img {
+  height: 100%;
+  width: auto;
+}

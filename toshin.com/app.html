@@ -1,0 +1,2265 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="keywords" content="予備校,東進,公式,スマートフォン,アプリ,英語,センター,TOEIC">
+  <meta name="description" content="大学受験の予備校・塾、東進。東進公式スマートフォンアプリを利用して、学習効果を高めよう。センターや二次対策だけでなく、TOEICのスコアアップにも効果的。">
+  <title>東進公式スマートフォンアプリ</title>
+  <link rel="stylesheet" href="common_source/pc/css/global.css">  <link rel="stylesheet" href="app/css/index.css">
+  <link rel="stylesheet" href="app/assets/fancybox/jquery.fancybox-1.3.4.css" media="screen">
+<script type="text/javascript" async src="js/tracking_code.js" charset="utf-8"></script></head>
+<body>
+    <!-- <style>
+    #global-header{
+      background-image: none;
+    }
+  </style> -->
+<!--ページ更新ボタンー START -->
+<div id="reload-btn" class="reload-btn-wrap" onclick="window.location.reload(true); _gaq.push(['_trackEvent', 'page-reload', 'pc', 'toshin-reload-btn'+'_'+location.href.split(/\?|\#/)[0]]);">
+  <div class="reload-btn">
+    <img class="reload-icon" src="resources/img/reload/reload-icon.png" alt="ページを更新する">
+    <span class="reload-txt">ページを更新する</span>
+  </div>
+</div>
+<style>
+  .reload-btn-wrap {
+    margin: 0 auto;
+    position: relative;
+    text-align: right;
+    z-index: 1000000000;
+  }
+  .reload-btn {
+    align-items: center;
+    background: rgba(255, 255, 255, .8);
+    border: solid 2px #4d4d4d;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, .3);
+    cursor: pointer;
+    display: inline-flex;
+    margin: 5px 0;
+    padding: 2px 5px;
+    position: absolute;
+    left: calc(1000px + (100% - 1000px)/2);
+    top: 5px;
+  }
+  @media screen and (max-width: 1371px) {
+    .reload-btn {
+      right: 0;
+      left: auto;
+    }
+  }
+  .reload-btn:hover {
+    opacity: .7;
+  }
+  .reload-btn .reload-icon {
+    padding-left: 3px;
+    width: 20px;
+  }
+  .reload-txt {
+    color: #4d4d4d;
+    font-family: 'Lato', 'Noto Sans JP', '游ゴシック Medium', '游ゴシック体', 'Yu Gothic Medium', 'YuGothic', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', 'メイリオ', 'Meiryo', 'ＭＳ Ｐゴシック', 'MS PGothic', 'sans-serif';
+    font-size: 16px;
+    margin-left: 8px;
+  }
+</style>
+<script>
+  window.addEventListener('load', function() {
+    var reloadBtn = document.getElementById('reload-btn');
+    setTimeout(function() {
+      reloadBtn.animate([{
+        opacity: '1'
+      }, {
+        opacity: '0'
+      }], 500);
+    }, 5000);
+    setTimeout(function() {
+      reloadBtn.style.display = 'none';
+    }, 5500);
+  });
+  window.addEventListener('scroll', function() {
+    var reloadBtn = document.getElementById('reload-btn');
+    reloadBtn.animate([{
+      opacity: '1'
+    }, {
+      opacity: '0'
+    }], 500);
+    setTimeout(function() {
+      reloadBtn.style.display = 'none';
+    }, 500);
+  });
+</script>
+<!--ページ更新ボタンー END -->
+<header id="global-header">
+  <!--グローバルヘッダー START -->
+  <div class="global-header-inner">
+              <div class="toshin-logo">
+        <a href="index.html">
+          <img src="common_source/pc/img/toshin_logo.png" alt="Toshin.com">
+          <span>大学受験(大学入試)対策の塾・予備校なら東進</span>
+        </a>
+      </div>
+        <!-- box-banner -->
+    <!-- <div class="global-header-top01">
+      <a href="jisseki.html" onclick="_gaq.push(['_trackEvent', 'jisseki2022', 'pc', 'header'+'_'+location.href.split(/\?|\#/)[0]]);">
+        <img src="https://www.toshin.com/resources/banners/jisseki/365_45.jpg" alt="東進現役合格実績">
+      </a>
+    </div> -->
+    <div class="global-header-top01">
+      <a href="grade_select.html" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-shiryo-btn'});"><img src="common_source/pc/img/shiryo.png" alt="資料請求"></a>
+      <a href="grade_select/kobetsu.html" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-kobetsu-btn'});"><img src="common_source/pc/img/kobetsu.png" alt="個別相談"></a>
+      <a href="grade_select/experience.html" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-experience-btn'});"><img src="common_source/pc/img/taiken.png" alt="1日体験"></a>
+      <a href="intro.html" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-intro-btn'});"><img src="common_source/pc/img/intro.png" alt="アフィリエイトサイト"></a>
+    </div>
+    <!-- <div class="global-header-top01">
+      <a href="https://www.toshin.com/hantei_sys/" onClick="_gaq.push(['_trackEvent', 'global-header', 'pc', 'pc_global-header_hantei_sys'+'_'+location.href.split(/\?|\#/)[0]]);">
+        <img src="https://www.toshin.com/resources/banners/hantei_sys/365_45.jpg" alt="合否判定システム">
+      </a>
+    </div> -->
+    <!-- box-sns -->
+    <!-- <div class="global-header-top02">
+      <div class="global-header-sns-twitter">
+                <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://www.toshin.com/index.php" data-text="" data-count="horizontal" data-lang="ja"><img src="https://www.toshin.com/common_source/pc/img/twitter_btn.png" class="global-twitter-img"></a>
+      </div>
+      <div class="global-header-sns-facebook">
+        <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.toshin.com%2F&width=72&layout=button&action=like&size=small&show_faces=false&share=false&height=30&appId" width="72" height="30" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+      </div>
+    </div> -->
+    <!-- box-search -->
+    <div class="global-header-top03">
+      <div class="global-header-utility">
+        <ul>
+          <li><a href="https://www.toitsutest.com/" target="_blank" rel="noopener">全国統一ﾃｽﾄ</a></li>
+          <li><a href="nagase.html">企業案内</a></li>
+          <li><a href="nagase/recruit.html">採用情報</a></li>
+          <li><a href="sitemap.html">ｻｲﾄﾏｯﾌﾟ</a></li>
+          <li><a href="news_release.html" target="_blank" rel="noopener">ﾆｭｰｽﾘﾘｰｽ</a></li>
+        </ul>
+      </div>
+      <div class="global-header-search">
+        <!-- 検索ボックス -->
+        <div class="cse-branding-bottom">
+          <div class="cse-branding-form">
+            <form action="search/search_result.html" id="cse-search-box">
+              <div class="cse-search-input">
+                <input type="hidden" name="cx" value="partner-pub-0636460989826629:6666848261">
+                <input type="hidden" name="cof" value="FORID:10">
+                <input type="hidden" name="ie" value="UTF-8">
+                <input type="text" name="q" id="q" size="17" placeholder="&nbsp;校舎名、イベント名で検索">
+                <input type="submit" name="sa" value="検索">
+              </div>
+            </form>
+            <div class="cse-branding-logo">
+              <img src="images/poweredby_transparent/poweredby_FFFFFF.gif" alt="Google">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--グローバルヘッダー END -->
+  <!--グローバルメニュー START-->
+  <nav class="global-header-menu">
+    <div class="global-header-menu-inner">
+      <div class="menuItem" onMouseOver="document.getElementById('hsPullDown').style.display='block'" onMouseOut="document.getElementById('hsPullDown').style.display='none'">
+        <a href="hs.html">
+          <img src="common_source/pc/img/01.png" alt="東進ハイスクール">
+        </a>
+        <div id="hsPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li><a href="hs.html">東進ハイスクール</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconMiddle">
+            <li><a href="teacher.html">講師紹介</a></li>
+            <li><a href="courses.html">講座案内</a></li>
+            <li><a href="hs/map.html">校舎案内</a></li>
+            <li><a href="https://www.toshin-moshi.com/">東進模試</a></li>
+            <li><a href="jisseki.html">合格実績</a></li>
+            <li><a href="taikenki.html">合格体験記</a></li>
+            <li><a href="system.html">第一志望合格のために</a></li>
+          </ul>
+          <div class="menuItem-link-request">
+            <a href="grade_select.html">
+              <img src="common_source/pc/img/shiryo_seikyu.jpg" alt="資料・入学案内請求">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="menuItem" onMouseOver="document.getElementById('esPullDown').style.display='block'" onMouseOut="document.getElementById('esPullDown').style.display='none'">
+        <a href="es.html">
+          <img src="common_source/pc/img/02.png" alt="東進衛星予備校">
+        </a>
+        <div id="esPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li><a href="es.html">東進衛星予備校</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconMiddle">
+            <li><a href="teacher.html">講師紹介</a></li>
+            <li><a href="courses.html">講座案内</a></li>
+            <li><a href="es/map.html">校舎案内</a></li>
+            <li><a href="exams.html">東進模試</a></li>
+            <li><a href="jisseki.html">合格実績</a></li>
+            <li><a href="taikenki.html">合格体験記</a></li>
+          </ul>
+          <div class="menuItem-link-request">
+            <a href="grade_select.html">
+              <img src="common_source/pc/img/shiryo_seikyu.jpg" alt="資料・入学案内請求">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="menuItem">
+        <a href="jisseki.html">
+          <img src="common_source/pc/img/04.png" alt="合格実績">
+        </a>
+      </div>
+      <div class="menuItem">
+                  <a href="map/top-1.html">
+            <img src="common_source/pc/img/05.png" alt="校舎案内">
+          </a>
+              </div>
+      <div class="menuItem" onMouseOver="document.getElementById('examsPullDown').style.display='block'" onMouseOut="document.getElementById('examsPullDown').style.display='none'">
+        <a href="https://www.toshin-moshi.com/">
+          <img src="common_source/pc/img/06.png" alt="東進模試">
+        </a>
+        <!-- <div id="examsPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li><a href="https://www.toshin-moshi.com/">東進模試 トップページ</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconMiddle">
+            <li><a href="https://www.toshin.com/kyotsutest_doujitsu/">共通テスト同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/kyotsu/">共通テスト本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/nankan_level/">早慶上理・難関国公立大模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/yumei_level/">全国有名国公私大模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/todai_level/">東大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/todai_level_h2/">高2東大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/kyodai_level/">京大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/hokudai_honban/">北大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/tohokudai_honban/">東北大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/meidai_honban/">名大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/handai_honban/">阪大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/kyudai_honban">九大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/hitotsubashi_level/">一橋大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/toukoudai_level">東工大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/todai_doujitsu/">東大入試同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/basic_ex/">大学合格基礎力判定テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/center_high/">高校レベル記述模試</a></li>
+            <li><a href="https://www.toitsutest-koukou.com/">全国統一高校生テスト</a></li>
+            <li><a href="https://www.toitsutest-chugaku.com/">全国統一中学生テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/chibadai_level/">千葉大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/koubedai_level/">神戸大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/hiroshimadai_level/">広島大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/igakubu">医学部82大学判定テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/chugaku_hantei">中学学力判定テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/meidai_doujitsu">名大入試同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/tohokudai_doujitsu">東北大入試同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/information1_taiken/">大学入学共通テスト「情報Ⅰ」体験模試</a></li>
+          </ul>
+        </div> -->
+      </div>
+      <div class="menuItem">
+        <div><a href="https://www.toshin-kakomon.com/"><img src="common_source/pc/img/07.png" alt="過去問データベース"></a></div>
+      </div>
+      <div class="menuItem" onMouseOver="document.getElementById('posPullDown').style.display='block'" onMouseOut="document.getElementById('posPullDown').style.display='none'">
+        <a href="index.html" onclick="_gaq.push(['_trackEvent', 'global-header', 'pc', 'pos'+location.href.split(/\?|\#/)[0]]);">
+          <img src="common_source/pc/img/08.png" alt="東進学力POS">
+        </a>
+        <div id="posPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li>高校生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="index.html">東進ハイスクール<br>東進衛星予備校<br>東進個別</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>中学生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="pos-sub/SSO1/TJ/SSOLogin/StudentLogin.html">東進ハイスクール中学部<br>東進中学NET</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="pos-sub/SSO21/TO/SSOLogin/SSOLogin.html">東進オンライン学校</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>小学生・中学生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="pos-sub/SSO21/TO/SSOLogin/SSOLogin.html">東進オンライン学校</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>大学生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="pos-sub/SSO21/BIZ/SSOLogin/SSOLogin.html">東進ビジネススクール<br>大学生向け東進学力POS</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>社会人対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="pos-sub/SSO21/BIZ/SSOLogin/SSOLogin.html">東進ビジネススクール<br>社会人向け東進学力POS</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="menuItem">
+        <a href="pos-sub/PSSO/PSSO.html" onclick="_gaq.push(['_trackEvent', 'global-header', 'pc', 'mypage'+location.href.split(/\?|\#/)[0]]);">
+          <img src="common_source/pc/img/11.png" alt="マイページ">
+        </a>
+      </div>
+      <div class="menuItem">
+        <a href="grade_select.html">
+          <img src="common_source/pc/img/09.png" alt="資料請求">
+        </a>
+      </div>
+      <div class="menuItem">
+        <a href="grade_select/nyugaku.html">
+          <img src="common_source/pc/img/10.png" alt="入学受付">
+        </a>
+      </div>
+    </div>
+  </nav>
+  <!--グローバルメニュー END-->
+</header>
+  <div class="mainvisual">
+  <div class="mv-wrapper">
+    <!-- スクリーンショット-->
+    <div id="screen-shots">
+    </div>
+    <!-- スマホ画面 -->
+    <div class="smartphone-image">
+      <img src="app/img/main_visual/main_mock-up.png" alt="スマホモックアップ">
+    </div>
+    <div class="mv-title">
+      <img src="app/img/main_visual/main_title.png" alt="東進公式スマートフォンアプリ">
+    </div>
+    <!-- twitter -->
+    <div class="mv-button mv-button-tw">
+      <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=%E6%9D%B1%E9%80%B2%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=http%3A%2F%2Fwww.toshin.com%2Fapp%2F&via=Toshincom">
+        <img src="app/img/x.jpg" alt="twitter">
+      </a>
+    </div>
+    <!-- facebook -->
+    <div class="mv-button mv-button-fb">
+      <a href="https://www.facebook.com/sharer.php?u=https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA" target="_blank" rel="noopener">
+        <img src="app/img/r_fb.png" alt="facebook">
+      </a>
+    </div>
+    <!-- LINE -->
+    <div class="mv-button mv-button-li">
+      <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%0Ahttp%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+        <img src="app/img/r_line.png" alt="LINE">
+      </a>
+    </div>
+  </div>
+</div>
+  <!-- wrapper_start -->
+  <div id="wrapper">
+    <div id="sub-catch">
+      <img src="app/img/sub_catch.gif" alt="東進公式アプリなら">
+    </div>
+    <div id="sub-catch-img">
+      <img src="app/img/sub_catch_img.gif" alt="東進公式アプリのメリット">
+    </div>
+    <!-- contents_box_start -->
+    <div id="contents">
+      <!-- 切替タブ_start -->
+      <div id="apri-left-box">
+        <div id="tab-bt-box">
+          <div id="tab1-bt">
+            <img src="app/img/tab1_eitango-1800_on.png" class="tab01-style" alt="英単語センター1800">
+          </div>
+          <div id="tab2-bt">
+            <img src="app/img/tab2_off.png" class="tab02-style" alt="主な機能と学習効果">
+          </div>
+          <div id="tab3-bt">
+            <img src="app/img/tab3_off.png" class="tab03-style" alt="ダウンロード">
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div id="apri-left">
+          <div id="eitango-1800">
+            <!-- tab1_start -->
+<div class="tab-1">
+    <div class="left-prop">
+        <div class="prop-txt">iPhone&nbsp;/&nbsp;サイズ：164.6MB</div>
+        <div class="prop-txt">Android&nbsp;/&nbsp;サイズ：127MB</div>
+        <div class="prop-txt">価　格：無料</div>
+        <div class="cap">
+            共通テストカバー率，驚異の99.5%!<br>
+            共通テストやその他大学入試に出るすべての重要英単語を「最速」で「完全」にマスターするための、東進公式英単語アプリです。抜群の合格実績を誇る東進ハイスクール・東進衛星予備校において、"必修"となっている英単語教材「共通テスト対応1800」がアプリになりました。<br>
+            東進の現役合格メソッドにもとづいて厳選された、高校生(大学受験生)がまずはじめに絶対に覚えておきたい必修英単語。それがこの1800語です。
+        </div>
+    </div>
+    <!-- <div class="left-img">
+    <img src="./img/eitango1800/mov_title.gif" alt="英単語センター1800のプレイ動画はこちら！"><br>
+    <iframe class="mov-iframe" src="https://www.youtube.com/embed/fdaH5lMyM5Q" allow="fullscreen"></iframe>
+  </div> -->
+    <div class="sub-title">
+        <img src="app/img/eitango1800/cover.png" alt="新・英単語センター1800のカバー率">
+    </div>
+    <div class="box">
+        <table id="cover">
+            <tr id="table-index">
+                <td>大学名</td>
+                <td class="coverrate">カバー率</td>
+            </tr>
+            <tr>
+                <td>センター試験</td>
+                <td class="coverrate">99.5％(過去10年間の平均)</td>
+            </tr>
+            <tr>
+                <td>東京大学</td>
+                <td class="coverrate">98.8％</td>
+            </tr>
+            <tr>
+                <td>京都大学</td>
+                <td class="coverrate">97.8％</td>
+            </tr>
+            <tr>
+                <td>大阪大学</td>
+                <td class="coverrate">97.5％</td>
+            </tr>
+            <tr>
+                <td>名古屋大学</td>
+                <td class="coverrate">96.2％</td>
+            </tr>
+            <tr>
+                <td>九州大学</td>
+                <td class="coverrate">97.1％</td>
+            </tr>
+            <tr>
+                <td>東北大学</td>
+                <td class="coverrate">96.9％</td>
+            </tr>
+            <tr>
+                <td>北海道大学</td>
+                <td class="coverrate">97.8％</td>
+            </tr>
+            <tr>
+                <td>東京工業大学</td>
+                <td class="coverrate">95.6％</td>
+            </tr>
+            <tr>
+                <td>一橋大学</td>
+                <td class="coverrate">98.8％</td>
+            </tr>
+            <tr>
+                <td>早稲田大学（政経）</td>
+                <td class="coverrate">97.9％</td>
+            </tr>
+            <tr>
+                <td>慶應義塾大学（経済）</td>
+                <td class="coverrate">96.4％</td>
+            </tr>
+            <tr>
+                <td>上智大学（経営）</td>
+                <td class="coverrate">97.5％</td>
+            </tr>
+        </table>
+    </div>
+    <div class="line">
+        <img src="app/img/line.gif" alt="区切り線">
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab2_start -->
+<div class="tab-2">
+    <div class="sub-title">
+        <img src="app/img/sub_title1.png" alt="このアプリの学習効果">
+    </div>
+    <div class="box">
+        <img src="app/img/eitango1800/apri_sample.jpg" class="sample-img" alt="アプリサンプル画像">
+        共通テストやその他の大学入試に出るすべての重要英単語を「最速」で「完全」にマスターするための、東進生専用英単語アプリです。抜群の合格実績を誇る東進ハイスクール・東進衛星予備校の現役合格メソッドにもとづいて厳選された、高校生（大学受験生）がまずはじめに絶対に覚えておきたい必修英単語。それがこの1800語です。
+        <p class="clear"></p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title2.png" alt="このアプリの主な機能">
+    </div>
+    <div class="box">
+        <table class="tab2-table">
+            <tr>
+                <td>
+                    <img src="app/img/eitango1800/kinou1.png" alt="何度でも自由に再テストができる！">
+                </td>
+                <td>
+                    <img src="app/img/eitango1800/kinou2.png" alt="英文法にチェックがつけられる！">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="app/img/eitango1800/kinou3.png" alt="聞き流し学習・音読学習が可能！">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title3.png" alt="スモールステップ・パーフェクトマスター">
+    </div>
+    <div class="box">
+        このアプリは東進の「スモールステップ・パーフェクトマスター」のカリキュラムを元に作成しています。基礎レベルから学ぶことができ、学習したことを確実に身に付けることができます。<br>
+        <div class="catch-pic">
+            <img src="app/img/small_step.png" alt="スモールステップカリキュラム">
+        </div>
+        <a href="system/s_step.html">「スモールステップ・パーフェクトマスター」とは？</a>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title4.png" alt="東進学力POSとの連携">
+    </div>
+    <div class="box">
+        <div class="catch-pic">
+            <img src="app/img/pos_sample.png" alt="POSのイメージ">
+        </div>
+        <div class="cap-s">
+            ※「認証失敗/ロックされています」などと出る場合管理者(=東進各校舎の社員・担任)にお問い合わせのうえ、POS上からロックを強制解除するなど、
+            適宜ご対処ください。ご迷惑をおかけして申し訳ございません。
+        </div>
+        <!-- <div id="pos">
+      <div id="pos-explain">
+        <p>
+          このアプリを最後まで利用することができます。(東進生以外は、ステージ1まで利用可能となっています。)<br>
+          <em class="big">東進学力POS</em>との連携など、学習に役立つツールを<em class="big">すべて利用</em>することができます。
+        </p>
+      </div>
+      <div id="pos-detail">
+        <a id="fancyImage01" href="./img/about_pos.jpg">
+          <img src="./img/pos.png" alt="東進学力POSとは？">
+        </a>
+      </div>
+    </div> -->
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab3_start -->
+<div class="tab-3">
+    <div class="sub-title">
+        <img src="app/img/sub_title6.png" alt="App Storeからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/eitango1800/logo.png" alt="新英単語センター1800">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/eitango1800/qr_app2.gif" alt="App StoreのQRコード" class="app-img">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>新・英単語センター1800</h2>
+                <p class="app-iphone">※iPhone版はこちらになります</p>
+            </div>
+            <div class="for-user">
+                <img src="app/img/foriphpne.png" alt="for iphpne">
+            </div>
+            <hr>
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：164.6MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：iPhone、iPod touch iOS7.0 および Apple Vision 1.0以降が必要</li>
+            </ul>
+            <p>※ Appを購入、ダウンロードするにはiTunesを開いてください。</p>
+            <div class="download">
+                <a href="https://apps.apple.com/jp/app/xin-ying-dan-yusenta1800/id785904625" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_apple.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title7.png" alt="Google Playからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/eitango1800/logo2.png" alt="共通テスト対応1800">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/eitango1800/qr_adr2.gif" alt="Google PlayのQRコード" class="app-img">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>共通テスト対応英単語1800</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/forandroid.png" alt="for android">
+            </div>
+            <hr class="app-dotline">
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：127MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：Android OS 5.0以降が必要</li>
+            </ul>
+            <div class="download">
+                <a href="https://play.google.com/store/apps/details?id=com.nagasebros.EW1800_New" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_android.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="sub-title">
+            <img src="app/img/attention.png" alt="ダウンロード時の注意点">
+        </div>
+        <div id="attention">
+            <p>◎アプリダウンロード後の初回起動時に，音声データのダウンロードが開始されます。3G環境では相当の時間がかかり、電波環境の悪化によって正常にダウンロードできない場合がありますので，Wi-Fi環境下でダウンロードしてください（Wi-Fi環境下の電波が良好な状態でも，10分程度の時間がかかります）。</p>
+            <p>◎ダウンロードの途中で回線が途絶えたりスリープ状態になったりすると，ダウンロードに失敗する場合がございます。その場合は，スリープまでの時間を延長するなど，設定を調整して再度インストールしてください。</p>
+            <p>◎音声データはSDカード内に保存できますが，充分な空き容量がないとダウンロードできません。必ず200MB程度の空き容量を確保したうえでダウンロードしてください。</p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title8.png" alt="東進ブックス">
+    </div>
+    <div class="box">
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>共通テスト対応英単語1800</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890857842/wwwtoshinbooc-22/ref=nosim" target="_blank" rel="noopener">
+                        <img src="app/img/eitango18.png" alt="英単語センター1800" class="eitango18">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>高橋潔 【編】</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890857845</li>
+                <li>【定価】本体1000円+税</li>
+                <li>【頁数】448頁</li>
+                <li>【判型】B6変判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890857842/wwwtoshinbooc-22/ref=nosim" target="_blank" rel="noopener">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>一億人の英文法</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim" target="_blank" rel="noopener">
+                        <img src="app/img/ichiokunin.png" alt="1億人の英文法">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>大西泰斗／ポール・マクベイ 【著】</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855278</li>
+                <li>【定価】本体1800円+税</li>
+                <li>【頁数】688頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim" target="_blank" rel="noopener">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline">英語の勉強法を<br>はじめからていねいに</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim" target="_blank" rel="noopener">
+                        <img src="app/img/hazimekara.png" alt="英語の勉強法をはじめからていねいに">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>安河内 哲也 【監修】</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855483</li>
+                <li>【定価】本体800円+税</li>
+                <li>【頁数】244頁</li>
+                <li>【判型】B6判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim" target="_blank" rel="noopener">→詳しくはこちら</a>
+            </div>
+        </div>
+        <p class="clear"></p>
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>          </div>
+          <div id="jukugo-750">
+            <!-- tab1_start -->
+<div class="tab-1">
+    <div class="left-prop">
+        <div class="prop-txt">iPhone&nbsp;/&nbsp;サイズ：109.5MB</div>
+        <div class="prop-txt">Android&nbsp;/&nbsp;サイズ：15.98MB</div>
+        <div class="prop-txt">価　格：無料</div>
+        <p class="app-text">
+            抜群の合格実績を誇る東進ハイスクール・東進衛星予備校において、”必修”となっている英熟語教材「英熟語センター750」がついにアプリになりました。東進の現役合格メソッドにもとづいて厳選された、高校生(大学受験生)がまずはじめに絶対に覚えておきたい必修英熟語。それがこの750語です。
+        </p>
+    </div>
+    <img src="app/img/jukugo750/apri_sample.jpg" class="sample-img sample-img-part" alt="アプリサンプル画像">
+    <p class="clear"></p>
+    <div class="box">
+        <p>【注意】このアプリは東進生専用です。STAGE 01～02は「体験受講」としてどなたでも学習可能ですが、STAGE 03～15は東進生(同名の高速基礎マスター講座を正規受講している生徒)としてのID・PWが認証されなければ学習できませんので、恐れ入りますが、あらかじめご了承ください。</p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/tokucho.png" alt="このアプリの特徴">
+    </div>
+    <div class="box">
+        <ul class="sub-list">
+            <li>■ 徹底的に厳選された750語！</li>
+            <p>過去28年分のセンター試験を徹底分析し、英熟語の出題回数を実際にコンピューターとプロの目で数えて頻出度を算出。大学受験生にとって本当に必要な英熟語と訳語だけが厳選収録されています。</p>
+            <li>■ 大学入試に「出る順」で収録！</li>
+            <p>頻度順に英熟語を配列しているので、センター試験によく出る英熟語から順に覚えられます。なお、センター頻出の英熟語は、国立大の二次試験や私立大入試、英検やTOEICテストでも頻出します。センター試験対策に、その上の難関大合格のために、さらには社会で実際に英語を使うために、まずはこの750の熟語を最速でマスターしましょう。</p>
+            <li>■ 厳選された英熟語を「完全」に覚えられる！</li>
+            <p>
+                このアプリは「厳選された英熟語を完璧にすべて覚える」ことを目標に作られているという点で、ほかの英熟語アプリとは一線を画す以下のような特長があります。<br>
+                ★スモールステップ・パーフェクトマスター！<br>
+                ★自分の今の英熟語力が一目でわかる！<br>
+                ★「覚えていない熟語」だけを集中攻略できる！<br>
+                ★音声学習で音読・復習・定着！
+            </p>
+        </ul>
+    </div>
+    <div class="line">
+        <img src="app/img/line.gif" alt="区切り線">
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab2_start -->
+<div class="tab-2">
+    <div class="sub-title">
+        <img src="app/img/sub_title1.png" alt="このアプリの学習効果">
+    </div>
+    <div class="box">
+        <ul class="list">
+            <li>□ 過去の入試問題から絞りこまれた重要な英熟語をマスターできる。</li>
+            <li>□ 自分の今の英熟語力が一目でわかる。</li>
+            <li>□ 英検やTOEIC、TOEFLテストでも役立つ英熟語力が身につく。</li>
+            <li>□ 覚えていない熟語だけを集中攻略できる。</li>
+            <li>□ 音声学習で音読しながら復習することで、確実に定着させることができる。</li>
+            <li>□ 詳しい解説で理解を深めることができる。</li>
+            <li>□ リスニングの実力を伸ばすことができる。</li>
+            <li>□ 英語の感覚が身につく。</li>
+            <li>□ リスニングの実力を伸ばすことができる。</li>
+        </ul>
+        <img src="app/img/jukugo750/kouka.png" alt="画面例">
+        <p class="clear"></p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title2.png" alt="このアプリの主な機能">
+    </div>
+    <div class="box">
+        <table class="tab2-table">
+            <tr>
+                <td>
+                    <img src="app/img/jukugo750/kinou1.png" alt="何度でも自由に再テストができる！">
+                </td>
+                <td>
+                    <img src="app/img/jukugo750/kinou2.png" alt="英文法にチェックがつけられる！">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="app/img/jukugo750/kinou3.png" alt="聞き流し学習・音読学習が可能！">
+                </td>
+                <td>
+                    <img src="app/img/jukugo750/kinou4.png" alt="東進生のみなさんへ">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title4.png" alt="東進学力POSとの連携">
+    </div>
+    <div class="box">
+        <div class="catch-pic">
+            <img src="app/img/pos_sample.png" alt="POSのイメージ">
+        </div>
+        <div class="cap-s">
+            ※「認証失敗/ロックされています」などと出る場合管理者(=東進各校舎の社員・担任)にお問い合わせのうえ、POS上からロックを強制解除するなど、 適宜ご対処ください。ご迷惑をおかけして申し訳ございません。
+        </div>
+    </div>
+    <!-- <div id="pos">
+    <div id="pos-explain">
+      このアプリを最後まで利用することができます。（東進生以外は、ステージ2まで利用可能となっています。）<br>
+      <em class="big">東進学力POS</em>との連携など、学習に役立つツールを<em class="big">すべて利用</em>することができます。
+    </div>
+    <div id="pos-detail">
+      <a id="fancyImage02" href="./img/about_pos.jpg">
+        <img src="./img/pos.png" alt="東進学力POSとは？">
+      </a>
+    </div>
+  </div> -->
+        <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab3_start -->
+<div class="tab-3">
+    <div class="sub-title">
+        <img src="app/img/sub_title6.png" alt="App Storeからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/jukugo750/logo_iphone.png" alt="英熟語センター750">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/jukugo750/qr_app.gif" alt="App StoreのQRコード" class="app-border">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>英熟語センター750</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/foriphpne.png" alt="for iphpne">
+            </div>
+            <hr>
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：109.5MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：iPhone、iPod touch iOS7.0 および Apple Vision 1.0以降が必要</li>
+            </ul>
+            <p>※ Appを購入、ダウンロードするにはiTunesを開いてください。</p>
+            <div class="download">
+                <a href="https://apps.apple.com/jp/app/id499224982" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_apple.png" alt="ダウンロードする">
+                </a>
+            </div>
+        </div>
+        <p class="clear"></p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title7.png" alt="Google Playからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/jukugo750/logo_android.png" alt="英熟語センター750">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/jukugo750/qr_adr.gif" alt="Google PlayのQRコード" class="app-border">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>共通テスト対応英熟語750</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/forandroid.png" alt="for android">
+            </div>
+            <hr class="app-dotline">
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：15.98MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：Android OS 5.0以降が必要</li>
+            </ul>
+            <div class="download">
+                <a href="https://play.google.com/store/apps/details?id=com.nagasebros.EI750" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_android.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="sub-title">
+            <img src="app/img/attention.png" alt="ダウンロード時の注意点">
+        </div>
+        <div id="attention">
+            <p>◎アプリダウンロード後の初回起動時に，音声データのダウンロードが開始されます。3G環境では相当の時間がかかり、電波環境の悪化によって正常にダウンロードできない場合がありますので，必ずWi-Fi環境下でダウンロードしてください（Wi-Fi環境下の電波が良好な状態でも，5分程度の時間がかかります）。</p>
+            <p>◎ダウンロードの途中で回線が途絶えたりスリープ状態になったりすると，ダウンロードに失敗する場合がございます。その場合は，スリープまでの時間を延長するなど，設定を調整して再度インストールしてください。</p>
+            <p>◎アプリデータはSDカード内に保存できますが，充分な空き容量がないとダウンロードできません。必ず100MB程度の空き容量を確保したうえでダウンロードしてください。</p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title8.png" alt="東進ブックス">
+    </div>
+    <div class="box">
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>一億人の英文法</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/ichiokunin.png" alt="1億人の英文法">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p> 【著者】大西泰斗／ポール・マクベイ</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855278</li>
+                <li>【定価】本体1800円+税</li>
+                <li>【頁数】688頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline">英語の勉強法を
+                    <br>はじめからていねいに
+                </h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/hazimekara.png" alt="英語の勉強法をはじめからていねいに">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p> 【監修】安河内 哲也</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855483</li>
+                <li>【定価】本体800円+税</li>
+                <li>【頁数】244頁</li>
+                <li>【判型】B6判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <p class="clear"></p>
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>          </div>
+          <div id="bunpou-750">
+            <!-- tab1_start -->
+<div class="tab-1">
+    <div class="left-prop">
+        <div class="prop-txt">iPhone&nbsp;/&nbsp;サイズ：111.3MB</div>
+        <div class="prop-txt">Android&nbsp;/&nbsp;サイズ：16.55MB</div>
+        <div class="prop-txt">価　格：無料</div>
+        <p class="app-text">
+            抜群の合格実績を誇る東進ハイスクール・東進衛星予備校において、”必修”となっている英文法教材「英文法750」がついにアプリになりました。東進の現役合格メソッドにもとづいて作られた、高校生(大学受験生)が絶対に覚えておきたい必修・頻出の英文法。それがこの750問です。
+        </p>
+    </div>
+    <img src="app/img/bunpou750/apri_sample.jpg" class="sample-img sample-img-part" alt="アプリサンプル画像">
+    <p class="clear"></p>
+    <div class="box">
+        <p>
+            【注意】このアプリは東進生専用です。STAGE 01は「体験受講」としてどなたでも学習可能ですが、STAGE 02〜15 は東進生(同名の高速基礎マスター講座を正規受講している生徒)としてのID・パスワードを入力しなければ学習できませんので、恐れ入りますが、あらかじめご了承ください。
+        </p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/tokucho.png" alt="このアプリの特徴">
+    </div>
+    <div class="box">
+        <ul class="sub-list">
+            <li>■ 必要なすべての英文法を750問に凝縮！</li>
+            <p>大学入試に必要なすべての文法項目を750問に完全集約。同じような問題をバラバラに学習するよりも、この厳選された750問を短期間で一気に修得する方がはるかに効率的です。</p>
+            <li>■ 重要な単語・熟語も同時マスター！</li>
+            <p>英語学習でまず身につけたい基本的な文法は限られています。特殊な文法は数多くありますが、実際の英語の論文・長文、フォーマルな会話、ビジネスシーンに用いられる文法は決まった型。特殊な文法は土台ができてから、その文法に触れる機会の中で学んでいけばよいでしょう。この「英文法750」は、大学受験だけでなく、英検・TOEICテスト・実用英語に必要な英文法も十分に網羅しています。</p>
+            <li>■ 英文のイメージが記憶に残りやすい！</li>
+            <p>英文中の空所に適切な語句を補充する「空所補充問題」と、英単語を並べ替えて正しい英文を作る「整序問題」。入試頻出であるこの2つの問題形式に完全対応しました。特に整序問題では、英単語パネルを指で並べ替えるというゲーム性を徹底追求。解きながら、楽しみながら、着実に英文法を(英作文の力も同時に)身につけることができます。</p>
+        </ul>
+    </div>
+    <div class="line">
+        <img src="app/img/line.gif" alt="区切り線">
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab2_start -->
+<div class="tab-2">
+    <div class="sub-title">
+        <img src="app/img/sub_title1.png" alt="このアプリの学習効果">
+    </div>
+    <div class="box">
+        <ul class="list">
+            <li>□ 大学入試に必要なすべての文法項目を短期間でマスターできる。</li>
+            <li>□ 問題にチェックを付けて苦手な文法を集中攻略できる。</li>
+            <li>□ 英検やTOEIC、TOEFLテストに必要な英文法が身につく。</li>
+            <li>□ 英語の論文や長文が理解できるようになる。</li>
+            <li>□ 入試でも頻出の「空所補充問題」と「整序問題」を解く速度が劇的に向上する。</li>
+            <li>□ 英作文の力が身につく。</li>
+            <li>□ 英語の感覚が身につく。</li>
+            <li>□ ゲーム感覚で解きながら、楽しみながら、着実に英文法を身につけることができる。</li>
+        </ul>
+        <img src="app/img/bunpou750/kouka.png" alt="画面例">
+        <p class="clear"></p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title2.png" alt="このアプリの主な機能">
+    </div>
+    <div class="box">
+        <table class="tab2-table">
+            <tr>
+                <td>
+                    <img src="app/img/bunpou750/kinou1.png" alt="何度でも自由に再テストができる！">
+                </td>
+                <td>
+                    <img src="app/img/bunpou750/kinou2.png" alt="英文法にチェックがつけられる！">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="app/img/bunpou750/kinou3.png" alt="聞き流し学習・音読学習が可能！">
+                </td>
+                <td>
+                    <img src="app/img/bunpou750/kinou4.png" alt="東進生のみなさんへ">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title4.png" alt="東進学力POSとの連携">
+    </div>
+    <div class="box">
+        <div class="catch-pic">
+            <img src="app/img/pos_sample.png" alt="POSのイメージ">
+        </div>
+        <div class="cap-s">
+            ※「認証失敗/ロックされています」などと出る場合管理者(=東進各校舎の社員・担任)にお問い合わせのうえ、POS上からロックを強制解除するなど、 適宜ご対処ください。ご迷惑をおかけして申し訳ございません。
+        </div>
+    </div>
+    <!-- <div id="pos">
+    <div id="pos-explain">
+      このアプリを最後まで利用することができます。（東進生以外は、ステージ1まで利用可能となっています。）<br>
+      <em class="big">東進学力POS</em>との連携など、学習に役立つツールを<em class="big">すべて利用</em>することができます。
+    </div>
+    <div id="pos-detail">
+      <a id="fancyImage03" href="./img/about_pos.jpg">
+        <img src="./img/pos.png" alt="東進学力POSとは？">
+      </a>
+    </div>
+  </div> -->
+    <div class="sub-title">
+  <img src="app/img/toshin.png">
+</div>
+<div id="banner-area">
+  <div class="rm-banner" name="G:1"></div>
+  <div class="banner">
+    <a href="grade_select/kobetsu.html">
+      <img src="app/img/mendan.jpg" alt="個別面談無料実施中！" class="banner-img01">
+    </a>
+  </div>
+  <div class="banner">
+    <a href="experience.html">
+      <img src="app/img/taiken.jpg" alt="体験授業無料受付中！" class="banner-img02">
+    </a>
+  </div>
+  <div class="banner">
+    <a href="grade_select.html">
+      <img src="app/img/siryou.jpg" alt="資料請求受付中！" class="banner-img03">
+    </a>
+  </div>
+</div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab3_start -->
+<div class="tab-3">
+    <div class="sub-title">
+        <img src="app/img/sub_title6.png" alt="App Storeからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/bunpou750/logo.png" alt="英文法750">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/bunpou750/qr_app.gif" class="app-border" alt="App StoreのQRコード">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title">
+                <h2>英文法750</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/foriphpne.png" alt="for iphpne">
+            </div>
+            <hr>
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：111.3MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：iPhone、iPod touch iOS7.0 および Apple Vision 1.0以降が必要</li>
+            </ul>
+            <p>※ Appを購入、ダウンロードするにはiTunesを開いてください。</p>
+            <div class="download">
+                <a href="https://apps.apple.com/jp/app/ying-wen-fa750/id511828910" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_apple.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title7.png" alt="Google Playからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/bunpou750/logo.png" alt="英文法750">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/bunpou750/qr_adr.gif" class="app-border" alt="Google PlayのQRコード">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title">
+                <h2>英文法750</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/forandroid.png" alt="for android">
+            </div>
+            <hr class="app-dotline">
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：16.55MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：Android OS 5.0以降が必要</li>
+            </ul>
+            <div class="download">
+                <a href="https://play.google.com/store/apps/details?id=com.nagasebros.EG750" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_android.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="sub-title">
+            <img src="app/img/attention.png" alt="ダウンロード時の注意点">
+        </div>
+        <div id="attention">
+            <p>◎アプリダウンロード後の初回起動時に，音声データのダウンロードが開始されます。3G環境では相当の時間がかかり、電波環境の悪化によって正常にダウンロードできない場合がありますので，必ずWi-Fi環境下でダウンロードしてください（Wi-Fi環境下の電波が良好な状態でも，5分程度の時間がかかります）。</p>
+            <p>◎ダウンロードの途中で回線が途絶えたりスリープ状態になったりすると，ダウンロードに失敗する場合がございます。その場合は，スリープまでの時間を延長するなど，設定を調整して再度インストールしてください。</p>
+            <p>◎アプリデータはSDカード内に保存できますが，充分な空き容量がないとダウンロードできません。必ず100MB程度の空き容量を確保したうえでダウンロードしてください。</p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title8.png" alt="東進ブックス">
+    </div>
+    <div class="box">
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>一億人の英文法</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/ichiokunin.png" alt="1億人の英文法">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>【著者】大西泰斗／ポール・マクベイ</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855278</li>
+                <li>【定価】本体1800円+税</li>
+                <li>【頁数】688頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline">
+                    英語の勉強法を<br>
+                    はじめからていねいに
+                </h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/hazimekara.png" alt="英語の勉強法をはじめからていねいに">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>【監修】安河内 哲也</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855483</li>
+                <li>【定価】本体800円+税</li>
+                <li>【頁数】244頁</li>
+                <li>【判型】B6判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline">
+                    【完全版】英文法・語法 問題集<br>
+                    Master1000
+                </h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/489085391X/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/eibunpo.png" alt="英文法・語法問題集">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>【著者】山中博</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890853915</li>
+                <li>【定価】本体1370円+税</li>
+                <li>【頁数】問題編　176頁<br>解答・解説編　404頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/489085391X/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <p class="clear"></p>
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>          </div>
+          <div id="reibun-300">
+            <!-- tab1_start -->
+<div class="tab-1">
+    <div class="left-prop">
+        <div class="prop-txt">iPhone&nbsp;/&nbsp;サイズ：49.8MB</div>
+        <div class="prop-txt">Android&nbsp;/&nbsp;サイズ：53.47MB</div>
+        <div class="prop-txt">価　格：無料</div>
+        <p class="app-text">
+            抜群の東大合格実績を誇る東進の公式教材「英語基本例文300」のアプリがついに完成しました。 　重要且つ頻出の文法・構文をすべて網羅し、さらに多くの重要英単語・熟語を取り入れて作られた、英語の総合力を飛躍的に高め、英語を実際に使いこなすための「基本」ともなる300の英語例文。それがこの「英語基本例文300」です。
+        </p>
+    </div>
+    <img src="app/img/reibun300/apri_sample.jpg" class="sample-img sample-img-part" alt="アプリサンプル画像">
+    <p class="clear"></p>
+    <div class="box">
+        <p>【注意】このアプリは東進生専用です。STAGE 01～02は「体験受講」としてどなたでも学習可能ですが、STAGE 03～20は東進生(同名の高速基礎マスター講座を正規受講している生徒)としてのID・パスワードを入力しなければ学習できませんので、恐れ入りますが、あらかじめご了承ください。</p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/tokucho.png" alt="このアプリの特徴">
+    </div>
+    <div class="box">
+        <ul class="sub-list">
+            <li>■ 基本的な英文法を網羅</li>
+            <p>「英語基本例文300」は、大学受験および実用英語において、最も基本的で、重要且つ頻出の文法・構文を網羅しています。単語・熟語・英文法の基礎が固まった生徒は、次にこの基本例文300を徹底的に音読し、暗唱できるようになってください。例文中に出現する英文法・構文を理解し、使いこなすことができれば、センター試験レベルにおいては、まず完全な文法力を身につけた事になり、英語を実際に使えるようにするための一生モノの訓練となります。</p>
+            <li>■ 重要な単語・熟語も同時マスター！</li>
+            <p>例文中には、多くの重要英単語や英熟語、コロケーションが登場します。これらを学ぶことでさらなる語彙力アップも果たすことができます。英文の暗記は、語彙を学ぶための良い方法でもあるのです。この基本例文300の中には、入試頻出の語彙がたくさんちりばめられてありますから、英文を暗唱することは、最も記憶に残りやすい形で語彙を暗記していることにもなるのです。また、受験生がどう学習してよいか悩む英作文の明確な対策ともなります。</p>
+            <li>■ 英文のイメージが記憶に残りやすい！</li>
+            <p>他の例文集と違い、この基本英文300は、徹底的に内容にこだわって作成されてあります。前後の文脈がないとわからないような英文ではなく、できるだけその一文だけで意味的に完結するよう配慮されてあります。また、みなさんの日常生活に関連した英文や、教示に富む英文、物語性のある英文を多く含んでいるので、イメージ的に記憶に残りやすいものとなっています。一刻も早くこの基本例文を暗唱し、勝ち組に生まれ変わりましょう！</p>
+        </ul>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/reibun300/level.png" alt="このアプリの対象レベル">
+    </div>
+    <div class="box">
+        <ul class="sub-list">
+            <li>◎ センター試験・中堅大レベル～難関大レベル</li>
+            <li>◎ センター模試120点以上の生徒</li>
+            <li>◎ 東大・慶應などの難関大対策</li>
+        </ul>
+    </div>
+    <div class="line">
+        <img src="app/img/line.gif" alt="区切り線">
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab2_start -->
+<div class="tab-2">
+    <div class="sub-title">
+        <img src="app/img/sub_title1.png" alt="このアプリの学習効果">
+    </div>
+    <div class="box">
+        <ul class="list">
+            <li>□ 基本的な英文法と同時に、重要な英単語と英熟語がおぼえられる。</li>
+            <li>□ 英語の処理能力が高まり、速読が得意になる。</li>
+            <li>□ 英文法を瞬間的に理解し、応用する力がつく。</li>
+            <li>□ 英単語・英熟語を英文中ですばやく把握できるようになる。</li>
+            <li>□ ４択問題・整序問題などを解く速度が劇的に向上する。</li>
+            <li>□ 英語の感覚が身につく。</li>
+            <li>□ リスニングの実力を伸ばすことができる。</li>
+            <li>□ 表現を英作文で使うことができる。</li>
+            <li>□ 英語のスピーキング能力が身につく。</li>
+        </ul>
+        <img src="app/img/reibun300/kouka.png" alt="画面例">
+        <p class="clear"></p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title2.png" alt="このアプリの主な機能">
+    </div>
+    <div class="box">
+        <table class="tab2-table">
+            <tr>
+                <td>
+                    <img src="app/img/reibun300/kinou1.png" alt="何度でも自由に再テストができる！">
+                </td>
+                <td>
+                    <img src="app/img/reibun300/kinou2.png" alt="英文法にチェックがつけられる！">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="app/img/reibun300/kinou3.png" alt="聞き流し学習・音読学習が可能！">
+                </td>
+                <td>
+                    <img src="app/img/reibun300/kinou4.png" alt="東進生のみなさんへ">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title4.png" alt="東進学力POSとの連携">
+    </div>
+    <div class="box">
+        <div class="catch-pic">
+            <img src="app/img/pos_sample.png" alt="POSのイメージ">
+        </div>
+        <div class="cap-s">
+            ※「認証失敗/ロックされています」などと出る場合管理者(=東進各校舎の社員・担任)にお問い合わせのうえ、POS上からロックを強制解除するなど、 適宜ご対処ください。ご迷惑をおかけして申し訳ございません。
+        </div>
+    </div>
+    <!-- <div id="pos">
+    <div id="pos-explain">
+      このアプリを最後まで利用することができます。（東進生以外は、ステージ2まで利用可能となっています。）<br>
+      <em class="big">東進学力POS</em>との連携など、学習に役立つツールを<em class="big">すべて利用</em>することができます。
+    </div>
+    <div id="pos-detail">
+      <a id="fancyImage04" href="./img/about_pos.jpg">
+        <img src="./img/pos.png" alt="東進学力POSとは？">
+      </a>
+    </div>
+  </div> -->
+    <div class="sub-title">
+  <img src="app/img/toshin.png">
+</div>
+<div id="banner-area">
+  <div class="rm-banner" name="G:1"></div>
+  <div class="banner">
+    <a href="grade_select/kobetsu.html">
+      <img src="app/img/mendan.jpg" alt="個別面談無料実施中！" class="banner-img01">
+    </a>
+  </div>
+  <div class="banner">
+    <a href="experience.html">
+      <img src="app/img/taiken.jpg" alt="体験授業無料受付中！" class="banner-img02">
+    </a>
+  </div>
+  <div class="banner">
+    <a href="grade_select.html">
+      <img src="app/img/siryou.jpg" alt="資料請求受付中！" class="banner-img03">
+    </a>
+  </div>
+</div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab3_start -->
+<div class="tab-3">
+    <div class="sub-title">
+        <img src="app/img/sub_title6.png" alt="App Storeからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/reibun300/logo.png" alt="基本例文300">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/reibun300/qr_app.gif" alt="App StoreのQRコード" class="app-border">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>英語基本例文300</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/foriphpne.png" alt="for iphpne">
+            </div>
+            <hr>
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：49.8MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：iPhone、iPod touch iOS6.0 および Apple Vision 1.0以降が必要</li>
+            </ul>
+            <p>※ Appを購入、ダウンロードするにはiTunesを開いてください。</p>
+            <div class="download">
+                <a href="https://apps.apple.com/jp/app/ying-yu-ji-ben-li-wen300/id557854307" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_apple.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title7.png" alt="Google Playからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/reibun300/logo.png" alt="基本例文300">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/reibun300/qr_adr.gif" alt="Google PlayのQRコード" class="app-border">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title">
+                <h2>英語基本例文300</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/forandroid.png" alt="for android">
+            </div>
+            <hr class="app-dotline">
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：53.47MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：Android OS 6.0以降が必要</li>
+            </ul>
+            <div class="download">
+                <a href="https://play.google.com/store/apps/details?id=com.nagasebros.BS300" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_android.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="sub-title">
+            <img src="app/img/attention.png" alt="ダウンロード時の注意点">
+        </div>
+        <div id="attention">
+            <p>◎アプリダウンロード後の初回起動時に，音声データのダウンロードが開始されます。3G環境では相当の時間がかかり、電波環境の悪化によって正常にダウンロードできない場合がありますので，必ずWi-Fi環境下でダウンロードしてください（Wi-Fi環境下の電波が良好な状態でも，5分程度の時間がかかります）。</p>
+            <p>◎ダウンロードの途中で回線が途絶えたりスリープ状態になったりすると，ダウンロードに失敗する場合がございます。その場合は，スリープまでの時間を延長するなど，設定を調整して再度インストールしてください。</p>
+            <p>◎アプリデータはSDカード内に保存できますが，充分な空き容量がないとダウンロードできません。必ず100MB程度の空き容量を確保したうえでダウンロードしてください。</p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title8.png" alt="東進ブックス">
+    </div>
+    <div class="box">
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>英熟語FORMULA1000</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890853782/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/formula.png" alt="英熟語FORMULA1000">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>【著者】安河内 哲也 & PROJECT FORMULA</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890853786</li>
+                <li>【定価】本体1100円+税</li>
+                <li>【頁数】304頁</li>
+                <li>【判型】B6判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890853782/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>一億人の英文法</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/ichiokunin.png" alt="1億人の英文法">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p> 【著者】大西泰斗／ポール・マクベイ</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855278</li>
+                <li>【定価】本体1800円+税</li>
+                <li>【頁数】688頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline">
+                    英語の勉強法を<br>
+                    はじめからていねいに
+                </h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/hazimekara.png" alt="英語の勉強法をはじめからていねいに">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p> 【監修】安河内 哲也</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855483</li>
+                <li>【定価】本体800円+税</li>
+                <li>【頁数】244頁</li>
+                <li>【判型】B6判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <p class="clear"></p>
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>          </div>
+          <div id="business4002">
+            <!-- tab1_start -->
+<div class="tab-1">
+    <div class="left-prop">
+        <div class="prop-txt">iPhone&nbsp;/&nbsp;サイズ：1GB</div>
+        <div class="prop-txt">Android&nbsp;/&nbsp;サイズ：19.24MB</div>
+        <div class="prop-txt">価　格：無料</div>
+        <p class="app-text">
+            この『ビジネス英単語4002』は、ビジネスシーンでよく使用される重要英単語を「最速」で「完全」にマスターするために開発されたアプリです。TOEIC® L/Rテストにも出題される、厳選された英単語を扱っています。40のSTAGE構成で、STAGE01から重要度の高い順に並んでいますから、最重要単語から効率的に学習することができます。</p>
+    </div>
+    <img src="app/img/toeic2000/apri_sample.jpg" class="sample-img sample-img-part" alt="アプリサンプル画像">
+    <p class="clear"></p>
+    <div class="box">
+        <p>【注意】このアプリは、東進ビジネススクール生（大学生・社会人）専用のアプリです。STAGE01・02は、体験受講としてどなたでも学習可能ですが、STAGE 03～40は東進ビジネススクール生としてのID・パスワードを入力しなければ学習できません。恐れ入りますが、あらかじめご了承ください。</p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/tokucho.png" alt="このアプリの特徴">
+    </div>
+    <div class="box">
+        <ul class="sub-list">
+            <li>■ 効率的に学習できるSTAGE構成</li>
+            <p>&nbsp;使用頻度の高い英単語の中には、business「事業」のように比較的易しいものから、equipment「設備」のように難しいものまで、幅広くあります。本アプリは使用頻度に加え、難易度も加味してSTAGEを配置していますから、冒頭のSTAGEから問題を解いていくことで、効率よく学習することができます。</p>
+            <li>■ 実践的な意味と、充実した関連語</li>
+            <p>例えば「extension 405」という表記を目にしたときに、あなたは意味を推測できるでしょうか。extensionには「拡大」と「内線」という２つの意味がありますが、ビジネスシーンでは、「内線」の意味でよく用いられます。本アプリは、ビジネスシーンでよく使われる意味を優先して学習できるよう作成されています。</p>
+            <p>また、全4002語の英単語学習に取り組む中で、「あれ？この単語、前のSTAGEで学習したような…」と感じるかもしれません。それは、1つの単語から派生する語も、1つの見出し語として扱ってるからです。例えばmanage「経営する」はSTAGE 05に出てきますが、語尾の変化したmanager「経営者」、management「管理」もほかのSTAGEで出題されています。似た語感を持つ派生語に何度も出会うことで、その単語の理解が深まっていきます。</p>
+        </ul>
+    </div>
+    <div class="line">
+        <img src="app/img/line.gif" alt="区切り線">
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab2_start -->
+<div class="tab-2">
+    <div class="sub-title">
+        <img src="app/img/sub_title1.png" alt="このアプリの学習効果">
+    </div>
+    <div class="box">
+        <ul class="list">
+            <li>□ ビジネスでの使用頻度の高い4002語の英単語をマスターできる。</li>
+            <li>□ ビジネスシーンで使用される語義で英単語を学ぶことができる。</li>
+            <li>□ TOEIC®のスコアアップだけでなく、実生活で使える英語が身につく。</li>
+            <li>□ ビジネスで使われる例文で英単語の使い方を学べる。</li>
+            <li>□ 音声学習により短期間で必要な英単語を身につけることができる。</li>
+            <li>□ 英語の感覚が身につく。</li>
+            <li>□ 通勤時間などのすき間時間に着実に英単語を身につけることができる。</li>
+        </ul>
+        <img src="app/img/toeic2000/kouka.png" alt="画面例">
+        <p class="clear"></p>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title2.png" alt="このアプリの主な機能">
+    </div>
+    <div class="box">
+        <table class="tab2-table">
+            <tr>
+                <td>
+                    <img src="app/img/toeic2000/kinou1.png" alt="何度でも自由に再テストができる！">
+                </td>
+                <td>
+                    <img src="app/img/toeic2000/kinou2.png" alt="英文法にチェックがつけられる！">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="app/img/toeic2000/kinou3.png" alt="聞き流し学習・音読学習が可能！">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title4.png" alt="東進学力POSとの連携">
+    </div>
+    <div class="box">
+        <div class="catch-pic">
+            <img src="app/img/pos_sample.png" alt="POSのイメージ">
+        </div>
+        <div class="cap-s">
+            ※「認証失敗/ロックされています」などと出る場合管理者(=東進各校舎の社員・担任)にお問い合わせのうえ、POS上からロックを強制解除するなど、 適宜ご対処ください。ご迷惑をおかけして申し訳ございません。
+        </div>
+    </div>
+    <!-- <div id="pos">
+    <div id="pos-explain">
+      このアプリを最後まで利用することができます。（東進生以外は、ステージ2まで利用可能となっています。）<br>
+      <em class="big">東進学力POS</em>との連携など、学習に役立つツールを<em class="big">すべて利用</em>することができます。
+    </div>
+    <div id="pos-detail">
+      <a id="fancyImage05" href="./img/about_pos.jpg">
+        <img src="./img/pos.png" alt="東進学力POSとは？">
+      </a>
+    </div>
+  </div> -->
+    <div class="sub-title">
+  <img src="app/img/toshin.png">
+</div>
+<div id="banner-area">
+  <div class="rm-banner" name="G:1"></div>
+  <div class="banner">
+    <a href="grade_select/kobetsu.html">
+      <img src="app/img/mendan.jpg" alt="個別面談無料実施中！" class="banner-img01">
+    </a>
+  </div>
+  <div class="banner">
+    <a href="experience.html">
+      <img src="app/img/taiken.jpg" alt="体験授業無料受付中！" class="banner-img02">
+    </a>
+  </div>
+  <div class="banner">
+    <a href="grade_select.html">
+      <img src="app/img/siryou.jpg" alt="資料請求受付中！" class="banner-img03">
+    </a>
+  </div>
+</div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>
+<!-- tab3_start -->
+<div class="tab-3">
+    <div class="sub-title">
+        <img src="app/img/sub_title6.png" alt="App Storeからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/business4002/4002_icon_CR.png" alt="TOEICテスト新・頻出英単語2000" class="apr-img">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/business4002/QR_iPhone.png" alt="App StoreのQRコード" class="app-border apr-img">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>ビジネス英単語 4002</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/foriphpne.png" alt="for iphpne">
+            </div>
+            <hr>
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：1GB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：iPhone、iPod touch iOS12.0 および Apple Vision 1.0以降が必要</li>
+            </ul>
+            <p>※ Appを購入、ダウンロードするにはiTunesを開いてください。</p>
+            <div class="download">
+                <a href="https://apps.apple.com/jp/app/BW4002/id1605092594" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_apple.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title7.png" alt="Google Playからダウンロードする">
+    </div>
+    <div class="app-box">
+        <div class="app-area">
+            <div id="app-logo">
+                <img src="app/img/business4002/4002_icon_CR.png" alt="TOEICテスト新・頻出英単語2000" class="apr-img">
+            </div>
+            <div id="app-qr">
+                <img src="app/img/business4002/QR_Android.png" alt="Google PlayのQRコード" class="app-border apr-img">
+            </div>
+        </div>
+        <div class="app-info">
+            <div class="app-title ">
+                <h2>ビジネス英単語 4002</h2>
+            </div>
+            <div class="for-user">
+                <img src="app/img/forandroid.png" alt="for android">
+            </div>
+            <hr class="app-dotline">
+            <ul>
+                <li>無料</li>
+                <li>カテゴリ：教育</li>
+                <li>サイズ：19.24MB</li>
+                <li>言語：日本語</li>
+                <li>販売元：Nagase Inc.</li>
+                <li>&copy;株式会社ナガセ</li>
+                <li>条件：Android OS 8.0以降が必要</li>
+            </ul>
+            <div class="download">
+                <a href="https://play.google.com/store/apps/details?id=com.nagasebros.BW4002" target="_blank" rel="noopener">
+                    <img src="app/img/dwl_android.png" alt="ダウンロードする">
+                </a>
+            </div>
+            <p class="clear"></p>
+        </div>
+    </div>
+    <div class="box">
+        <div class="sub-title">
+            <img src="app/img/attention.png" alt="ダウンロード時の注意点">
+        </div>
+        <div id="attention">
+            <p>◎アプリダウンロード後の初回起動時に，音声データのダウンロードが開始されます。3G環境では相当の時間がかかり、電波環境の悪化によって正常にダウンロードできない場合がありますので，必ずWi-Fi環境下でダウンロードしてください（Wi-Fi環境下の電波が良好な状態でも，5分程度の時間がかかります）。</p>
+            <p>◎ダウンロードの途中で回線が途絶えたりスリープ状態になったりすると，ダウンロードに失敗する場合がございます。その場合は，スリープまでの時間を延長するなど，設定を調整して再度インストールしてください。</p>
+            <p>◎アプリデータはSDカード内に保存できますが，充分な空き容量がないとダウンロードできません。必ず100MB程度の空き容量を確保したうえでダウンロードしてください。</p>
+        </div>
+    </div>
+    <div class="sub-title">
+        <img src="app/img/sub_title8.png" alt="東進ブックス">
+    </div>
+    <div class="box">
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline2">
+                    新TOEICテスト<br>
+                    英文法をはじめからていねいに<br>
+                    〈改訂版〉
+                </h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890854886/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/toeichazime.png" alt="英文法をはじめからていねいに">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p> 【著者】安河内哲也</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890854882</li>
+                <li>【定価】本体1300円+税</li>
+                <li>【頁数】224頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890854886/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3>一億人の英文法</h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/ichiokunin.png" alt="1億人の英文法">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p>【著者】大西泰斗／ポール・マクベイ </p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855278</li>
+                <li>【定価】本体1800円+税</li>
+                <li>【頁数】688頁</li>
+                <li>【判型】A5判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855270/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <div class="book-box">
+            <div class="book-box-s">
+                <h3 class="book-title-newline">
+                    英語の勉強法を<br>
+                    はじめからていねいに
+                </h3>
+                <div class="books">
+                    <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">
+                        <img src="app/img/hazimekara.png" alt="英語の勉強法をはじめからていねいに">
+                    </a>
+                </div>
+            </div>
+            <hr class="app-dotline">
+            <p> 【監修】安河内 哲也</p>
+            <ul>
+                <li>【出版社】東進ブックス</li>
+                <li>【ISBN】9784890855483</li>
+                <li>【定価】本体800円+税</li>
+                <li>【頁数】244頁</li>
+                <li>【判型】B6判 </li>
+            </ul>
+            <div class="book-detail">
+                <a href="https://www.amazon.co.jp/exec/obidos/ASIN/4890855483/wwwtoshinbooc-22/ref=nosim">→詳しくはこちら</a>
+            </div>
+        </div>
+        <p class="clear"></p>
+    </div>
+    <div class="box">
+        <!-- <div>
+  <img src="./img/sns_title.png" alt="このアプリをお友達に紹介する">
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?original_referer=&text=+%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=&via=Toshincom">
+    <img src="./img/sns_twitter.png" alt="twitter">
+  </a>
+</div>
+<div class="td-sns">
+  <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer.php?u= https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA">
+    <img src="./img/sns_fb.png" alt="facebook">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F">
+    <img src="./img/sns_line.png"  alt="LINE">
+  </a>
+</div>
+<div class="td-sns">
+  <a href="https://www.toshin.com/cgi-bin/osusume_mail/osusume_app_mail.cgi">
+    <img src="./img/sns_mail.png" alt="mail">
+  </a>
+</div>
+<p class="clear"></p>
+ -->    </div>
+</div>          </div>
+        </div>
+      </div>
+      <div id="apri-right-box">
+        <div>
+          <img src="app/img/right_title.png" class="apri-right-title" alt="公式アプリ一覧">
+        </div>
+        <div id="apri-right">
+          <div class="apri-list" id="eitango-1800-btn">
+            <img src="app/img/r_center1800_on.png" alt="英単語センター1800">
+          </div>
+          <div class="apri-list" id="jukugo-750-btn">
+            <img src="app/img/r_eijukugo750_off.png" alt="英熟語センター750">
+          </div>
+          <div class="apri-list" id="bunpou-750-btn">
+            <img src="app/img/r_eibunpou750_off.png" alt="英文法750">
+          </div>
+          <div class="apri-list" id="reibun-300-btn">
+            <img src="app/img/r_reibun300_off.png" alt="基本例文300">
+          </div>
+          <div class="apri-list" id="business4002-btn">
+            <img src="app/img/r_business4002_off.png" alt="TOEICテスト新・頻出英単語2000">
+          </div>
+          <div class="right-ban">
+            <a href="https://twitter.com/intent/tweet?original_referer=&text=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA&tw_p=tweetbutton&url=https://www.toshin.com/app/&via=Toshincom" target="_blank" rel="noopener">
+              <img src="app/img/x.jpg" alt="twitter共有">
+            </a>
+          </div>
+          <div class="right-ban">
+            <a href="https://www.facebook.com/sharer.php?u=https://www.toshin.com/app/&amp;t=%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA" target="_blank" rel="noopener">
+              <img src="app/img/r_fb.png" alt="Facebook共有">
+            </a>
+          </div>
+          <div class="right-ban">
+            <a href="https://line.naver.jp/R/msg/text/?%E6%9D%B1%E9%80%B2%E5%85%AC%E5%BC%8F%E3%82%B9%E3%83%9E%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%B3%E3%82%A2%E3%83%97%E3%83%AA%5Cnhttps%3A%2F%2Fwww.toshin.com%2Fapp%2F" target="_blank" rel="noopener">
+              <img src="app/img/r_line.png" alt="LINE共有">
+            </a>
+            <br>
+            <img src="app/img/r_hr.png" alt="点線">
+          </div>
+          <div class="right-ban">
+            <a href="experience.html">
+              <img src="IncUnit/banners/experience/200_90.jpg" alt="一日体験バナー">
+            </a>
+          </div>
+        </div>
+        <div class="clear"></div>
+      </div>
+    </div>
+  </div>
+<footer id="global-footer">
+  <ul class="footer-banner">
+    <li><a href="koukou_course.html">キミの高校に対応！東進の個別指導コース</a></li>
+    <li><a href="weather.html">90日先まで大胆予報！ 全国学校のお天気</a></li>
+  </ul>
+  <ul class="footer-banner">
+    <li><a href="nyushi_info.html">受験生必見！ 大学情報・入試情報</a></li>
+    <li><a href="proverb.html">きっと元気になる Proverb格言</a></li>
+    <li><a href="mirai.html">将来の夢や進路を見つけよう 未来発見サイト</a></li>
+  </ul>
+  <ul class="footer-banner">
+    <li><a href="movie.html">大学・学部選びの動画サイト 東進TV</a></li>
+    <li><a href="https://www.time.ne.jp/">時刻も天気もイベントも掲載! ナガセ世界時計</a></li>
+  </ul>
+  <ul class="footer-link">
+    <li><a href="index.html">大学受験予備校・塾の東進ドットコムTOP</a></li>
+    <li><a href="aboutsite.html">このサイトについて</a></li>
+    <li><a href="link_popularity.html">リンクについて</a></li>
+    <li><a href="toi.html">お問い合わせ</a></li>
+    <li><a href="privacy/index.html">プライバシーポリシー</a></li>
+    <li><a href="data.html">データ利用</a></li>
+  </ul>
+  <div class="footer-copyright">Copyright (C) Nagase Brothers Inc.</div>
+</footer>
+  <script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="js/tracking_code.js" charset="utf-8"></script>  <script src="app/assets/js/jquery-1.11.3.min.js"></script>
+  <script src="app/assets/js/jquery-migrate-1.4.1.js"></script>
+  <script src="app/assets/fancybox/jquery.mousewheel-3.0.4.pack.js"></script>
+  <script src="app/assets/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+  <script src="app/js/index.js"></script>
+</body>
+</html>

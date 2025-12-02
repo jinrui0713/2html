@@ -1,0 +1,28 @@
+name = "worker-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-11-30"
+
+[observability]
+enabled = true
+
+# R2 bucket binding for storing downloaded videos and metadata
+[[r2_buckets]]
+binding = "VIDEOS_BUCKET"
+bucket_name = "proxy-videos"
+
+# Note: Set the following secrets in your Wrangler / Cloudflare dashboard or GitHub secrets:
+# - GITHUB_TOKEN: Personal access token with repo:dispatch or workflow access
+# - JOB_SECRET: shared secret used to validate callbacks from Actions
+
+# R2 Bucket for video storage
+[[r2_buckets]]
+binding = "VIDEOS_BUCKET"
+bucket_name = "youtube-videos"
+
+# Environment variables (set these via wrangler secret)
+# wrangler secret put GITHUB_TOKEN
+# wrangler secret put JOB_SECRET
+# wrangler secret put GITHUB_REPO
+
+[vars]
+GITHUB_OWNER = "inosisi1102"

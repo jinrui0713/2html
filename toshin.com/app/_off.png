@@ -1,0 +1,611 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="東進404エラーページです。このページはリンク切れや、URLの入力が誤っている際に表示されます。ページ内の指示に従うことで目的のページに辿り着くことができます。">
+  <meta http-equiv="refresh" content="60;url=https://www.toshin.com/" target="_top">
+  <META NAME="robots" CONTENT="noindex,nofollow">
+  <title>東進 404　error page</title>
+  <link rel="stylesheet" href="https://www.toshin.com/common_source/pc/css/global.css">      <link rel="stylesheet" type="text/css" href="css/error.css">
+  <script type="text/javascript" async src="/js/tracking_code.js" charset="utf-8"></script></head>
+
+<body>
+  <div id="wrapper">
+    <div id="header">
+        <!-- <style>
+    #global-header{
+      background-image: none;
+    }
+  </style> -->
+<!--ページ更新ボタンー START -->
+<div id="reload-btn" class="reload-btn-wrap" onclick="window.location.reload(true); _gaq.push(['_trackEvent', 'page-reload', 'pc', 'toshin-reload-btn'+'_'+location.href.split(/\?|\#/)[0]]);">
+  <div class="reload-btn">
+    <img class="reload-icon" src="https://www.toshin.com/resources/img/reload/reload-icon.png" alt="ページを更新する">
+    <span class="reload-txt">ページを更新する</span>
+  </div>
+</div>
+
+<style>
+  .reload-btn-wrap {
+    margin: 0 auto;
+    position: relative;
+    text-align: right;
+    z-index: 1000000000;
+  }
+
+  .reload-btn {
+    align-items: center;
+    background: rgba(255, 255, 255, .8);
+    border: solid 2px #4d4d4d;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, .3);
+    cursor: pointer;
+    display: inline-flex;
+    margin: 5px 0;
+    padding: 2px 5px;
+    position: absolute;
+    left: calc(1000px + (100% - 1000px)/2);
+    top: 5px;
+  }
+
+  @media screen and (max-width: 1371px) {
+    .reload-btn {
+      right: 0;
+      left: auto;
+    }
+  }
+
+  .reload-btn:hover {
+    opacity: .7;
+  }
+
+  .reload-btn .reload-icon {
+    padding-left: 3px;
+    width: 20px;
+  }
+
+  .reload-txt {
+    color: #4d4d4d;
+    font-family: 'Lato', 'Noto Sans JP', '游ゴシック Medium', '游ゴシック体', 'Yu Gothic Medium', 'YuGothic', 'ヒラギノ角ゴ ProN', 'Hiragino Kaku Gothic ProN', 'メイリオ', 'Meiryo', 'ＭＳ Ｐゴシック', 'MS PGothic', 'sans-serif';
+    font-size: 16px;
+    margin-left: 8px;
+  }
+</style>
+
+<script>
+  window.addEventListener('load', function() {
+    var reloadBtn = document.getElementById('reload-btn');
+    setTimeout(function() {
+      reloadBtn.animate([{
+        opacity: '1'
+      }, {
+        opacity: '0'
+      }], 500);
+    }, 5000);
+    setTimeout(function() {
+      reloadBtn.style.display = 'none';
+    }, 5500);
+  });
+  window.addEventListener('scroll', function() {
+    var reloadBtn = document.getElementById('reload-btn');
+    reloadBtn.animate([{
+      opacity: '1'
+    }, {
+      opacity: '0'
+    }], 500);
+    setTimeout(function() {
+      reloadBtn.style.display = 'none';
+    }, 500);
+  });
+</script>
+<!--ページ更新ボタンー END -->
+<header id="global-header">
+  <!--グローバルヘッダー START -->
+  <div class="global-header-inner">
+              <div class="toshin-logo">
+        <a href="https://www.toshin.com/">
+          <img src="https://www.toshin.com/common_source/pc/img/toshin_logo.png" alt="Toshin.com">
+          <span>大学受験(大学入試)対策の塾・予備校なら東進</span>
+        </a>
+      </div>
+        <!-- box-banner -->
+    <!-- <div class="global-header-top01">
+      <a href="https://www.toshin.com/jisseki/" onclick="_gaq.push(['_trackEvent', 'jisseki2022', 'pc', 'header'+'_'+location.href.split(/\?|\#/)[0]]);">
+        <img src="https://www.toshin.com/resources/banners/jisseki/365_45.jpg" alt="東進現役合格実績">
+      </a>
+    </div> -->
+    <div class="global-header-top01">
+      <a href="https://www.toshin.com/grade_select/" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-shiryo-btn'});"><img src="https://www.toshin.com/common_source/pc/img/shiryo.png" alt="資料請求"></a>
+      <a href="https://www.toshin.com/grade_select/kobetsu.php" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-kobetsu-btn'});"><img src="https://www.toshin.com/common_source/pc/img/kobetsu.png" alt="個別相談"></a>
+      <a href="https://www.toshin.com/grade_select/experience.php" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-experience-btn'});"><img src="https://www.toshin.com/common_source/pc/img/taiken.png" alt="1日体験"></a>
+      <a href="https://www.toshin.com/intro/" class="header-cv-btn" onclick="dataLayer.push({'event':'ga_event','category':'click','action':'pc','label':'header-intro-btn'});"><img src="https://www.toshin.com/common_source/pc/img/intro.png" alt="アフィリエイトサイト"></a>
+    </div>
+    <!-- <div class="global-header-top01">
+      <a href="https://www.toshin.com/hantei_sys/" onClick="_gaq.push(['_trackEvent', 'global-header', 'pc', 'pc_global-header_hantei_sys'+'_'+location.href.split(/\?|\#/)[0]]);">
+        <img src="https://www.toshin.com/resources/banners/hantei_sys/365_45.jpg" alt="合否判定システム">
+      </a>
+    </div> -->
+    <!-- box-sns -->
+    <!-- <div class="global-header-top02">
+      <div class="global-header-sns-twitter">
+                <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://www.toshin.com/index.php" data-text="" data-count="horizontal" data-lang="ja"><img src="https://www.toshin.com/common_source/pc/img/twitter_btn.png" class="global-twitter-img"></a>
+      </div>
+      <div class="global-header-sns-facebook">
+        <iframe src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.toshin.com%2F&width=72&layout=button&action=like&size=small&show_faces=false&share=false&height=30&appId" width="72" height="30" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowTransparency="true"></iframe>
+      </div>
+    </div> -->
+    <!-- box-search -->
+    <div class="global-header-top03">
+      <div class="global-header-utility">
+        <ul>
+          <li><a href="https://www.toitsutest.com/" target="_blank" rel="noopener">全国統一ﾃｽﾄ</a></li>
+          <li><a href="https://www.toshin.com/nagase/">企業案内</a></li>
+          <li><a href="https://www.toshin.com/nagase/recruit/">採用情報</a></li>
+          <li><a href="https://www.toshin.com/sitemap/">ｻｲﾄﾏｯﾌﾟ</a></li>
+          <li><a href="https://www.toshin.com/news_release/" target="_blank" rel="noopener">ﾆｭｰｽﾘﾘｰｽ</a></li>
+        </ul>
+      </div>
+      <div class="global-header-search">
+        <!-- 検索ボックス -->
+        <div class="cse-branding-bottom">
+          <div class="cse-branding-form">
+            <form action="https://www.toshin.com/search/search_result.php" id="cse-search-box">
+              <div class="cse-search-input">
+                <input type="hidden" name="cx" value="partner-pub-0636460989826629:6666848261">
+                <input type="hidden" name="cof" value="FORID:10">
+                <input type="hidden" name="ie" value="UTF-8">
+                <input type="text" name="q" id="q" size="17" placeholder="&nbsp;校舎名、イベント名で検索">
+                <input type="submit" name="sa" value="検索">
+              </div>
+            </form>
+            <div class="cse-branding-logo">
+              <img src="https://www.google.com/images/poweredby_transparent/poweredby_FFFFFF.gif" alt="Google">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--グローバルヘッダー END -->
+  <!--グローバルメニュー START-->
+  <nav class="global-header-menu">
+    <div class="global-header-menu-inner">
+      <div class="menuItem" onMouseOver="document.getElementById('hsPullDown').style.display='block'" onMouseOut="document.getElementById('hsPullDown').style.display='none'">
+        <a href="https://www.toshin.com/hs/">
+          <img src="https://www.toshin.com/common_source/pc/img/01.png" alt="東進ハイスクール">
+        </a>
+        <div id="hsPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li><a href="https://www.toshin.com/hs/">東進ハイスクール</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconMiddle">
+            <li><a href="https://www.toshin.com/teacher/">講師紹介</a></li>
+            <li><a href="https://www.toshin.com/courses/">講座案内</a></li>
+            <li><a href="https://www.toshin.com/hs/map/">校舎案内</a></li>
+            <li><a href="https://www.toshin-moshi.com/">東進模試</a></li>
+            <li><a href="https://www.toshin.com/jisseki/">合格実績</a></li>
+            <li><a href="https://www.toshin.com/taikenki/">合格体験記</a></li>
+            <li><a href="https://www.toshin.com/system/">第一志望合格のために</a></li>
+          </ul>
+          <div class="menuItem-link-request">
+            <a href="https://www.toshin.com/grade_select/">
+              <img src="https://www.toshin.com/common_source/pc/img/shiryo_seikyu.jpg" alt="資料・入学案内請求">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="menuItem" onMouseOver="document.getElementById('esPullDown').style.display='block'" onMouseOut="document.getElementById('esPullDown').style.display='none'">
+        <a href="https://www.toshin.com/es/">
+          <img src="https://www.toshin.com/common_source/pc/img/02.png" alt="東進衛星予備校">
+        </a>
+        <div id="esPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li><a href="https://www.toshin.com/es/">東進衛星予備校</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconMiddle">
+            <li><a href="https://www.toshin.com/teacher/">講師紹介</a></li>
+            <li><a href="https://www.toshin.com/courses/">講座案内</a></li>
+            <li><a href="https://www.toshin.com/es/map/">校舎案内</a></li>
+            <li><a href="https://www.toshin.com/exams/">東進模試</a></li>
+            <li><a href="https://www.toshin.com/jisseki/">合格実績</a></li>
+            <li><a href="https://www.toshin.com/taikenki/">合格体験記</a></li>
+          </ul>
+          <div class="menuItem-link-request">
+            <a href="https://www.toshin.com/grade_select/">
+              <img src="https://www.toshin.com/common_source/pc/img/shiryo_seikyu.jpg" alt="資料・入学案内請求">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="menuItem">
+        <a href="https://www.toshin.com/jisseki/">
+          <img src="https://www.toshin.com/common_source/pc/img/04.png" alt="合格実績">
+        </a>
+      </div>
+      <div class="menuItem">
+                  <a href="https://www.toshin.com/map/?top=1">
+            <img src="https://www.toshin.com/common_source/pc/img/05.png" alt="校舎案内">
+          </a>
+              </div>
+      <div class="menuItem" onMouseOver="document.getElementById('examsPullDown').style.display='block'" onMouseOut="document.getElementById('examsPullDown').style.display='none'">
+        <a href="https://www.toshin-moshi.com/">
+          <img src="https://www.toshin.com/common_source/pc/img/06.png" alt="東進模試">
+        </a>
+        <!-- <div id="examsPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li><a href="https://www.toshin-moshi.com/">東進模試 トップページ</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconMiddle">
+            <li><a href="https://www.toshin.com/kyotsutest_doujitsu/">共通テスト同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/kyotsu/">共通テスト本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/nankan_level/">早慶上理・難関国公立大模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/yumei_level/">全国有名国公私大模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/todai_level/">東大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/todai_level_h2/">高2東大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/kyodai_level/">京大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/hokudai_honban/">北大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/tohokudai_honban/">東北大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/meidai_honban/">名大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/handai_honban/">阪大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/kyudai_honban">九大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/hitotsubashi_level/">一橋大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/toukoudai_level">東工大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/todai_doujitsu/">東大入試同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/basic_ex/">大学合格基礎力判定テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/center_high/">高校レベル記述模試</a></li>
+            <li><a href="https://www.toitsutest-koukou.com/">全国統一高校生テスト</a></li>
+            <li><a href="https://www.toitsutest-chugaku.com/">全国統一中学生テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/chibadai_level/">千葉大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/koubedai_level/">神戸大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/hiroshimadai_level/">広島大本番レベル模試</a></li>
+            <li><a href="https://www.toshin-moshi.com/igakubu">医学部82大学判定テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/chugaku_hantei">中学学力判定テスト</a></li>
+            <li><a href="https://www.toshin-moshi.com/meidai_doujitsu">名大入試同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/tohokudai_doujitsu">東北大入試同日体験受験</a></li>
+            <li><a href="https://www.toshin-moshi.com/information1_taiken/">大学入学共通テスト「情報Ⅰ」体験模試</a></li>
+          </ul>
+        </div> -->
+      </div>
+      <div class="menuItem">
+        <div><a href="https://www.toshin-kakomon.com/"><img src="https://www.toshin.com/common_source/pc/img/07.png" alt="過去問データベース"></a></div>
+      </div>
+      <div class="menuItem" onMouseOver="document.getElementById('posPullDown').style.display='block'" onMouseOut="document.getElementById('posPullDown').style.display='none'">
+        <a href="https://www.toshin.com/pos/" onclick="_gaq.push(['_trackEvent', 'global-header', 'pc', 'pos'+location.href.split(/\?|\#/)[0]]);">
+          <img src="https://www.toshin.com/common_source/pc/img/08.png" alt="東進学力POS">
+        </a>
+        <div id="posPullDown" class="pullDown">
+          <ul class="menuItem-link">
+            <li>高校生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="https://www.toshin.com/pos/">東進ハイスクール<br>東進衛星予備校<br>東進個別</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>中学生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="https://pos.toshin.com/SSO1/TJ/SSOLogin/StudentLogin.aspx">東進ハイスクール中学部<br>東進中学NET</a></li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="https://pos.toshin.com/SSO21/TO/SSOLogin/SSOLogin/">東進オンライン学校</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>小学生・中学生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="https://pos.toshin.com/SSO21/TO/SSOLogin/SSOLogin/">東進オンライン学校</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>大学生対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="https://pos.toshin.com/SSO21/BIZ/SSOLogin/SSOLogin">東進ビジネススクール<br>大学生向け東進学力POS</a></li>
+          </ul>
+          <ul class="menuItem-link">
+            <li>社会人対象</li>
+          </ul>
+          <ul class="menuItem-link menuItem-link-iconTop">
+            <li><a href="https://pos.toshin.com/SSO21/BIZ/SSOLogin/SSOLogin">東進ビジネススクール<br>社会人向け東進学力POS</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="menuItem">
+        <a href="https://pos.toshin.com/PSSO/PSSO" onclick="_gaq.push(['_trackEvent', 'global-header', 'pc', 'mypage'+location.href.split(/\?|\#/)[0]]);">
+          <img src="https://www.toshin.com/common_source/pc/img/11.png" alt="マイページ">
+        </a>
+      </div>
+      <div class="menuItem">
+        <a href="https://www.toshin.com/grade_select/">
+          <img src="https://www.toshin.com/common_source/pc/img/09.png" alt="資料請求">
+        </a>
+      </div>
+      <div class="menuItem">
+        <a href="https://www.toshin.com/grade_select/nyugaku.php">
+          <img src="https://www.toshin.com/common_source/pc/img/10.png" alt="入学受付">
+        </a>
+      </div>
+    </div>
+  </nav>
+  <!--グローバルメニュー END-->
+</header>
+
+          </div>
+    <!--header-->
+    <div id="contents">
+              <h1>ページが見つかりませんでした</h1>
+            <p>60秒後に自動的にトップページに移動します。</p>
+              <div class="apply">
+          <div>
+            <a class="button_apply_l" href="https://www.toshin.com/form/es/index.php?top=1">
+              <p>資料請求はこちら</p>
+            </a>
+          </div>
+          <div>
+            <a class="button_apply_r" href="https://www.toshin.com/experience/">
+              <p>一日体験</p>
+            </a>
+          </div>
+          <div>
+            <a class="button_apply_r" href="https://www.toshin.com/sform/kobetsu-mendan/">
+              <p>個別受験相談</p>
+            </a>
+          </div>
+        </div>
+        <div class="clear"></div>
+            <div class="solve">
+        <h2>1.URLをもう一度ご確認ください</h2>
+        <p>ご指定のページが見つからない理由は幾つか考えられますが、入力頂いたURLが誤っている場合もございます。今一度ご確認ください。</p>
+                  <img src="img/url.jpg" alt="URL画像">
+              </div>
+      <hr>
+      <div class="solve">
+        <h2>2.検索する</h2>
+        <p>以下の検索ボックスにキーワードを入力することで情報を探す事ができます。</p>
+        <form action="https://www.toshin.com/search/search_result.php">
+          <div>
+            <input type="hidden" name="cx" value="partner-pub-0636460989826629:6666848261">
+            <input type="hidden" name="cof" value="FORID:10">
+            <input type="hidden" name="ie" value="UTF-8">
+            <input type="text" name="q" id="sub" size="20" placeholder="キーワード">
+            <input type="submit" name="sa" id="search-button" value="検索">
+          </div>
+        </form>
+      </div>
+      <!--solve-->
+      <hr>
+      <div class="solve">
+        <h2>3.東進トップページへ</h2>
+        <p>東進トップページに戻る方は<a href="https://www.toshin.com/" style="color:blue;">こちら</a>から</p>
+      </div>
+      <div class="apply">
+                  <div class="apply">
+            <div>
+              <a class="button_apply_l" href="https://www.toshin.com/form/es/index.php?top=1">
+                <p>資料請求はこちら</p>
+              </a>
+            </div>
+            <div>
+              <a class="button_apply_r" href="https://www.toshin.com/experience/">
+                <p>一日体験</p>
+              </a>
+            </div>
+            <div>
+              <a class="button_apply_r" href="https://www.toshin.com/sform/kobetsu-mendan/">
+                <p>個別受験相談</p>
+              </a>
+            </div>
+          </div>
+              </div>
+      <div class="clear"></div>
+    </div>
+    <link href="https://www.toshin.com/common_source/pc/group-list/css/global-group-list.css" rel="stylesheet" type="text/css">
+
+<div class="nagase-group-list">
+  <div class="nagase-group-list-head">
+    <h3 class="nagase-group-list-title">
+      <a href="https://www.toshin.com/nagase/" class="nagase-group-list-title-link">ナガセの教育ネットワーク</a>
+    </h3>
+    <p class="nagase-group-list-comment">
+      <a href="https://www.toshin.com/nagase/"><span class="text">教育力こそが、国力だと思う。</span></a>
+    </p>
+  </div>
+  <div class="nagase-group-list-content-wrap">
+    <ul class="nagase-group-list-content line-1">
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin.com/hs/" title="東進ハイスクール">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/1.png" alt="東進ハイスクール">
+          </div>
+          <div class="nagase-group-list-item-copyright">大学受験の予備校<br>東進ハイスクール</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin.com/es/" title="東進衛星予備校">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/2.png" alt="東進衛星予備校">
+          </div>
+          <div class="nagase-group-list-item-copyright">大学入試の<br>東進衛星予備校</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin.com/kb/" title="東進個別">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/20.png" alt="東進個別">
+          </div>
+          <div class="nagase-group-list-item-copyright">完全個別カリキュラムで<br>成績を大巾に伸ばす</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.wasedajuku.com/" title="早稲田塾">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/7.png" alt="早稲田塾">
+          </div>
+          <div class="nagase-group-list-item-copyright">総合型・学校推薦型選抜なら<br>大学受験の早稲田塾</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.yotsuyaotsuka.com/" title="四谷大塚">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/4.png" alt="四谷大塚">
+          </div>
+          <div class="nagase-group-list-item-copyright">中学受験塾<br>四谷大塚</div>
+        </a>
+      </li>
+    </ul>
+    <ul class="nagase-group-list-content line-2">
+      <li class="nagase-group-list-items">
+        <a href="https://www.itoman.com/" title="イトマンスイミングスクール">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/5.png" alt="イトマンスイミングスクール">
+          </div>
+          <div class="nagase-group-list-item-copyright">スイミングスクール・水泳教室<br>イトマンスイミングスクール</div>
+        </a>
+        <div class="nagase-group-list-item-copyright"><a href="https://www.itoman.com/grand_fitness/">ｲﾄﾏﾝｸﾞﾗﾝﾄﾞﾌｨｯﾄﾈｽ受付中!</a></div>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.itoman-s.com/" title="イトマンスポーツスクール">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/21.png" alt="イトマンスポーツスクール">
+          </div>
+          <div class="nagase-group-list-item-copyright">九州を中心としたスイミング<br>スクール・水泳教室</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.itoman-w.com/" title="イトマンスポーツスクエア">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/19.png" alt="イトマンスポーツスクエア">
+          </div>
+          <div class="nagase-group-list-item-copyright">イトマンスポーツスクエアなら<br>あなたにぴったりが見つかる</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.kimurajuku.co.jp/" title="木村塾">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/17.png" alt="木村塾">
+          </div>
+          <div class="nagase-group-list-item-copyright">阪神地区・大阪北摂に展開<br>小中高生の塾・現役予備校<br>個別指導</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshinikueisha.com/" title="東進育英舎">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/11.png" alt="東進育英舎">
+          </div>
+          <div class="nagase-group-list-item-copyright">小中高生の受験予備校・塾<br>東進育英舎</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshinshikoku.com/" title="東進四国">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/12.png" alt="東進四国">
+          </div>
+          <div class="nagase-group-list-item-copyright">四国の予備校・塾<br>東進四国</div>
+        </a>
+      </li>
+    </ul>
+    <ul class="nagase-group-list-content line-3">
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin.com/kodomo/" title="東進こども英語塾">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/6.png" alt="東進こども英語塾">
+          </div>
+          <div class="nagase-group-list-item-copyright">東進こども英語塾</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin-online.com/" title="東進オンライン学校">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/3.png" alt="東進オンライン学校">
+          </div>
+          <div class="nagase-group-list-item-copyright">東進オンライン学校</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshindigital.com/biz/" title="東進デジタルユニバーシティ">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/8.png" alt="東進デジタルユニバーシティ">
+          </div>
+          <div class="nagase-group-list-item-copyright">東進デジタル<br>ユニバーシティ</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin.com/bs/" title="東進ビジネススクール">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/9.png" alt="東進ビジネススクール">
+          </div>
+          <div class="nagase-group-list-item-copyright">東進ビジネススクール</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin-chugaku.com/original/" title="東進中学NET">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/10.png" alt="東進中学NET">
+          </div>
+          <div class="nagase-group-list-item-copyright">東進中学NET</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin-todai.com/" title="東大特進コース">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/13.png" alt="東大特進コース">
+          </div>
+          <div class="nagase-group-list-item-copyright">東大特進コース</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.kiyosehikari.jp/" title="清瀬ひかり幼稚園">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/14.png" alt="清瀬ひかり幼稚園">
+          </div>
+          <div class="nagase-group-list-item-copyright">清瀬ひかり幼稚園</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.toshin.com/codemonkey/" title="東進CODE MONKEY">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/16.png" alt="東進CODE MONKEY">
+          </div>
+          <div class="nagase-group-list-item-copyright">東進CODE MONKEY</div>
+        </a>
+      </li>
+      <li class="nagase-group-list-items">
+        <a href="https://www.babys-care.net/" title="赤ちゃん成長ナビ">
+          <div class="nagase-group-list-item-images">
+            <img src="https://www.toshin.com/common_source/pc/group-list/img/18.png" alt="赤ちゃん成長ナビ">
+          </div>
+          <div class="nagase-group-list-item-copyright">赤ちゃん成長ナビ</div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>    <!--contents-->
+        
+<footer id="global-footer">
+  <ul class="footer-banner">
+    <li><a href="https://www.toshin.com/koukou_course/">キミの高校に対応！東進の個別指導コース</a></li>
+    <li><a href="https://www.toshin.com/weather/">90日先まで大胆予報！ 全国学校のお天気</a></li>
+  </ul>
+  <ul class="footer-banner">
+    <li><a href="https://www.toshin.com/nyushi_info/">受験生必見！ 大学情報・入試情報</a></li>
+    <li><a href="https://www.toshin.com/proverb/">きっと元気になる Proverb格言</a></li>
+    <li><a href="https://www.toshin.com/mirai/">将来の夢や進路を見つけよう 未来発見サイト</a></li>
+  </ul>
+  <ul class="footer-banner">
+    <li><a href="https://www.toshin.com/movie/">大学・学部選びの動画サイト 東進TV</a></li>
+    <li><a href="https://www.time.ne.jp/">時刻も天気もイベントも掲載! ナガセ世界時計</a></li>
+  </ul>
+  <ul class="footer-link">
+    <li><a href="https://www.toshin.com/">大学受験予備校・塾の東進ドットコムTOP</a></li>
+    <li><a href="https://www.toshin.com/aboutsite/">このサイトについて</a></li>
+    <li><a href="https://www.toshin.com/link_popularity/">リンクについて</a></li>
+    <li><a href="https://www.toshin.com/toi/">お問い合わせ</a></li>
+    <li><a href="https://www.toshin.com/privacy/index.php">プライバシーポリシー</a></li>
+    <li><a href="https://www.toshin.com/data/">データ利用</a></li>
+  </ul>
+  <div class="footer-copyright">Copyright (C) Nagase Brothers Inc.</div>
+</footer>
+  </div>
+  <script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script><script type="text/javascript" src="https://www.toshin.com/js/tracking_code.js" charset="utf-8"></script>  <!--wrapper-->
+</body>
+</html>

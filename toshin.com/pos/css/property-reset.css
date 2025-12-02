@@ -1,0 +1,62 @@
+/* ------------------------------
+ Property-Resset
+------------------------------ */
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl,
+dt,
+dd,
+li,
+table,
+th,
+td,
+form,
+select,
+option,
+address,
+pre,
+blockquote,
+code {
+  margin: 0px;
+  padding: 0px;
+  font-size: 100%;
+  font-weight: normal;
+  font-style: normal;
+  text-align: left;
+}
+
+img {
+  border: 0;
+}
+
+ul,
+ol,
+dl {
+  list-style-type: none;
+}
+
+li li,
+li p,
+li pre,
+li dt,
+li dd,
+dd li,
+dd p,
+dd pre,
+dd dt,
+dd dd {
+  font-size: 100%;
+}
+
+hr {
+  display: none;
+}

@@ -1,0 +1,318 @@
+@charset "utf-8";
+/*東進グローバルヘッダー＆フッダーのcss*/
+
+body {
+  font-family: normal;
+  background: url('../../image/index/TMP/christmas_2017.jpg') repeat-x;
+}
+
+#IncGlobalHeader {
+  position: relative;
+  z-index: 100000;
+  width: 1000px;
+  height: 70px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+#IncGlobalHeader img {
+  border: none;
+}
+
+#ToshinLogo {
+  position: absolute;
+  top: 11px;
+  left: 0;
+  text-align: left;
+  white-space: nowrap;
+  color: #009c88;
+}
+
+#ToshinLogo a {
+  font-size: 11px;
+  color: #009c88;
+}
+
+#ToshinLogo span {
+  font-size: 12px;
+  display: block;
+  letter-spacing: 0;
+}
+
+#IncGlobalHeader_Box0 {
+  position: absolute;
+  top: 15px;
+  left: 220px;
+  height: 50px;
+  padding: 2px;
+}
+
+#IncGlobalHeader_Box0>#bannerArea {
+  float: left;
+  width: 370px;
+}
+
+#IncGlobalHeader_Box0>#bannerArea img {
+  cursor: pointer;
+  -webkit-transition: all .15;
+  -moz-transition: all .15;
+  -ms-transition: all .15;
+  transition: all .15;
+}
+
+#IncGlobalHeader_Box0>#bannerArea img:hover {
+  opacity: .8;
+}
+
+#IncGlobalHeader_Box0>#snsArea {
+  float: left;
+  width: 80px;
+  height: auto;
+}
+
+#IncGlobalHeader_twitter {
+  margin-bottom: 5px;
+}
+
+#IncGlobalHeader_twitter, #IncGlobalHeader_facebook {
+  line-height: 1;
+}
+
+#IncGlobalHeader_Box1 {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+
+#IncGlobalHeader_Box2 {
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  height: 20px;
+}
+
+#IncGlobalHeader_Box2 .cse-search-box {
+  position: relative;
+}
+
+#IncGlobalHeader_Box2 .cse-branding-form input[type='text'] {
+  font-size: 12px;
+  position: absolute;
+  right: 105px;
+  width: 160%;
+  height: 25px;
+  padding: 3px 5px;
+  border: 1px solid #ccc;
+}
+
+#IncGlobalHeader_Box2 .cse-branding-form input[type='submit'] {
+  font-size: 12px;
+  position: relative;
+  right: 5px;
+  height: 25px;
+  cursor: pointer;
+  border: solid 1px #ccc;
+  background-color: transparent;
+}
+
+#IncGlobalHeader_Box2 .Box {
+  font-size: 12px;
+  color: #04c;
+}
+
+#IncGlobalHeader_Box2 .Box a {
+  letter-spacing: 0;
+  color: #04c;
+}
+
+#IncGlobalHeader_Box2 .Box a:hover {
+  color: #09f;
+}
+
+#IncGlobalHeader_Box1 ul {
+  display: flex;
+  margin: 0;
+}
+
+#IncGlobalHeader_Box1 li {
+  list-style: none;
+}
+
+#IncGlobalHeader_Box1 a {
+  font-size: 12px;
+  padding: 0 5px;
+  text-decoration: underline;
+  letter-spacing: 0;
+  color: #04c;
+  border-right: solid 1px #04c;
+}
+
+#IncGlobalHeader_Box1 li:last-child a {
+  border-right: none;
+}
+
+#IncGlobalHeader_Box1 span a {
+  color: #018368;
+}
+
+#IncGlobalHeader_Box1 span a:hover {
+  color: #02c197;
+}
+
+#bannerArea a {
+  float: left;
+  width: 185px;
+}
+
+#IncGlobalHeader_Box2 .gssb_c {
+  z-index: 1000000;
+}
+
+/*ヘッダー2段目*/
+#GlobalMenu {
+  position: relative;
+  z-index: 100000;
+  width: 100%;
+  height: 40px;
+  text-align: center;
+}
+
+#GlobalMenu-inner {
+  position: relative;
+  width: 1000px;
+  height: 50px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#GlobalMenu .Menu {
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+#GlobalMenu .PullDown {
+  position: absolute;
+  display: none;
+  padding: 10px 0;
+  color: #060;
+  background: url('../../image/Menu_20120105/PullDown_Base.png') repeat-x;
+}
+
+#GlobalMenu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#GlobalMenu li {
+  margin: 0 10px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+#GlobalMenu .text_link li {
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 10px 0 -5px;
+  padding: 5px 10px 5px 31px;
+  letter-spacing: 2px;
+  background: url('../../image/Menu_20120105/PullDown_Arrow.png') no-repeat 0 50%;
+}
+
+#GlobalMenu .text_link li a {
+  color: #00765b;
+}
+
+#GlobalMenu .text_link li a:hover {
+  color: #3fa833;
+}
+
+#GlobalMenu .text_link.Type2 li {
+  font-size: 12px;
+  margin: 0 10px 0 25px;
+  padding: 5px 10px 5px 13px;
+  background: url('../../image/Menu_20120105/PullDown_Arrow2.png') no-repeat 0 50%;
+}
+
+#GlobalMenu .text_link.Type3 li {
+  font-size: 12px;
+  line-height: 160%;
+  margin: 0 10px 10px 25px;
+  padding: 0 10px 5px 13px;
+  background: url('../../image/Menu_20120105/PullDown_Arrow2.png') no-repeat 0 8px;
+}
+
+#GlobalMenu img {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+#GlobalMenu .season_event {
+  font-family: 'Lucida Grande', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  margin-left: 3px;
+  padding: 1px 2px;
+  letter-spacing: 0;
+  color: #fff;
+  border-radius: 4px;
+}
+
+#GlobalMenu .season_event_new, #GlobalMenu .season_event_limit {
+  background-color: #f00;
+}
+
+#GlobalMenu .season_event_recommend {
+  background-color: #f60;
+}
+
+/*グローバルフッダー*/
+#Footer {
+  font-size: 12px;
+  line-height: 150%;
+  clear: both;
+  margin: 0;
+  padding: 10px 0;
+  text-align: center;
+  color: #444;
+}
+
+#Footer_Copy {
+  font-size: 11px;
+  line-height: 150%;
+  margin: 0 0 3px 0;
+  text-align: center;
+}
+
+#Footer_Link, #Footer_Link a {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+#Footer #footer_banner {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+#Footer #footer_banner a {
+  margin-right: 25px;
+  text-decoration: none;
+}
+
+#Footer #footer_banner a span {
+  font-size: 14px;
+  text-decoration: underline;
+  color: #1a0dab;
+}
+
+#Footer #footer_banner a span:hover {
+  color: #ff6819;
+}
+
+#Footer_Copyright {
+  font-size: 12px;
+  margin-top: 20px;
+}

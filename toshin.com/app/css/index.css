@@ -1,0 +1,552 @@
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'メイリオ', Meiryo, 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+}
+
+.clear {
+  clear: both;
+}
+
+img {
+  border: none;
+}
+
+a img:hover {
+  opacity: 0.6;
+  filter: alpha(opacity=60);
+  -moz-opacity: 0.6;
+}
+
+#wrapper {
+  margin: 0px auto 5px auto;
+  width: 1000px;
+}
+
+#wrapper img {
+  border: 0;
+  vertical-align: bottom;
+}
+
+/*------------------- メインビジュアル -------------------*/
+
+.mainvisual {
+  width: 100%;
+  overflow: hidden;
+}
+
+.mv-wrapper {
+  margin: 0 auto;
+  width: 2500px;
+  height: 460px;
+  position: relative;
+  top: 0;
+  left: 50%;
+  margin-left: -840px;
+}
+
+#screen-shots {
+  position: absolute;
+  left: -36px;
+  top: 93px;
+}
+
+.smartphone-image {
+  position: absolute;
+  left: 340px;
+  top: 0;
+}
+
+.mv-title {
+  position: absolute;
+  left: 640px;
+  top: 10px;
+}
+
+.mv-button {
+  position: absolute;
+  top: 380px;
+}
+
+.mv-button-tw {
+  left: 620px;
+}
+
+.mv-button-fb {
+  left: 860px;
+}
+
+.mv-button-li {
+  left: 1100px;
+}
+
+/*------------------- 東進公式アプリなら -------------------*/
+
+#sub-catch {
+  text-align: center;
+  margin: 10px auto 0px auto;
+}
+
+#sub-catch img {
+  height: 45px;
+}
+
+#sub-catch-img {
+  text-align: center;
+  margin: 0px auto 0px auto;
+}
+
+/*------------------- index.php -------------------*/
+
+#contents {
+  width: 1000px;
+  margin-top: 25px;
+}
+
+/*------------------- 左カラム > タブ切り替えボタン -------------------*/
+
+#tab-bt-box {
+  margin: 10px auto 0 auto;
+}
+
+#tab1-bt,
+#tab2-bt,
+#tab3-bt {
+  float: left;
+  cursor: pointer;
+}
+
+#tab2-bt,
+#tab3-bt {
+  margin-left: 4px;
+}
+
+.tab01-style {
+  width: 300px;
+  height: 56px;
+}
+
+.tab02-style {
+  width: 222px;
+  height: 56px;
+}
+
+.tab03-style {
+  width: 188px;
+  height: 56px;
+}
+
+/*------------------- 左カラム -------------------*/
+
+#apri-left-box {
+  float: left;
+  width: 718px;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: #bdbdaa solid 1px;
+  background-color: #edede8;
+  -moz-box-shadow: inset 0px 0px 5px 2px #bdbdaa;
+  -webkit-box-shadow: inset 0px 0px 5px 2px #bdbdaa;
+  box-shadow: inset 0px 0px 5px 2px #bdbdaa;
+}
+
+#apri-left {
+  background-color: #ffffff;
+  width: 718px;
+  border: solid 1px #cccccc;
+}
+
+#apri-left .left-prop {
+  float: left;
+  /*width: 340px;*/
+  margin: 20px 20px 0 20px;
+}
+
+#apri-left .prop-txt {
+  padding: 10px;
+  border-bottom: #666666 dotted 1px;
+  font-size: 16px;
+}
+
+.sample-img {
+  float: right;
+  margin-left: 25px;
+}
+
+.sample-img-part {
+  position: relative;
+  right: 15px;
+}
+
+#apri-left .left-img {
+  float: right;
+  margin: 10px 20px 10px 10px;
+  text-align: center;
+}
+
+.mov-iframe {
+  width: 300px;
+  height: 224px;
+  border: 0;
+}
+
+#apri-left .box {
+  padding: 15px 20px 15px 20px;
+  font-size: 13px;
+  line-height: 180%;
+}
+
+#cover {
+  border: 1px solid #b5c5e5;
+  border-collapse: collapse;
+  background: #e3eef3 repeat;
+  width: 560px;
+  font-weight: bold;
+}
+
+#cover td {
+  border: 1px solid #b5c5e5;
+  border-collapse: collapse;
+  padding: 0.3em 1.2em;
+}
+
+#table-index {
+  width: 560px;
+  font-size: 130%;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.4em;
+  font-weight: normal;
+  background-color: #3f6194;
+}
+
+.coverrate {
+  width: 260px;
+  text-align: center;
+}
+
+.list {
+  list-style: none;
+  margin: 0 20px 20px;
+}
+
+.line {
+  text-align: center;
+  margin: 15px auto 15px auto;
+}
+
+.sub-title {
+  text-align: center;
+  margin: 15px auto 0px auto;
+}
+
+.sub-list li {
+  font-size: 20px;
+  color: #449999;
+  list-style: none;
+  margin: 20px 0 5px 0;
+}
+
+.sub-list p {
+  text-indent: 1em;
+}
+
+.tab2-table {
+  width: 660px;
+  border: 0;
+}
+
+.catch-pic {
+  margin-top: 15px;
+  text-align: center;
+}
+
+#apri-left .cap {
+  padding: 10px;
+  font-size: 13px;
+  line-height: 1.8em;
+}
+
+#apri-left .cap-s {
+  padding: 10px;
+  font-size: 12px;
+  line-height: 110%;
+}
+
+#pos {
+  background: url('../img/pos_bg.jpg') no-repeat;
+  width: 640px;
+  height: 216px;
+  position: relative;
+  margin: 0 auto;
+}
+
+#pos-explain {
+  display: block;
+  width: 400px;
+  float: left;
+  margin: 60px 40px;
+  font-size: 16px;
+}
+
+.big {
+  font-size: 22px;
+  font-style: normal;
+  font-weight: bold;
+  color: #08d;
+}
+
+#pos-detail {
+  position: absolute;
+  right: 10px;
+  top: 38px;
+}
+
+.app-box {
+  width: 680px;
+  margin: 20px auto;
+}
+
+.app-area {
+  width: 140px;
+  height: 300px;
+  margin: 0 5px;
+  float: left;
+}
+
+.app-info {
+  width: 480px;
+  padding: 20px;
+  background: #efefef;
+  border: #ccc 1px solid;
+  float: right;
+  position: relative;
+  margin-bottom: 20px;
+  font-size: 85%;
+}
+
+.app-text {
+  width: 380px;
+  margin: 20px 5px;
+  line-height: 1.8em;
+  font-size: 13px;
+  display: block;
+  float: left;
+}
+
+.app-title {
+  height: 45px;
+}
+
+.app-info h2 {
+  margin: 5px 0;
+  font-size: 20px;
+}
+
+.app-info ul {
+  margin: 10px 5px;
+}
+
+.app-info ul li {
+  list-style: none;
+  line-height: 150%;
+}
+
+#app-logo {
+  width: 126px;
+  margin: 0 auto;
+}
+
+#app-logo img{
+    width: 100%;
+}
+
+#app-qr {
+  margin: 20px auto 0 auto;
+}
+
+#app-qr .app-border {
+  border: #AAA 1px solid;
+}
+.app-img{
+  width: 90px;
+  border: #AAA 1px solid;
+  margin: 0px 23px;
+}
+
+.app-dotline {
+  border-top: 1px dashed #777777;
+  width: 100%;
+}
+
+.for-user {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+
+.download {
+  position: absolute;
+  top: 90px;
+  right: 20px;
+}
+
+#attention {
+  padding: 20px;
+}
+
+#attention p {
+  margin-top: 20px;
+}
+
+.book-box {
+  width: 190px;
+  height: 500px;
+  margin: 5px;
+  padding: 5px 10px;
+  float: left;
+  background: #f1f1f1;
+  box-shadow: 1px 1px 2px;
+  border: #ccc 1px solid;
+  font-size: 80%;
+  position: relative;
+}
+
+.book-box h3 {
+  font-size: 120%;
+  text-align: center;
+  display: block;
+  height: 60px;
+  line-height: 60px;
+}
+
+.book-box .book-title-newline {
+  line-height: 30px;
+}
+
+.book-box .book-title-newline2 {
+  line-height: 20px;
+}
+
+.book-box ul {
+  margin-top: 10px;
+}
+
+.book-box ul li {
+  list-style: none;
+  text-align: left;
+}
+
+.book-box-s {
+  height: 255px;
+}
+
+.books {
+  margin: 7px auto;
+  width: 120px;
+}
+
+.book-detail {
+  position: absolute;
+  bottom: 15px;
+  text-align: right;
+  width: 190px;
+}
+
+/*------------------- baner.php -------------------*/
+
+#banner-area {
+  width: 630px;
+  height: 265px;
+  margin: 20px auto;
+  margin-bottom: 20px;
+}
+
+.banner img {
+  margin-bottom: 10px;
+}
+
+.banner-img01,
+.banner-img02,
+.banner-img03 {
+  float: left;
+}
+
+.banner-img01 {
+  margin: 10px 25px 7px 25px;
+}
+
+.banner-img02 {
+  margin: 7px 25px;
+}
+
+.banner-img03 {
+  margin: 7px 25px 10px 25px;
+}
+
+/*------------------- share.php -------------------*/
+
+.td-sns {
+  width: 161px;
+  float: left;
+  margin: 2px;
+}
+
+/*------------------- 右カラム -------------------*/
+
+#apri-right-box {
+  float: right;
+  width: 250px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.apri-right-title {
+  width: 250px;
+  height: 84px;
+}
+
+#apri-right {
+  width: 238px;
+  padding: 5px 5px 20px 5px;
+  background-color: #f4f4f4;
+  border-left: solid 1px #cccccc;
+  border-right: solid 1px #cccccc;
+  border-bottom: solid 1px #cccccc;
+}
+
+/* 右カラム > タブ切り替えボタン */
+.apri-list {
+  height: 50px;
+  padding: 5px 0 5px 0;
+  border-bottom: #9f9a88 dotted 1px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+.right-ban {
+  margin: 10px auto 10px auto;
+}
+
+.rm {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+}
+
+.rm-banner {
+  float: left;
+}
+
+.apr-img{
+  width: 100%;
+}
+
+.app-iphone{
+  margin: -9px 0px;
+  color: red;
+}
+
+.eitango18{
+  margin: -11px 5px;
+}

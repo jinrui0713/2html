@@ -1,0 +1,251 @@
+body {
+  font-family: 'メイリオ', Meiryo, 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+}
+
+.clear {
+  clear: both;
+}
+
+.wrapper {
+  background: url('../img/bg_tit.png') repeat-x;
+  height: 101px;
+  margin: 0 auto;
+}
+
+.pos-header {
+  width: 1000px;
+  padding-top: 12px;
+  margin: 0 auto;
+  color: #FFF;
+  font-size: 12px;
+}
+
+.pos-header a {
+  color: #FFF;
+}
+
+.pos-header a:hover {
+  text-decoration: none;
+}
+
+.pos-header-logo {
+  float: left;
+  padding: 10px 23px 0 0;
+}
+
+.pos-header-body {
+  background: url('../img/caution.png') no-repeat left;
+  padding: 0 0 0 55px;
+  float: right;
+  height: 47px;
+  width: 440px;
+}
+
+.pos-header-link {
+  font-size: 14px;
+}
+
+.pos-header-link a {
+  margin: 0 9px 0 0;
+}
+
+.pos-header-login-button img {
+  margin: 0 15px 7px 0;
+}
+
+.pos-header-login-button a img {
+  background: none;
+  margin: 0 15px 7px 0;
+}
+
+.pos-header-login-button a:hover img {
+  filter: alpha(opacity=80);
+  opacity: 0.7;
+  background: none;
+  margin: 0 15px 7px 0;
+}
+
+/*自宅オンライン講習のバナーを外す際には、以下の「background.jpg」と「bg_pos.png」をtest2の/pos/images/にある2020/4/11バックアップ分の物と差し替えてください。*/
+
+.pos-body {
+  background: url('../img/background.jpg') no-repeat center;
+  background-color: #137A75;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pos-body-title-img img {
+  width: 1030px;
+  display: block;
+  margin: 0 auto;
+}
+
+.pos-body-login {
+  background: url('../img/bg_pos.png') no-repeat center;
+  height: 395px;
+}
+
+.pos-body-login-box {
+  padding-top: 17px;
+  width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.pos-body-login-account {
+  position: absolute;
+  left: 232px;
+  top: 15px;
+}
+
+.pos-body-login-account span {
+  margin-right: 12px;
+}
+
+.pos-body-login-account input {
+  height: 25px;
+  width: 376px;
+}
+
+.pos-body-login-account-notice {
+  font-size: 11px;
+  position: absolute;
+  left: 321px;
+  top: 50px;
+  width: 480px;
+  text-align: left;
+}
+
+.pos-body-login-password {
+  position: absolute;
+  left: 219px;
+  top: 90px;
+}
+
+.pos-body-login-password span {
+  margin-right: 12px;
+}
+
+.pos-body-login-password input {
+  height: 25px;
+  width: 376px;
+}
+
+.pos-body-forgot-password {
+  font-size: 11px;
+  position: absolute;
+  left: 321px;
+  top: 125px;
+  width: 480px;
+  text-align: left;
+}
+
+.pos-body-login-button {
+  position: absolute;
+  left: 310px;
+  top: 168px;
+}
+
+.pos-body-login-notice {
+  position: absolute;
+  left: 280px;
+  top: 336px;
+  text-align: left;
+  font-size: 15px;
+  color: #FFF;
+}
+
+.pos-body-login-notice span {
+  float: left;
+  margin-right: 10px;
+}
+.pos-junior-login {
+  font-size: 11px;
+  position: absolute;
+  left: 321px;
+  top: 230px;
+  width: 480px;
+  text-align: left;}
+
+.top-link {
+  display: block;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  background-color: #009380;
+  width: 50%;
+  margin: 10px auto;
+  font-size: 25px;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.pos-banner {
+  background: url('../img/ban_bg.jpg') repeat-x;
+  height: 213px;
+  padding-top: 24px;
+  position: relative;
+}
+
+.pos-banner-button-left {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  cursor: pointer;
+}
+
+.pos-banner-button-right {
+  position: absolute;
+  top: 4px;
+  right: 0;
+  cursor: pointer;
+}
+
+.pos-footer {
+  font-size: 12px;
+  line-height: 150%;
+  color: #444;
+  padding: 10px 0;
+  margin: 0;
+  text-align: center;
+  clear: both;
+}
+
+.pos-footer-copyright {
+  font-size: 11px;
+  line-height: 150%;
+  margin: 0 0 3px 0;
+  text-align: center;
+}
+
+.pos-footer-link a {
+  font-size: 12px;
+}
+
+#clickdiv {
+  background-attachment: fixed;
+  background-image: url('../img/spacer.gif');
+  position: absolute;
+  left: 0;
+  top: 0;
+  accelerator: true;
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+}
+
+.pos-password-attention {
+  position: absolute;
+  right: 0;
+  top: 220px;
+  border: solid 1px #000;
+  padding: 5px;
+  font-size: 11px;
+  text-align: left;
+}
+
+.pos-password-attention ul li{
+  font-weight: bold;
+}

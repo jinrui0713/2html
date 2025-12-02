@@ -1,0 +1,314 @@
+/*
+* Theme Name: toshin.com
+* Theme URI: https://www.toshin.com
+* Description: toshin.comで共通で使うスタイル
+* Created Date: 2018.02.28
+* Update Date:
+*/
+
+/*------------------------------------
+  Color
+------------------------------------*/
+
+body {
+  color: #333;
+}
+
+/*------------------------------------
+  Font
+------------------------------------*/
+
+html {
+  /* 1rem=10pxに設定 */
+  font-size: 62.5%;
+}
+
+body {
+  /* win:游ゴシック優先、mac:ヒラギノ角ゴシック優先 */
+  font-family: 'Avenir', 'Helvetica Neue', 'Helvetica', 'Arial', 'Hiragino Sans', 'ヒラギノ角ゴシック', YuGothic, 'Yu Gothic', 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', 'MS PGothic';
+  /* 標準のフォントサイズを 1.6rem=16pxに設定 */
+  font-size: 1.6rem;
+  letter-spacing: .05em;
+}
+
+/*------------------------------------
+  Common
+------------------------------------*/
+
+*, *:after, *:before {
+  box-sizing: border-box;
+}
+
+a {
+  -o-transition: all .3s;
+  -webkit-transition: all .3s;
+  -moz-transition: all .3s;
+  transition: all .3s;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+.img-liquid {
+  width: 100%;
+  height: auto;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+a {
+  cursor: pointer;
+}
+
+@media screen and (max-width:600px) {
+  img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/*------------------------------------
+  General
+------------------------------------*/
+
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.align-right {
+  float: right;
+  margin: 0 0 1em 1em;
+}
+
+.align-left {
+  float: left;
+  margin: 0 1em 1em 0;
+}
+
+.clearfix::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.clear {
+  clear: both;
+}
+
+/*------------------------------------
+  Layout:block
+------------------------------------*/
+
+.container-wrap {
+  background-color: #fff;
+}
+
+.container {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+.section-primary {
+  margin-top: 50px;
+  margin-bottom: calc(40px + 20px);
+}
+
+.section-secondary, .section-tertiary, .section-quaternary {
+  margin: 40px 0;
+}
+
+@media screen and (max-width:600px) {
+  .container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2.5%;
+  }
+  .section-primary {
+    margin-top: 30px;
+    margin-bottom: calc(20px + 30px);
+  }
+  .sec-content {
+    margin-bottom: 20px;
+  }
+  .section-secondary, .section-tertiary, .section-quaternary {
+    margin: 20px 0 40px 0;
+  }
+}
+
+/*------------------------------------
+  Layout:column
+------------------------------------*/
+
+.col-flex {
+  -js-display: flex;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  min-height: 1px;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+  padding-right: 15px;
+  padding-left: 15px;
+}
+
+.col-1 {
+  max-width: 8.33333333%;
+  flex: 0 0 8.33333333%;
+}
+
+.col-2 {
+  max-width: 16.666666%;
+  flex: 0 0 16.666666%;
+}
+
+.col-3 {
+  max-width: 25%;
+  flex: 0 0 25%;
+}
+
+.col-4 {
+  max-width: 33.333333%;
+  flex: 0 0 33.333333%;
+}
+
+.col-5 {
+  max-width: 41.66667%;
+  flex: 0 0 41.66667%;
+}
+
+.col-6 {
+  max-width: 50%;
+  flex: 0 0 50%;
+}
+
+.col-7 {
+  max-width: 58.33333%;
+  flex: 0 0 58.33333%;
+}
+
+.col-8 {
+  max-width: 66.66666667%;
+  flex: 0 0 66.66666667%;
+}
+
+.col-9 {
+  max-width: 75%;
+  flex: 0 0 75%;
+}
+
+.col-10 {
+  max-width: 83.33333%;
+  flex: 0 0 83.33333%;
+}
+
+.col-11 {
+  max-width: 91.6666%;
+  flex: 0 0 91.6666%;
+}
+
+.col-12 {
+  max-width: 100%;
+  flex: 0 0 100%;
+}
+
+.col-box-2 .col-6, .col-box-2 .col-4 {
+  margin-bottom: 30px;
+}
+
+.col-box-2 img, .col-box-3 img {
+  margin-bottom: 15px;
+}
+
+@media screen and (max-width:600px) {
+  .col-flex {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .col-1, .col-2, .col-3, .col-4, .col-5, .col-6, .col-7, .col-8, .col-9, .col-10, .col-11, .col-12 {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+}
+
+/*------------------------------------
+  Text
+------------------------------------*/
+
+h1, h2, h3, h4, h5, h6, p, ul, li, th, td, dt, dd {
+  line-height: 1.5;
+  margin: 0;
+  padding: 0;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+@media screen and (max-width:600px) {
+  p {
+    margin-bottom: .5em;
+  }
+}
+
+/*------------------------------------
+  ttl
+------------------------------------*/
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: .5em;
+}
+
+.ttl-primary {
+  margin-bottom: 40px;
+}
+
+.content-main .ttl-primary :first-of-tye {
+  margin-bottom: 40px;
+}
+
+@media screen and (max-width:600px) {
+  .ttl-primary {
+    margin-bottom: 20px;
+  }
+  .content-main .ttl-primary :first-of-tye {
+    margin-bottom: 20px;
+  }
+}
+
+/*------------------------------------
+  Header
+------------------------------------*/
+
+/*------------------------------------
+  Footer
+------------------------------------*/
+
+footer {
+  margin-top: 100px;
+}

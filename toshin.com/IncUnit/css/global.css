@@ -1,0 +1,379 @@
+@charset "utf-8";
+/*
+* Theme Name: 東進 PCサイト グローバルヘッダー、フッター用CSS
+* Theme URI: https://www.toshin.com/kodomo/
+* Created Date: 2018.04.27
+* Update Date:
+*/
+
+/*=============================================
+　東進 グローバルヘッダー PC
+=============================================*/
+
+body {
+  font-family: normal;
+  background: url('../../image/index/TMP/christmas_2017.jpg') repeat-x;
+}
+
+/*------------------------------------
+  global-header
+------------------------------------*/
+
+#global-header ul {
+  margin: 0;
+  padding: 0;
+}
+
+#global-header img {
+  border: none;
+}
+
+#global-header .global-header-inner {
+  display: flex;
+}
+
+#global-header .global-header-inner {
+  position: relative;
+  z-index: 100000;
+  width: 1000px;
+  height: 70px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+#global-header .toshin-logo {
+  margin-top: 10px;
+}
+
+#global-header .toshin-logo a {
+  font-size: 11px;
+  display: block;
+  color: #009c88;
+}
+
+#global-header .toshin-logo span {
+  font-size: 11px;
+  position: relative;
+  display: block;
+  letter-spacing: -0.06em;
+}
+
+#global-header .global-header-box01 {
+  margin: 15px 0 0 10px;
+}
+
+#global-header .global-header-box02 {
+  margin: 14px 0 0 360px;
+}
+
+#global-header .button-sns-twitter {
+  margin-bottom: 3px;
+}
+
+#global-header .button-sns-twitter, #global-header .button-sns-facebook {
+  line-height: 1;
+}
+
+#global-header .global-header-share {
+  font-size: 12px;
+  display: flex;
+  box-sizing: border-box;
+  width: 88px;
+  height: 20px;
+  letter-spacing: 0;
+  color: #fff;
+  border-radius: 3px;
+  align-items: center;
+  justify-content: space-around;
+}
+
+#global-header .share-twiiter {
+  padding: 5px 7px;
+  background-color: #00aced;
+}
+
+#global-header .share-twiiter img {
+  width: 15px;
+}
+
+#global-header .button-sns-facebook {
+  margin-top: 7px;
+}
+
+#global-header .share-facebook {
+  padding: 5px 7px;
+  background-color: #305097;
+}
+
+#global-header .share-facebook img {
+  width: 15px;
+}
+
+#global-header .share-facebook span {
+  position: relative;
+  right: 3px;
+}
+
+#global-header .global-header-box03 {
+  position: absolute;
+  top: 15px;
+  right: 0;
+}
+
+#global-header .search-site {
+  position: absolute;
+  right: 5px;
+  height: 20px;
+}
+
+#global-header .cse-search-box {
+  position: relative;
+}
+
+#global-header .cse-search-input {
+  float: left;
+  margin-left: 5px;
+}
+
+#global-header .cse-branding-form {
+  display: flex;
+}
+
+#global-header .cse-branding-form input[type='text'] {
+  font-size: 12px;
+  position: absolute;
+  right: 105px;
+  width: 215px;
+  height: 25px;
+  padding: 3px 5px;
+  border: 1px solid #ccc;
+}
+
+#global-header .cse-branding-form input[type='submit'] {
+  font-size: 12px;
+  position: relative;
+  right: 5px;
+  height: 25px;
+  cursor: pointer;
+  border: solid 1px #ccc;
+  background-color: transparent;
+}
+
+#global-header .global-header-box03 ul {
+  display: flex;
+  margin: 0;
+}
+
+#global-header .global-header-box03 li {
+  list-style: none;
+}
+
+#global-header .global-header-box03 a {
+  font-size: 13px;
+  padding: 0 5px;
+  text-decoration: underline;
+  letter-spacing: .02em;
+  color: #04c;
+  border-right: solid 1px #04c;
+}
+
+#global-header .global-header-box03 li:last-child a {
+  border-right: none;
+}
+
+#global-header .global-header-box03 span a {
+  color: #018368;
+}
+
+#global-header .global-header-box03 span a:hover {
+  color: #02c197;
+}
+
+#global-header .search-site .gssb_c {
+  z-index: 1000000;
+}
+
+/* ヘッダー2段目 */
+
+#global-header .global-menu {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  text-align: center;
+}
+
+#global-header .global-menu-inner {
+  position: relative;
+  width: 1000px;
+  height: 50px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#global-header .global-menu .Menu {
+  float: left;
+  margin: 0;
+  padding: 0;
+}
+
+#global-header .global-menu .PullDown {
+  position: absolute;
+  display: none;
+  padding: 10px 0;
+  color: #060;
+  background: url('../../image/Menu_20120105/PullDown_Base.png') repeat-x;
+}
+
+#global-header .global-menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#global-header .global-menu li {
+  margin: 0 10px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+#global-header .global-menu .text_link li {
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 10px 0 -5px;
+  padding: 5px 10px 5px 31px;
+  letter-spacing: 2px;
+  background: url('../../image/Menu_20120105/PullDown_Arrow.png') no-repeat 0 50%;
+}
+
+#global-header .global-menu .text_link li a {
+  color: #00765b;
+}
+
+#global-header .global-menu .text_link li a:hover {
+  color: #3fa833;
+}
+
+#global-header .global-menu .text_link.Type2 li {
+  font-size: 12px;
+  margin: 0 10px 0 25px;
+  padding: 5px 10px 5px 13px;
+  background: url('../../image/Menu_20120105/PullDown_Arrow2.png') no-repeat 0 50%;
+}
+
+#global-header .global-menu .text_link.Type3 li {
+  font-size: 12px;
+  line-height: 160%;
+  margin: 0 10px 10px 25px;
+  padding: 0 10px 5px 13px;
+  background: url('../../image/Menu_20120105/PullDown_Arrow2.png') no-repeat 0 8px;
+}
+
+#global-header .global-menu img {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+#global-header .global-menu .season_event {
+  font-family: 'Lucida Grande', 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Meiryo, メイリオ, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  margin-left: 3px;
+  padding: 1px 2px;
+  letter-spacing: 0;
+  color: #fff;
+  border-radius: 4px;
+}
+
+#global-header .global-menu .season_event_new, #global-header .global-menu .season_event_limit {
+  background-color: #f00;
+}
+
+#global-header .global-menu .season_event_recommend {
+  background-color: #f60;
+}
+
+#global-header #Hs_PullDown {
+  top: 40px;
+  left: 5px;
+}
+
+#global-header .global-menu .doc-request {
+  margin: 5px 20px 10px 20px;
+}
+
+#global-header #Es_PullDown {
+  top: 40px;
+  left: 131px;
+}
+
+#global-header #Moshi_PullDown {
+  top: 40px;
+  left: 447px;
+}
+
+#global-header #Pos_PullDown {
+  top: 40px;
+  right: 150px;
+}
+
+#global-header #Event_PullDown {
+  top: 40px;
+  left: 717px;
+}
+
+#global-header .global-menu .menu-event {
+  cursor: pointer;
+}
+
+/*------------------------------------
+  global-header
+------------------------------------*/
+
+#global-footer {
+  font-size: 12px;
+  line-height: 150%;
+  clear: both;
+  margin: 0;
+  padding: 10px 0;
+  text-align: center;
+  color: #444;
+}
+
+#global-footer .footer-copyright {
+  font-size: 11px;
+  line-height: 150%;
+  margin: 0 0 3px 0;
+  text-align: center;
+}
+
+#global-footer .footer-link, #global-footer .footer-link a {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+#global-footer .footer-banner {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+#global-footer .footer-banner a {
+  margin-right: 25px;
+  text-decoration: none;
+}
+
+#global-footer .footer-banner a span {
+  font-size: 14px;
+  text-decoration: underline;
+  color: #1a0dab;
+}
+
+#global-footer .footer-banner a span:hover {
+  color: #ff6819;
+}
+
+#global-footer .footer-copyright {
+  font-size: 12px;
+  margin-top: 20px;
+}

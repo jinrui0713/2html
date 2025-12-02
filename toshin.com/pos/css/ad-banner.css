@@ -1,0 +1,28 @@
+#ad_banner {
+  display: none;
+}
+
+#ad_banner_disp {
+  width: 100%;
+  height: 165px;
+  overflow: hidden;
+  position: relative;
+}
+
+#ad_banner_disp #ad_banner {
+  display: block;
+  width: auto;
+  height: 165px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin-left: 0px;
+}
+
+#ad_banner_disp #ad_banner li {
+  width: 400px;
+  height: 165px;
+  float: left;
+  margin: 0 20px 0 0;
+  overflow: hidden;
+}

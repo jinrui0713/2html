@@ -1,0 +1,257 @@
+@charset "UTF-8";
+
+/*---------------------------------------
+  title
+-----------------------------------------*/
+.tit_h1{
+  font-size: 142%;
+  padding-bottom: 0;
+}
+.tit_h1,.tit_h2{
+  margin: 0;
+}
+.tit_sub{
+  margin: 20px 0 0;
+}
+h1.tit_sub{
+  margin: 0;
+}
+#login_before h1.tit_sub{
+  width: 100%;
+  margin: 0;
+}
+
+/*---------------------------------------
+  text
+-----------------------------------------*/
+p,p.text_link{
+  margin: 0 0;
+}
+
+/*---------------------------------------
+  img_box
+-----------------------------------------*/
+.img_box .img_1cols{
+  margin: 0;
+}
+.img_box .img_2cols ul li.left{
+  float: none;
+  width: 100%;
+}
+.img_box .img_2cols ul li.right{
+  float: none;
+  width: 100%;
+  margin-top: 20px;
+}
+.img_box .img_2cols ul li img{
+  width: 100%;
+}
+
+/*---------------------------------------
+  anchor_link_box
+-----------------------------------------*/
+.anchor_link_box{
+  margin: 40px 0 0;
+  border: 1px solid #159E86;
+  padding: 10px 10px 0;
+}
+
+/*---------------------------------------
+  topic_box
+-----------------------------------------*/
+.topic_box{
+  margin: 30px 0 0;
+}
+.topic_box .inner .text_link{
+  padding: 0;
+  margin: 0;
+}
+
+/*---------------------------------------
+  top_info_box
+-----------------------------------------*/
+.top_info_box{
+  margin: 0 0 30px;
+  padding: 5px;
+}
+.top_info_box ul{
+  overflow: hidden;
+}
+.top_info_box ul li{
+  float: none;
+  text-align: left;
+  width: 100%;
+}
+
+/*---------------------------------------
+  alert_box
+-----------------------------------------*/
+.alert_box{
+  margin: 30px 0 0;
+}
+
+/*---------------------------------------
+  step_box
+-----------------------------------------*/
+.step_arae{
+  margin: 0;
+}
+.step_box{
+  width: auto;
+}
+.step_box .inner{
+  padding: 0 0 20px;
+}
+.step_box .inner dl dt{
+  width: auto;
+  height: auto;
+  position: relative;
+  background: none #159E86;
+}
+.step_box .inner dl dt span{
+  padding: 10px;
+  text-align: center;
+}
+.step_box .inner dl dd.text{
+  padding: 20px 10px 0;
+}
+.step_box .inner dl dd.link .icn_bullet span{
+  display: block;
+  padding-top: 3px;
+}
+
+/*---------------------------------------
+  qa_box
+-----------------------------------------*/
+.qa_box{
+  margin: 20px 0 0 0;
+}
+.qa_box dl{
+  margin: 0;
+}
+
+/*---------------------------------------
+  list
+-----------------------------------------*/
+/* basic */
+.topic_box ul.list_basic{
+  margin: 5px 0 0;
+}
+ul.list_basic{
+  margin: 0;
+}
+ul.list_basic li{
+  background: url(../Images/icn_circle.png) no-repeat 0 6px;
+}
+
+/* alert */
+.alert_box ul.list_alert{
+  margin: 5px 0 0;
+}
+ul.list_alert{
+  margin: 0;
+}
+ul.list_alert li{
+  background: url(../Images/icn_circle_alert.png) no-repeat 0 6px;
+}
+
+/*---------------------------------------
+  icon link
+-----------------------------------------*/
+/* bullet */
+.icn_bullet a{
+  padding: 0 0 5px 20px;
+  background: url(../Images/icn_bullet.png) no-repeat 0 0;
+}
+.icn_bullet_anchor a{
+  padding: 2px 0 5px 20px;
+  background: url(../Images/icn_bullet_anchor.png) no-repeat 0 0;
+}
+
+/*---------------------------------------
+  form
+-----------------------------------------*/
+.form_area{
+  width: auto;
+  margin: 0;
+  padding-top: 10px;
+}
+.form_area dl{
+  margin: 0;
+  padding-top: 20px;
+}
+.form_area dt{
+  display: block;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  float: none;
+}
+.form_area dd{
+  display: block;
+  padding: 5px 0 0;
+  margin: 0;
+  text-align: left;
+  width: 100%;
+  float: none;
+}
+.form_area .form_note{
+  padding-top: 5px;
+  display: block;
+}
+.form_area input[type=radio]{
+  margin-top: -3px;
+}
+
+/*---------------------------------------
+  button
+-----------------------------------------*/
+
+/*
+  btn_2cols button
+-----------------------------------------*/
+.btn_2cols{
+  padding-top: 20px;
+}
+.btn_2cols ul{
+  width: auto;
+}
+.btn_2cols ul li.left{
+  float: none;
+  width: 220px;
+  margin: 0 auto;
+  padding-top: 10px;
+}
+.btn_2cols ul li.right{
+  float: none;
+  width: 220px;
+  margin: 0 auto;
+  padding-top: 20px;
+}
+
+/*---------------------------------------
+  input
+-----------------------------------------*/
+.form_basic input{
+  width: 100%;
+}
+
+/*---------------------------------------
+  hr
+-----------------------------------------*/
+hr{
+  margin:20px 0 0;
+}
+
+/*---------------------------------------
+  btn_pagetop
+-----------------------------------------*/
+.btn_pagetop{
+  background: #159E86;
+}
+#content .btn_pagetop{
+  padding-right: 15px;
+}
+.btn_pagetop_s{
+  margin: 0;
+}

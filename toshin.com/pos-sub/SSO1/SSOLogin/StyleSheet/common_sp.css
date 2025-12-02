@@ -1,0 +1,212 @@
+@charset "UTF-8";
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/*---------------------------------------
+  layout
+-----------------------------------------*/
+body#login_before #content{
+  width: auto;
+}
+
+/*---------------------------------------
+  header
+-----------------------------------------*/
+#header {
+  height: 45px;
+}
+#header .logo{
+  float: none;
+  padding:13px 0 0;
+  margin: 0;
+  text-align: center;
+}
+body #header .logo_simple{
+  padding: 13px 0 13px 0;
+}
+#header .logo img{
+  width: 162px;
+}
+#header #sp_menu{
+  display: block;
+  overflow: hidden;
+}
+#header .nav_utility{
+  display: none;
+}
+#header .login_info{
+display: none;
+}
+body#login_before #header{
+  padding: 0;
+  margin: 0 0 30px;
+  text-align: center;
+  background: url(../Images/s_bg_header.png) repeat-x 0 bottom;
+  height: 48px;
+}
+body#login_before #header .logo{
+  padding: 13px 0 0;
+}
+
+/*---------------------------------------
+  layout
+-----------------------------------------*/
+body #content{
+   margin: 0;
+   padding: 30px 15px 60px;
+}
+body#login_before #content{
+  margin: 0 auto;
+  padding:0 15px 80px;
+  background: #FFF;
+}
+
+/* nav_global */
+#header #sp_menu .nav_global{
+  display: block;
+  overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+#header #sp_menu .nav_global a {
+  display: block;
+  border-right:1px solid #E0E0E0;
+  width: 45px;
+  height: 45px;
+  background: url(../Images/s_icn_btn.png) 15px 15px no-repeat;
+  background-size:22px 56px;
+  -webkit-background-size:22px 56px;
+  -moz-background-size:22px 56px;
+}
+#header #sp_menu .nav_global a span{
+  display: block;
+  text-indent: 100%; 
+  white-space: nowrap; 
+  overflow: hidden; 
+}
+
+/* nav_setting */
+#header #sp_menu .nav_setting{
+  display: block;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+}
+#header #sp_menu .nav_setting a {
+  display: block;
+  border-left:1px solid #E0E0E0;
+  width: 45px;
+  height: 45px;
+  background: url(../Images/s_icn_btn.png) 12px -20px no-repeat;
+  background-size:22px 56px;
+  -webkit-background-size:22px 56px;
+  -moz-background-size:22px 56px;
+}
+#header #sp_menu .nav_setting a span{
+  display: block;
+  text-indent: 100%; 
+  white-space: nowrap; 
+  overflow: hidden; 
+}
+
+/*---------------------------------------
+  utility nav
+-----------------------------------------*/
+.sb-active-right #utility_area{
+  display: block;
+}
+#utility_area{
+  font-size: 100%;
+  background: #FFF;
+  border-left:1px solid #E0E0E0;
+}
+#utility_area .login_info{
+  margin-top: 45px;
+  border-top:1px solid #E0E0E0;
+}
+#utility_area .login_info ul{
+  background: #EBEBEB;
+  color: #333;
+  font-size: 65%;
+  padding: 10px 0 6px 7px;
+  box-shadow: 0px 4px 3px -3px rgba(0,0,0,0.1) inset;
+  -webkit-box-shadow: 0px 4px 3px -3px rgba(0,0,0,0.1) inset;
+  -moz-box-shadow: 0px 4px 3px -3px rgba(0,0,0,0.1) inset;
+}
+#utility_area .login_info ul li{
+  padding: 0 0 5px;
+  line-height: 1.3;
+}
+#utility_area .nav_utility li a{
+  border-bottom: 1px solid #E1E1E1;
+  display: block;
+  padding: 10px 10px 8px 10px;
+  color: #FFF;
+  line-height: 1.2;
+  color: #333;
+  font-size:70%;
+  text-decoration: none;
+}
+#utility_area .nav_utility li a span{
+  display: block;
+  padding: 0 10px 0 15px;
+}
+#utility_area .nav_utility .icn_question{
+  background: url(../Images/s_icn_nav_utility.png) no-repeat 7px 10px;
+  background-size:12px 134px;
+}
+#utility_area .nav_utility .icn_pass{
+  background: url(../Images/s_icn_nav_utility.png) no-repeat 7px -32px;
+  background-size:12px 134px;
+}
+#utility_area .nav_utility .icn_email{
+  background: url(../Images/s_icn_nav_utility.png) no-repeat 7px -72px;
+  background-size:12px 134px;
+}
+#utility_area .nav_utility .icn_logout{
+  background: url(../Images/s_icn_nav_utility.png) no-repeat 9px -113px;
+  background-size:12px 134px;
+}
+
+/*---------------------------------------
+  footer
+-----------------------------------------*/
+#footer{
+  text-align: center;
+  font-size: 71%;
+}
+
+/*---------------------------------------
+  content Area
+-----------------------------------------*/
+body #content .section{
+  width: auto;
+  margin: 0;
+  padding: 0 15px;
+  
+}
+body #content .section_inner{
+  padding: 40px 0 80px;
+}
+
+/*---------------------------------------
+  view control
+-----------------------------------------*/
+.pc_view{
+  display: none;
+}
+.sp_view{
+  display: block;
+}
+.sp_blk{
+  display: block !important;
+}
