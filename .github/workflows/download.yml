@@ -84,6 +84,10 @@ jobs:
                 YT_CMD="$YT_CMD -f 'bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]' --merge-output-format mp4"
                 EXT="mp4"
                 ;;
+              "360p")
+                YT_CMD="$YT_CMD -f 'bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360]' --merge-output-format mp4"
+                EXT="mp4"
+                ;;
               "bestaudio")
                 YT_CMD="$YT_CMD -x --audio-format mp3 --audio-quality 0"
                 EXT="mp3"
@@ -137,21 +141,21 @@ jobs:
       - name: Upload to R2
         id: upload
         run: |
-          JOB_ID="${{ github.event.inputs.job_id }}"
+          JOB_ID="${{ github.event.inputs.job_id || github.event.client_payload.job_id }}"
           FILENAME="${{ steps.download.outputs.filename }}"
           FILEPATH="${{ steps.download.outputs.filepath }}"
           
           # Upload to R2
           R2_ENDPOINT="${{ secrets.R2_ENDPOINT }}"
-          BUCKET_NAME="youtube-videos"
+          BUCKET_NAME="proxy-videos"
           
-          # Upload video file
-          aws s3 cp "$FILEPATH" "s3://${BUCKET_NAME}/${JOB_ID}/${FILENAME}" \
+          # Upload video file to videos/${JOB_ID}/ directory
+          aws s3 cp "$FILEPATH" "s3://${BUCKET_NAME}/videos/${JOB_ID}/${FILENAME}" \
             --endpoint-url "$R2_ENDPOINT" \
             --no-progress
           
-          echo "Uploaded to R2: ${JOB_ID}/${FILENAME}"
-          echo "r2_path=${JOB_ID}/${FILENAME}" >> $GITHUB_OUTPUT
+          echo "Uploaded to R2: videos/${JOB_ID}/${FILENAME}"
+          echo "r2_path=videos/${JOB_ID}/${FILENAME}" >> $GITHUB_OUTPUT
       
       - name: Callback to Worker
         if: always()
