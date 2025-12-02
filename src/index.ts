@@ -239,9 +239,205 @@ class AdBlockRewriter {
   }
 }
 
+// --- Download API Handler (extracted to bypass auth) ---
+async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname: string): Promise<Response> {
+  function genJobId() {
+    const a = crypto.getRandomValues(new Uint8Array(6));
+    return Date.now().toString(36) + '-' + Array.from(a).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function writeMeta(jobId: string, meta: any) {
+    try {
+      await env.VIDEOS_BUCKET.put(`videos/${jobId}/meta.json`, JSON.stringify(meta), {
+        httpMetadata: { contentType: 'application/json; charset=utf-8' }
+      });
+    } catch (e) {
+      console.log('[DownloadAPI] Error writing meta to R2:', e);
+    }
+  }
+
+  // POST /api/download/request
+  if (pathname === '/api/download/request' && request.method === 'POST') {
+    try {
+      const body = await request.json().catch(() => null) as any;
+      if (!body || !body.url) return new Response(JSON.stringify({ error: 'url required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+
+      const jobId = genJobId();
+      const meta: DownloadJob = {
+        job_id: jobId,
+        video_url: body.url,
+        format: body.format || body.f || 'best',
+        audio_only: !!body.audio_only,
+        status: 'pending',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      // Save initial meta
+      await writeMeta(jobId, meta);
+
+      // Dispatch GitHub Actions via repository_dispatch
+      try {
+        if (env.GITHUB_TOKEN && env.GITHUB_OWNER && env.GITHUB_REPO) {
+          const dispatchUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/dispatches`;
+          const payload = {
+            event_type: 'yt_download',
+            client_payload: {
+              job_id: jobId,
+              url: body.url,
+              format: meta.format,
+              callback_url: body.callback_url || `${new URL(request.url).origin}/api/download/callback`
+            }
+          };
+          const resp = await fetch(dispatchUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `token ${env.GITHUB_TOKEN}`,
+              'Accept': 'application/vnd.github+json',
+              'Content-Type': 'application/json',
+              'User-Agent': 'CloudflareWorker'
+            },
+            body: JSON.stringify(payload)
+          });
+          console.log('[DownloadAPI] GitHub dispatch response:', resp.status);
+          // Update meta to processing
+          meta.status = resp.ok ? 'processing' : 'pending';
+          meta.updated_at = new Date().toISOString();
+          await writeMeta(jobId, meta);
+        } else {
+          console.log('[DownloadAPI] GITHUB_TOKEN or GITHUB_REPO not configured in env. Skipping dispatch.');
+        }
+      } catch (e: any) {
+        console.log('[DownloadAPI] Dispatch error:', e.message || e);
+      }
+
+      return new Response(JSON.stringify({ job_id: jobId }), { status: 202, headers: { 'Content-Type': 'application/json' } });
+    } catch (e: any) {
+      console.log('[DownloadAPI] Request error:', e.message || e);
+      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
+  // POST /api/download/callback
+  if (pathname === '/api/download/callback' && request.method === 'POST') {
+    const incomingSecret = request.headers.get('X-Job-Secret') || request.headers.get('x-job-secret');
+    if (!env.JOB_SECRET || !incomingSecret || incomingSecret !== env.JOB_SECRET) {
+      return new Response(JSON.stringify({ error: 'invalid secret' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    try {
+      const body = await request.json().catch(() => null) as any;
+      if (!body || !body.job_id) return new Response(JSON.stringify({ error: 'job_id required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      const jobId = body.job_id;
+
+      // Read existing meta if exists
+      let metaObj: any = { job_id: jobId };
+      try {
+        const existing = await env.VIDEOS_BUCKET.get(`videos/${jobId}/meta.json`);
+        if (existing && existing.body) {
+          const txt = await existing.text();
+          metaObj = JSON.parse(txt || '{}');
+        }
+      } catch (e) { /* ignore */ }
+
+      metaObj.updated_at = new Date().toISOString();
+      if (body.status) metaObj.status = body.status;
+      if (body.filename) metaObj.filename = body.filename;
+      if (body.filesize) metaObj.filesize = body.filesize;
+      if (body.title) metaObj.title = body.title;
+      if (body.r2_path) metaObj.r2_path = body.r2_path;
+      if (body.error) metaObj.error = body.error;
+
+      await writeMeta(jobId, metaObj);
+
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } catch (e: any) {
+      console.log('[DownloadAPI] Callback processing error:', e.message || e);
+      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
+  // GET /api/download/status?job_id=... or /api/download/status/:jobId
+  if (pathname.startsWith('/api/download/status') && request.method === 'GET') {
+    let jobId = url.searchParams.get('job_id') || url.searchParams.get('jobId') || '';
+    if (!jobId) {
+      const parts = pathname.split('/').filter(Boolean);
+      if (parts.length >= 4) jobId = parts[3];
+    }
+    if (!jobId) return new Response(JSON.stringify({ error: 'job_id required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+
+    try {
+      const obj = await env.VIDEOS_BUCKET.get(`videos/${jobId}/meta.json`);
+      if (!obj || !obj.body) return new Response(JSON.stringify({ error: 'not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      const txt = await obj.text();
+      return new Response(txt, { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } catch (e: any) {
+      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
+  // GET /api/download/list -> list job meta entries
+  if (pathname === '/api/download/list' && request.method === 'GET') {
+    try {
+      const list = await env.VIDEOS_BUCKET.list({ prefix: 'videos/' });
+      const jobIds = new Set<string>();
+      const objects = list.objects || [];
+      for (const item of objects) {
+        if (item && item.key) {
+          const parts = item.key.split('/');
+          if (parts.length >= 2 && parts[1]) jobIds.add(parts[1]);
+        }
+      }
+      const results: any[] = [];
+      for (const id of jobIds) {
+        try {
+          const obj = await env.VIDEOS_BUCKET.get(`videos/${id}/meta.json`);
+          if (obj && obj.body) {
+            const txt = await obj.text();
+            results.push(JSON.parse(txt || '{}'));
+          }
+        } catch (e) { /* ignore individual errors */ }
+      }
+      return new Response(JSON.stringify({ jobs: results }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } catch (e: any) {
+      console.log('[DownloadAPI] List error:', e.message || e);
+      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
+  // Default: not found for /api/download/* paths
+  return new Response(JSON.stringify({ error: 'endpoint not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    const pathname = url.pathname || '/';
+
+    // --- API endpoints that bypass authentication ---
+    // /api/download/* endpoints need to be accessible without login
+    if (pathname.startsWith('/api/download/')) {
+      return handleDownloadAPI(request, env, url, pathname);
+    }
+    
+    // /video/* endpoint to serve R2 files (also bypasses auth)
+    if (pathname.startsWith('/video/') && request.method === 'GET') {
+      const parts = pathname.split('/').filter(Boolean);
+      if (parts.length < 3) return new Response('Bad Request', { status: 400 });
+      const jobId = parts[1];
+      const filename = parts.slice(2).join('/');
+      try {
+        const obj = await env.VIDEOS_BUCKET.get(`videos/${jobId}/${filename}`);
+        if (!obj || !obj.body) return new Response('Not Found', { status: 404 });
+        const headers = new Headers();
+        if (obj.httpMetadata && obj.httpMetadata.contentType) headers.set('Content-Type', obj.httpMetadata.contentType);
+        if (obj.httpMetadata && obj.httpMetadata.contentDisposition) headers.set('Content-Disposition', obj.httpMetadata.contentDisposition as string);
+        return new Response(obj.body, { status: 200, headers });
+      } catch (e: any) {
+        console.log('[DownloadAPI] Error serving R2 object:', e.message || e);
+        return new Response('Internal Error', { status: 500 });
+      }
+    }
     
     // --- Authentication Logic ---
     const cookies = parseCookies(request.headers.get('Cookie'));
@@ -338,199 +534,6 @@ export default {
       return new Response(loginHtml, { headers: { 'Content-Type': 'text/html' } });
     }
     // ----------------------------
-
-        // --- Download job API endpoints (R2 + GitHub Actions dispatch) ---
-        // POST /api/download/request  -> create job, store meta in R2, dispatch GitHub Actions
-        // POST /api/download/callback -> receive status updates from Actions (validated by X-Job-Secret)
-        // GET  /api/download/status  -> get job meta
-        // GET  /api/download/list    -> list jobs (reads meta.json in R2)
-        // GET  /video/:jobId/:file   -> proxy file from R2
-
-        const pathname = url.pathname || '/';
-
-        function genJobId() {
-            const a = crypto.getRandomValues(new Uint8Array(6));
-            return Date.now().toString(36) + '-' + Array.from(a).map(b => b.toString(16).padStart(2, '0')).join('');
-        }
-
-        async function writeMeta(jobId: string, meta: any) {
-            try {
-                await env.VIDEOS_BUCKET.put(`videos/${jobId}/meta.json`, JSON.stringify(meta), {
-                    httpMetadata: { contentType: 'application/json; charset=utf-8' }
-                });
-            } catch (e) {
-                console.log('[DownloadAPI] Error writing meta to R2:', e);
-            }
-        }
-
-        // POST /api/download/request
-        if (pathname === '/api/download/request' && request.method === 'POST') {
-            try {
-                const body = await request.json().catch(() => null);
-                if (!body || !body.url) return new Response(JSON.stringify({ error: 'url required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-
-                const jobId = genJobId();
-                const meta: DownloadJob = {
-                    job_id: jobId,
-                    video_url: body.url,
-                    format: body.format || body.f || 'best',
-                    audio_only: !!body.audio_only,
-                    status: 'pending',
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                };
-
-                // Save initial meta
-                await writeMeta(jobId, meta);
-
-                // Dispatch GitHub Actions via repository_dispatch
-                try {
-                    if (env.GITHUB_TOKEN && env.GITHUB_OWNER && env.GITHUB_REPO) {
-                        const dispatchUrl = `https://api.github.com/repos/${env.GITHUB_OWNER}/${env.GITHUB_REPO}/dispatches`;
-                        const payload = {
-                            event_type: 'yt_download',
-                            client_payload: {
-                                job_id: jobId,
-                                url: body.url,
-                                format: meta.format,
-                                callback_url: body.callback_url || `${new URL(request.url).origin}/api/download/callback`
-                            }
-                        };
-                        const resp = await fetch(dispatchUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `token ${env.GITHUB_TOKEN}`,
-                                'Accept': 'application/vnd.github+json',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                        console.log('[DownloadAPI] GitHub dispatch response:', resp.status);
-                        // Update meta to processing
-                        meta.status = resp.ok ? 'processing' : 'pending';
-                        meta.updated_at = new Date().toISOString();
-                        await writeMeta(jobId, meta);
-                    } else {
-                        console.log('[DownloadAPI] GITHUB_TOKEN or GITHUB_REPO not configured in env. Skipping dispatch.');
-                    }
-                } catch (e: any) {
-                    console.log('[DownloadAPI] Dispatch error:', e.message || e);
-                }
-
-                return new Response(JSON.stringify({ job_id: jobId }), { status: 202, headers: { 'Content-Type': 'application/json' } });
-            } catch (e: any) {
-                console.log('[DownloadAPI] Request error:', e.message || e);
-                return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-            }
-        }
-
-        // POST /api/download/callback
-        if (pathname === '/api/download/callback' && request.method === 'POST') {
-            const incomingSecret = request.headers.get('X-Job-Secret') || request.headers.get('x-job-secret');
-            if (!env.JOB_SECRET || !incomingSecret || incomingSecret !== env.JOB_SECRET) {
-                return new Response(JSON.stringify({ error: 'invalid secret' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
-            }
-
-            try {
-                const body = await request.json().catch(() => null);
-                if (!body || !body.job_id) return new Response(JSON.stringify({ error: 'job_id required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-                const jobId = body.job_id;
-
-                // Read existing meta if exists
-                let metaObj: any = { job_id: jobId };
-                try {
-                    const existing = await env.VIDEOS_BUCKET.get(`videos/${jobId}/meta.json`);
-                    if (existing && existing.body) {
-                        const txt = await existing.text();
-                        metaObj = JSON.parse(txt || '{}');
-                    }
-                } catch (e) { /* ignore */ }
-
-                metaObj.updated_at = new Date().toISOString();
-                if (body.status) metaObj.status = body.status;
-                if (body.filename) metaObj.filename = body.filename;
-                if (body.filesize) metaObj.filesize = body.filesize;
-                if (body.title) metaObj.title = body.title;
-                if (body.r2_path) metaObj.r2_path = body.r2_path;
-                if (body.error) metaObj.error = body.error;
-
-                await writeMeta(jobId, metaObj);
-
-                return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-            } catch (e: any) {
-                console.log('[DownloadAPI] Callback processing error:', e.message || e);
-                return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-            }
-        }
-
-        // GET /api/download/status?job_id=... or /api/download/status/:jobId
-        if (pathname.startsWith('/api/download/status') && request.method === 'GET') {
-            let jobId = url.searchParams.get('job_id') || url.searchParams.get('jobId') || '';
-            if (!jobId) {
-                const parts = pathname.split('/').filter(Boolean);
-                if (parts.length >= 3) jobId = parts[2];
-            }
-            if (!jobId) return new Response(JSON.stringify({ error: 'job_id required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-
-            try {
-                const obj = await env.VIDEOS_BUCKET.get(`videos/${jobId}/meta.json`);
-                if (!obj || !obj.body) return new Response(JSON.stringify({ error: 'not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-                const txt = await obj.text();
-                return new Response(txt, { status: 200, headers: { 'Content-Type': 'application/json' } });
-            } catch (e: any) {
-                return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-            }
-        }
-
-        // GET /api/download/list -> list job meta entries
-        if (pathname === '/api/download/list' && request.method === 'GET') {
-            try {
-                const list = await env.VIDEOS_BUCKET.list({ prefix: 'videos/' });
-                const jobIds = new Set<string>();
-                // R2 list returns { objects: R2Object[] }
-                const objects = list.objects || [];
-                for (const item of objects) {
-                    if (item && item.key) {
-                        const parts = item.key.split('/');
-                        if (parts.length >= 2 && parts[1]) jobIds.add(parts[1]);
-                    }
-                }
-                const results: any[] = [];
-                for (const id of jobIds) {
-                    try {
-                        const obj = await env.VIDEOS_BUCKET.get(`videos/${id}/meta.json`);
-                        if (obj && obj.body) {
-                            const txt = await obj.text();
-                            results.push(JSON.parse(txt || '{}'));
-                        }
-                    } catch (e) { /* ignore individual errors */ }
-                }
-                return new Response(JSON.stringify({ jobs: results }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-            } catch (e: any) {
-                console.log('[DownloadAPI] List error:', e.message || e);
-                return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-            }
-        }
-
-        // GET /video/:jobId/:filename -> proxy from R2
-        if (pathname.startsWith('/video/') && request.method === 'GET') {
-            const parts = pathname.split('/').filter(Boolean);
-            // parts: ['video', '<jobId>', '<filename>']
-            if (parts.length < 3) return new Response('Bad Request', { status: 400 });
-            const jobId = parts[1];
-            const filename = parts.slice(2).join('/');
-            try {
-                const obj = await env.VIDEOS_BUCKET.get(`videos/${jobId}/${filename}`);
-                if (!obj || !obj.body) return new Response('Not Found', { status: 404 });
-                const headers = new Headers();
-                if (obj.httpMetadata && obj.httpMetadata.contentType) headers.set('Content-Type', obj.httpMetadata.contentType);
-                if (obj.httpMetadata && obj.httpMetadata.contentDisposition) headers.set('Content-Disposition', obj.httpMetadata.contentDisposition as string);
-                return new Response(obj.body, { status: 200, headers });
-            } catch (e: any) {
-                console.log('[DownloadAPI] Error serving R2 object:', e.message || e);
-                return new Response('Internal Error', { status: 500 });
-            }
-        }
 
 
     let queryUrl = url.searchParams.get(PARAM_URL);
