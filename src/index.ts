@@ -405,6 +405,50 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
     }
   }
 
+  // DELETE /api/download/delete/:jobId or POST /api/download/delete
+  if (pathname.startsWith('/api/download/delete') && (request.method === 'DELETE' || request.method === 'POST')) {
+    let jobId = '';
+    
+    // Get job_id from URL path or request body
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts.length >= 4) {
+      jobId = parts[3];
+    }
+    
+    if (!jobId && request.method === 'POST') {
+      try {
+        const body = await request.json().catch(() => null) as any;
+        if (body && body.job_id) jobId = body.job_id;
+      } catch (e) { /* ignore */ }
+    }
+    
+    if (!jobId) {
+      return new Response(JSON.stringify({ error: 'job_id required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    try {
+      // List all objects with prefix videos/{jobId}/
+      const prefix = `videos/${jobId}/`;
+      const listResult = await env.VIDEOS_BUCKET.list({ prefix });
+      const objects = listResult.objects || [];
+      
+      if (objects.length === 0) {
+        return new Response(JSON.stringify({ error: 'job not found', job_id: jobId }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+      }
+      
+      // Delete all objects
+      const deletePromises = objects.map(obj => env.VIDEOS_BUCKET.delete(obj.key));
+      await Promise.all(deletePromises);
+      
+      console.log('[DownloadAPI] Deleted', objects.length, 'objects for job:', jobId);
+      
+      return new Response(JSON.stringify({ ok: true, job_id: jobId, deleted_count: objects.length }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    } catch (e: any) {
+      console.log('[DownloadAPI] Delete error:', e.message || e);
+      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
   // Default: not found for /api/download/* paths
   return new Response(JSON.stringify({ error: 'endpoint not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
 }
@@ -2108,146 +2152,472 @@ export default {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${customTitle} - ダウンロード管理</title>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height: 100vh; }
-    .wrapper { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
-    .back-link { display: inline-block; margin-bottom: 20px; color: #fff; text-decoration: none; font-weight: bold; }
-    .back-link:hover { text-decoration: underline; }
-    .card { background: #fff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden; margin-bottom: 25px; }
-    .card-header { padding: 20px 25px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-    .card-header.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .card-header.blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .card-body { padding: 25px; }
-    .form-group { margin-bottom: 18px; }
-    .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #444; font-size: 14px; }
-    .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; }
-    .form-group input:focus, .form-group select:focus { outline: none; border-color: #11998e; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; font-size: 15px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
-    .btn-submit { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; box-shadow: 0 4px 15px rgba(17,153,142,0.4); width: 100%; }
-    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(17,153,142,0.5); }
-    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-    .job-list { margin-top: 20px; }
-    .job-item { padding: 18px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; background: #fafafa; transition: all 0.2s; position: relative; overflow: hidden; }
-    .job-item:hover { background: #f5f5f5; }
-    .job-item.processing { border-left: 4px solid #2196f3; }
-    .job-item.completed { border-left: 4px solid #4caf50; }
-    .job-item.failed { border-left: 4px solid #f44336; }
-    .job-item.pending { border-left: 4px solid #ff9800; }
-    .job-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
-    .job-id { font-family: monospace; font-size: 11px; color: #888; background: #eee; padding: 4px 8px; border-radius: 4px; }
-    .job-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-    .job-status.pending { background: #fff3cd; color: #856404; }
-    .job-status.processing { background: #cce5ff; color: #004085; }
-    .job-status.completed { background: #d4edda; color: #155724; }
-    .job-status.failed { background: #f8d7da; color: #721c24; }
-    .spinner { width: 14px; height: 14px; border: 2px solid #004085; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif; 
+      background: #f8f9fc;
+      color: #374151;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    /* Glass morphism header */
+    .header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      padding: 16px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    .header-nav a {
+      color: #6b7280;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .header-nav a:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .wrapper { 
+      max-width: 1000px; 
+      margin: 0 auto; 
+      padding: 32px 24px;
+    }
+    
+    /* Card styles - clean and minimal */
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+      margin-bottom: 24px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .card-header {
+      padding: 20px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #374151;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+    .card-header .icon.teal { background: #e0f7f4; color: #0d9488; }
+    .card-header .icon.pink { background: #fce7f3; color: #db2777; }
+    .card-header .icon.blue { background: #dbeafe; color: #2563eb; }
+    .card-body { padding: 24px; }
+    
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    .stat-item {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    .stat-sub {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-top: 4px;
+    }
+    .stat-bar {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .stat-bar-fill.green { background: #10b981; }
+    .stat-bar-fill.yellow { background: #f59e0b; }
+    .stat-bar-fill.red { background: #ef4444; }
+    
+    /* Form styles */
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #374151;
+      background: #fff;
+      transition: all 0.2s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #a7f3d0;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    .form-group input::placeholder {
+      color: #9ca3af;
+    }
+    
+    /* Button styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    .btn-full { width: 100%; }
+    
+    /* Job list */
+    .job-list { margin-top: 8px; }
+    .job-item {
+      padding: 20px;
+      border: 1px solid #f3f4f6;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: #fff;
+      transition: all 0.2s;
+    }
+    .job-item:hover {
+      border-color: #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+    .job-item.completed { border-left: 3px solid #10b981; }
+    .job-item.processing { border-left: 3px solid #3b82f6; }
+    .job-item.pending { border-left: 3px solid #f59e0b; }
+    .job-item.failed { border-left: 3px solid #ef4444; }
+    
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .job-id {
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      color: #9ca3af;
+      background: #f9fafb;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    .job-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .job-status.pending { background: #fef3c7; color: #b45309; }
+    .job-status.processing { background: #dbeafe; color: #1d4ed8; }
+    .job-status.completed { background: #d1fae5; color: #047857; }
+    .job-status.failed { background: #fee2e2; color: #b91c1c; }
+    
+    .spinner {
+      width: 12px;
+      height: 12px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .job-title { font-weight: 600; font-size: 15px; color: #333; margin-bottom: 8px; word-break: break-all; }
-    .job-meta { font-size: 12px; color: #666; display: flex; flex-wrap: wrap; gap: 10px; }
-    .job-meta span { display: flex; align-items: center; gap: 4px; }
-    .job-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
-    .job-actions a { padding: 8px 16px; background: #667eea; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: background 0.2s; }
-    .job-actions a:hover { background: #5a67d8; }
-    .empty-state { text-align: center; padding: 40px; color: #999; }
-    .empty-state span { font-size: 48px; display: block; margin-bottom: 15px; }
-    .loading { text-align: center; padding: 30px; color: #666; }
-    .error-msg { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-    .success-msg { background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-    .progress-bar-container { height: 4px; background: #e0e0e0; border-radius: 2px; margin-top: 10px; overflow: hidden; }
-    .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); animation: progress-anim 2s ease-in-out infinite; }
-    @keyframes progress-anim { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
     
-    /* Usage Stats Card */
-    .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-    .usage-item { background: #f8f9fa; border-radius: 12px; padding: 20px; text-align: center; }
-    .usage-item h4 { margin: 0 0 10px 0; font-size: 13px; color: #666; font-weight: 600; }
-    .usage-value { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 8px; }
-    .usage-limit { font-size: 12px; color: #999; }
-    .usage-bar { height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 12px; overflow: hidden; }
-    .usage-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
-    .usage-bar-fill.green { background: linear-gradient(90deg, #11998e, #38ef7d); }
-    .usage-bar-fill.yellow { background: linear-gradient(90deg, #f7971e, #ffd200); }
-    .usage-bar-fill.red { background: linear-gradient(90deg, #f5576c, #f093fb); }
-    .refresh-btn { background: #eee; color: #333; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 15px; }
-    .refresh-btn:hover { background: #ddd; }
+    .job-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1f2937;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+    .job-meta {
+      font-size: 12px;
+      color: #6b7280;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .job-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .btn-download {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-download:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+    .btn-delete {
+      padding: 8px 16px;
+      background: #fff;
+      color: #ef4444;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-delete:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+    }
     
-    /* Status detail */
-    .status-detail { font-size: 11px; color: #666; margin-top: 6px; padding: 8px 12px; background: #f5f5f5; border-radius: 6px; }
-    .status-detail.error { background: #ffebee; color: #c62828; }
+    .status-detail {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 8px;
+      padding: 10px 14px;
+      background: #f9fafb;
+      border-radius: 8px;
+    }
+    .status-detail.error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+    
+    .progress-bar-container {
+      height: 3px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #60a5fa, #3b82f6);
+      animation: progress-anim 1.5s ease-in-out infinite;
+    }
+    @keyframes progress-anim {
+      0% { width: 0%; }
+      50% { width: 70%; }
+      100% { width: 100%; }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: #9ca3af;
+    }
+    .empty-state .icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .loading {
+      text-align: center;
+      padding: 32px;
+      color: #6b7280;
+    }
+    
+    .msg {
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .msg.success {
+      background: #d1fae5;
+      color: #047857;
+    }
+    .msg.error {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    
+    .hint {
+      margin-top: 16px;
+      padding: 14px 18px;
+      background: #fefce8;
+      border-radius: 10px;
+      font-size: 12px;
+      color: #a16207;
+      line-height: 1.5;
+    }
+    
+    @media (max-width: 640px) {
+      .header-inner { flex-direction: column; gap: 12px; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-title">ダウンロード管理</div>
+      <nav class="header-nav">
+        <a href="/">ホーム</a>
+      </nav>
+    </div>
+  </div>
+  
   <div class="wrapper">
-    <a href="/" class="back-link">← ホームに戻る</a>
-    
-    <!-- Usage Stats Card -->
+    <!-- Stats -->
     <div class="card">
-      <div class="card-header blue">📊 使用状況</div>
+      <div class="card-header">
+        <span class="icon blue">S</span>
+        使用状況
+      </div>
       <div class="card-body">
-        <div class="usage-grid">
-          <div class="usage-item">
-            <h4>☁️ R2 ストレージ使用量</h4>
-            <div class="usage-value" id="r2-usage">--</div>
-            <div class="usage-limit">無料枠: 10 GB / 月</div>
-            <div class="usage-bar"><div class="usage-bar-fill green" id="r2-bar" style="width: 0%"></div></div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-label">R2 ストレージ</div>
+            <div class="stat-value" id="r2-usage">--</div>
+            <div class="stat-sub">無料枠: 10 GB</div>
+            <div class="stat-bar"><div class="stat-bar-fill green" id="r2-bar" style="width: 0%"></div></div>
           </div>
-          <div class="usage-item">
-            <h4>⚡ GitHub Actions 使用時間</h4>
-            <div class="usage-value" id="actions-usage">--</div>
-            <div class="usage-limit">無料枠: 2,000 分 / 月</div>
-            <div class="usage-bar"><div class="usage-bar-fill green" id="actions-bar" style="width: 0%"></div></div>
+          <div class="stat-item">
+            <div class="stat-label">Actions 使用時間</div>
+            <div class="stat-value" id="actions-usage">--</div>
+            <div class="stat-sub">無料枠: 2,000 分</div>
+            <div class="stat-bar"><div class="stat-bar-fill green" id="actions-bar" style="width: 0%"></div></div>
           </div>
-          <div class="usage-item">
-            <h4>📦 今月のジョブ数</h4>
-            <div class="usage-value" id="job-count">--</div>
-            <div class="usage-limit">完了 / 処理中 / 失敗</div>
-            <div class="usage-bar"><div class="usage-bar-fill green" id="job-bar" style="width: 0%"></div></div>
+          <div class="stat-item">
+            <div class="stat-label">ジョブ数</div>
+            <div class="stat-value" id="job-count">--</div>
+            <div class="stat-sub">完了 / 処理中 / 失敗</div>
+            <div class="stat-bar"><div class="stat-bar-fill green" id="job-bar" style="width: 0%"></div></div>
           </div>
-        </div>
-        <button class="refresh-btn" onclick="loadUsageStats()">🔄 使用状況を更新</button>
-        <div style="margin-top: 12px; font-size: 11px; color: #888;">
-          ※ R2 の使用量はジョブメタデータから推計しています。正確な値は Cloudflare ダッシュボードをご確認ください。
         </div>
       </div>
     </div>
     
+    <!-- New Request -->
     <div class="card">
-      <div class="card-header">📥 新規ダウンロードリクエスト</div>
+      <div class="card-header">
+        <span class="icon teal">+</span>
+        新規ダウンロード
+      </div>
       <div class="card-body">
         <div id="form-message"></div>
         <form id="download-form">
           <div class="form-group">
-            <label for="video-url">YouTube URL または Video ID</label>
-            <input type="text" id="video-url" name="url" placeholder="https://www.youtube.com/watch?v=... または dQw4w9WgXcQ" required>
+            <label>YouTube URL</label>
+            <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=..." required>
           </div>
           <div class="form-group">
-            <label for="format">フォーマット (720p以下のみ対応)</label>
-            <select id="format" name="format">
-              <option value="720p">720p (推奨)</option>
+            <label>画質</label>
+            <select id="format">
+              <option value="720p">720p</option>
               <option value="480p">480p</option>
               <option value="360p">360p</option>
-              <option value="bestaudio">音声のみ (MP3)</option>
+              <option value="bestaudio">音声のみ</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-submit" id="submit-btn">
-            🚀 ダウンロード開始
+          <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
+            ダウンロード開始
           </button>
         </form>
-        <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 8px; font-size: 12px; color: #856404;">
-          ⚠️ GitHub Actions の無料枠節約のため、720p以下の画質に制限しています。処理には 2〜5 分かかります。
+        <div class="hint">
+          720p以下の画質に制限しています。処理には2〜5分かかります。
         </div>
       </div>
     </div>
     
+    <!-- Job List -->
     <div class="card">
-      <div class="card-header orange">📋 ダウンロード履歴</div>
+      <div class="card-header">
+        <span class="icon pink">H</span>
+        履歴
+        <button onclick="loadJobs()" class="btn btn-secondary" style="margin-left: auto; padding: 6px 12px; font-size: 12px;">更新</button>
+      </div>
       <div class="card-body">
         <div id="job-list" class="job-list">
           <div class="loading">読み込み中...</div>
-        </div>
-        <button onclick="loadJobs()" class="btn" style="margin-top: 15px; background: #eee; color: #333;">🔄 履歴を更新</button>
-        <div style="margin-top: 10px; font-size: 11px; color: #888;">
-          処理中のジョブは自動的に 10 秒ごとに更新されます。
         </div>
       </div>
     </div>
@@ -2278,15 +2648,15 @@ export default {
         });
         const data = await resp.json();
         if (resp.ok && data.job_id) {
-          formMsg.innerHTML = '<div class="success-msg">✅ リクエストを送信しました！ Job ID: <code>' + data.job_id + '</code><br><small>処理状況は下の履歴で確認できます。</small></div>';
+          formMsg.innerHTML = '<div class="msg success">リクエストを送信しました。Job ID: <code>' + data.job_id + '</code></div>';
           document.getElementById('video-url').value = '';
           loadJobs();
           startAutoRefresh();
         } else {
-          formMsg.innerHTML = '<div class="error-msg">❌ エラー: ' + (data.error || '不明なエラー') + '</div>';
+          formMsg.innerHTML = '<div class="msg error">エラー: ' + (data.error || '不明なエラー') + '</div>';
         }
       } catch (err) {
-        formMsg.innerHTML = '<div class="error-msg">❌ 通信エラー: ' + err.message + '</div>';
+        formMsg.innerHTML = '<div class="msg error">通信エラー: ' + err.message + '</div>';
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '🚀 ダウンロード開始';
@@ -2324,27 +2694,30 @@ export default {
         
         jobListEl.innerHTML = data.jobs.map(job => {
           const statusClass = job.status || 'pending';
-          const statusIcons = { pending: '⏳', processing: '', completed: '✅', failed: '❌' };
-          const statusLabels = { pending: '待機中', processing: 'ダウンロード中...', completed: '完了', failed: '失敗' };
-          const statusIcon = statusIcons[statusClass] || '';
+          const statusLabels = { pending: '待機中', processing: '処理中', completed: '完了', failed: '失敗' };
           const statusLabel = statusLabels[statusClass] || statusClass;
           const title = job.title || job.video_url || 'Unknown';
           const createdAt = job.created_at ? new Date(job.created_at).toLocaleString('ja-JP') : '-';
-          const updatedAt = job.updated_at ? new Date(job.updated_at).toLocaleString('ja-JP') : '-';
           
           let actionsHtml = '';
           let statusDetailHtml = '';
           let progressHtml = '';
           
+          // Delete button for all jobs
+          const deleteBtn = '<button class="btn-delete" onclick="deleteJob(\\'' + job.job_id + '\\')" title="削除">削除</button>';
+          
           if (job.status === 'completed' && job.filename) {
-            actionsHtml = '<div class="job-actions"><a href="/video/' + job.job_id + '/' + encodeURIComponent(job.filename) + '" target="_blank">⬇️ ダウンロード</a></div>';
+            actionsHtml = '<div class="job-actions"><a href="/video/' + job.job_id + '/' + encodeURIComponent(job.filename) + '" target="_blank" class="btn-download">ダウンロード</a>' + deleteBtn + '</div>';
           } else if (job.status === 'failed') {
-            statusDetailHtml = '<div class="status-detail error">❌ ' + escapeHtml(job.error || '処理中にエラーが発生しました') + '</div>';
+            statusDetailHtml = '<div class="status-detail error">' + escapeHtml(job.error || '処理中にエラーが発生しました') + '</div>';
+            actionsHtml = '<div class="job-actions">' + deleteBtn + '</div>';
           } else if (job.status === 'processing') {
             progressHtml = '<div class="progress-bar-container"><div class="progress-bar"></div></div>';
-            statusDetailHtml = '<div class="status-detail">🔄 GitHub Actions でダウンロード処理中です...</div>';
+            statusDetailHtml = '<div class="status-detail">GitHub Actions でダウンロード処理中です...</div>';
+            actionsHtml = '<div class="job-actions">' + deleteBtn + '</div>';
           } else if (job.status === 'pending') {
-            statusDetailHtml = '<div class="status-detail">⏳ ジョブがキューに追加されました。まもなく処理が開始されます。</div>';
+            statusDetailHtml = '<div class="status-detail">ジョブがキューに追加されました。まもなく処理が開始されます。</div>';
+            actionsHtml = '<div class="job-actions">' + deleteBtn + '</div>';
           }
           
           const spinnerHtml = job.status === 'processing' ? '<div class="spinner"></div>' : '';
@@ -2352,13 +2725,13 @@ export default {
           return '<div class="job-item ' + statusClass + '">' +
             '<div class="job-header">' +
               '<span class="job-id">' + job.job_id + '</span>' +
-              '<span class="job-status ' + statusClass + '">' + spinnerHtml + statusIcon + ' ' + statusLabel + '</span>' +
+              '<span class="job-status ' + statusClass + '">' + spinnerHtml + statusLabel + '</span>' +
             '</div>' +
             '<div class="job-title">' + escapeHtml(title) + '</div>' +
             '<div class="job-meta">' +
-              '<span>📅 作成: ' + createdAt + '</span>' +
-              (job.format ? '<span>🎬 ' + job.format + '</span>' : '') +
-              (job.filesize ? '<span>📦 ' + formatBytes(job.filesize) + '</span>' : '') +
+              '<span>' + createdAt + '</span>' +
+              (job.format ? '<span>' + job.format + '</span>' : '') +
+              (job.filesize ? '<span>' + formatBytes(job.filesize) + '</span>' : '') +
             '</div>' +
             progressHtml +
             statusDetailHtml +
@@ -2419,6 +2792,25 @@ export default {
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
+    async function deleteJob(jobId) {
+      if (!confirm('このジョブを削除しますか？\\n\\nJob ID: ' + jobId + '\\n\\n※ 動画ファイルも削除されます')) return;
+      
+      try {
+        const resp = await fetch('/api/download/delete/' + jobId, {
+          method: 'DELETE',
+          credentials: 'same-origin'
+        });
+        const data = await resp.json();
+        if (resp.ok && data.ok) {
+          loadJobs();
+        } else {
+          alert('削除エラー: ' + (data.error || '不明なエラー'));
+        }
+      } catch (err) {
+        alert('通信エラー: ' + err.message);
+      }
+    }
+    
     // Initial load
     loadJobs();
   </script>
@@ -2470,146 +2862,157 @@ export default {
             body { 
                 font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif; 
                 margin: 0; 
-                background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-                color: #333; 
+                background: linear-gradient(160deg, #f0f4f8 0%, #e8eef5 50%, #f5f0fa 100%);
+                color: #374151; 
                 min-height: 100vh;
             }
             .wrapper { width: 100%; max-width: 1100px; margin: 0 auto; }
             
             /* Header */
             .pos-header { 
-                background: #fff;
+                background: rgba(255,255,255,0.85);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
                 padding: 15px 30px; 
-                border-bottom: 4px solid #009944; 
+                border-bottom: 1px solid rgba(148,163,184,0.2);
                 display: flex; 
                 align-items: center; 
                 justify-content: space-between;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+                box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             }
             .pos-header-logo { 
-                font-size: 24px; 
-                font-weight: bold; 
-                color: #009944; 
+                font-size: 22px; 
+                font-weight: 600; 
+                color: #64748b; 
                 display: flex; 
                 align-items: center; 
                 gap: 12px;
-                letter-spacing: 1px;
+                letter-spacing: 0.5px;
             }
-            .pos-header-logo::before {
-                content: "📚";
-                font-size: 28px;
-            }
-            .header-links { font-size: 12px; color: #666; }
+            .header-links { font-size: 13px; color: #64748b; }
             .header-links a { 
-                color: #009944; 
+                color: #64748b; 
                 text-decoration: none; 
-                padding: 5px 10px;
-                border-radius: 4px;
+                padding: 8px 14px;
+                border-radius: 8px;
                 transition: all 0.2s;
+                margin-left: 4px;
             }
-            .header-links a:hover { background: #e8f5e9; }
+            .header-links a:hover { 
+                background: rgba(148,163,184,0.15); 
+                color: #475569;
+            }
             
             /* Main Body */
             .pos-body { 
                 padding: 40px 20px 60px; 
                 display: flex; 
                 justify-content: center; 
-                gap: 30px;
+                gap: 24px;
                 flex-wrap: wrap;
             }
             
             /* Cards */
             .card {
-                background: #fff;
-                border-radius: 16px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                background: rgba(255,255,255,0.85);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-radius: 20px;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+                border: 1px solid rgba(148,163,184,0.15);
                 overflow: hidden;
                 transition: transform 0.3s, box-shadow 0.3s;
             }
             .card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+                transform: translateY(-2px);
+                box-shadow: 0 12px 40px rgba(0,0,0,0.08);
             }
             .card-header {
-                padding: 20px 25px;
-                font-size: 16px;
-                font-weight: bold;
+                padding: 18px 24px;
+                font-size: 15px;
+                font-weight: 600;
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                border-bottom: 1px solid rgba(148,163,184,0.1);
             }
-            .card-body { padding: 25px; }
+            .card-body { padding: 24px; }
             
             /* Main Card */
             .main-card { flex: 1; min-width: 400px; max-width: 600px; }
             .main-card .card-header { 
-                background: linear-gradient(135deg, #009944 0%, #00b852 100%);
-                color: #fff;
+                background: linear-gradient(135deg, rgba(134,239,172,0.3) 0%, rgba(167,243,208,0.2) 100%);
+                color: #166534;
             }
             
             /* Side Card */
             .side-card { width: 350px; }
             .side-card .card-header {
-                background: linear-gradient(135deg, #de5833 0%, #ff7043 100%);
-                color: #fff;
+                background: linear-gradient(135deg, rgba(253,186,116,0.3) 0%, rgba(254,215,170,0.2) 100%);
+                color: #9a3412;
             }
             .side-card.bookmarks .card-header {
-                background: linear-gradient(135deg, #5c6bc0 0%, #7986cb 100%);
+                background: linear-gradient(135deg, rgba(196,181,253,0.3) 0%, rgba(221,214,254,0.2) 100%);
+                color: #5b21b6;
             }
             
             /* Input Styles */
             .input-group { margin-bottom: 20px; }
             .input-group label {
                 display: block;
-                font-weight: 600;
+                font-weight: 500;
                 margin-bottom: 8px;
-                font-size: 14px;
-                color: #444;
+                font-size: 13px;
+                color: #64748b;
             }
             .input-group input[type="text"] {
                 width: 100%;
                 padding: 14px 16px;
-                border: 2px solid #e0e0e0;
-                border-radius: 10px;
+                border: 1px solid rgba(148,163,184,0.3);
+                border-radius: 12px;
                 font-size: 15px;
                 transition: all 0.3s;
-                background: #fafafa;
+                background: rgba(255,255,255,0.7);
             }
             .input-group input[type="text"]:focus {
                 outline: none;
-                border-color: #009944;
+                border-color: #86efac;
                 background: #fff;
-                box-shadow: 0 0 0 4px rgba(0,153,68,0.1);
+                box-shadow: 0 0 0 4px rgba(134,239,172,0.2);
             }
             
             /* Options */
             .options-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 12px;
+                gap: 10px;
                 margin: 20px 0;
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 12px;
+                padding: 18px;
+                background: rgba(248,250,252,0.8);
+                border-radius: 14px;
+                border: 1px solid rgba(148,163,184,0.1);
             }
             .option-item {
                 display: flex;
                 align-items: center;
                 gap: 8px;
                 padding: 10px 12px;
-                background: #fff;
-                border-radius: 8px;
+                background: rgba(255,255,255,0.8);
+                border-radius: 10px;
                 cursor: pointer;
                 transition: all 0.2s;
-                border: 2px solid transparent;
+                border: 1px solid transparent;
             }
-            .option-item:hover { border-color: #009944; }
+            .option-item:hover { 
+                border-color: rgba(134,239,172,0.5);
+                background: rgba(255,255,255,0.95);
+            }
             .option-item input[type="checkbox"] {
                 width: 18px;
                 height: 18px;
-                accent-color: #009944;
+                accent-color: #22c55e;
             }
-            .option-item span { font-size: 13px; color: #555; }
+            .option-item span { font-size: 13px; color: #64748b; }
             
             /* Buttons */
             .btn {
@@ -2617,40 +3020,41 @@ export default {
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
-                padding: 14px 28px;
-                font-size: 15px;
-                font-weight: bold;
+                padding: 12px 24px;
+                font-size: 14px;
+                font-weight: 500;
                 border: none;
-                border-radius: 10px;
+                border-radius: 12px;
                 cursor: pointer;
                 transition: all 0.3s;
             }
             .btn-primary {
-                background: linear-gradient(135deg, #009944 0%, #00b852 100%);
-                color: #fff;
-                box-shadow: 0 4px 15px rgba(0,153,68,0.3);
+                background: linear-gradient(135deg, #86efac 0%, #a7f3d0 100%);
+                color: #166534;
+                box-shadow: 0 4px 15px rgba(134,239,172,0.3);
             }
             .btn-primary:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(0,153,68,0.4);
+                box-shadow: 0 6px 20px rgba(134,239,172,0.4);
             }
             .btn-secondary {
-                background: linear-gradient(135deg, #de5833 0%, #ff7043 100%);
-                color: #fff;
-                box-shadow: 0 4px 15px rgba(222,88,51,0.3);
+                background: linear-gradient(135deg, #fdba74 0%, #fed7aa 100%);
+                color: #9a3412;
+                box-shadow: 0 4px 15px rgba(253,186,116,0.3);
             }
             .btn-secondary:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(222,88,51,0.4);
+                box-shadow: 0 6px 20px rgba(253,186,116,0.4);
             }
             .btn-outline {
-                background: #fff;
-                color: #666;
-                border: 2px solid #ddd;
+                background: rgba(255,255,255,0.8);
+                color: #64748b;
+                border: 1px solid rgba(148,163,184,0.3);
             }
             .btn-outline:hover {
-                border-color: #009944;
-                color: #009944;
+                border-color: rgba(134,239,172,0.5);
+                color: #166534;
+                background: rgba(255,255,255,0.95);
             }
             .btn-group {
                 display: flex;
@@ -2669,15 +3073,17 @@ export default {
             .yt-input-row input {
                 flex: 1;
                 padding: 12px 14px;
-                border: 2px solid #e0e0e0;
-                border-radius: 8px;
+                border: 1px solid rgba(148,163,184,0.3);
+                border-radius: 10px;
                 font-size: 14px;
                 transition: all 0.3s;
+                background: rgba(255,255,255,0.7);
             }
             .yt-input-row input:focus {
                 outline: none;
-                border-color: #de5833;
-                box-shadow: 0 0 0 4px rgba(222,88,51,0.1);
+                border-color: #fdba74;
+                box-shadow: 0 0 0 4px rgba(253,186,116,0.2);
+                background: #fff;
             }
             .yt-options {
                 display: flex;
@@ -2690,18 +3096,18 @@ export default {
                 align-items: center;
                 gap: 6px;
                 padding: 8px 14px;
-                background: #fff;
-                border: 2px solid #eee;
+                background: rgba(255,255,255,0.8);
+                border: 1px solid rgba(148,163,184,0.2);
                 border-radius: 20px;
                 cursor: pointer;
                 font-size: 12px;
                 transition: all 0.2s;
             }
             .yt-option:has(input:checked) {
-                border-color: #de5833;
-                background: #fff5f2;
+                border-color: #fdba74;
+                background: rgba(254,243,199,0.5);
             }
-            .yt-option input { accent-color: #de5833; }
+            .yt-option input { accent-color: #f97316; }
             
             /* Bookmarks */
             .bookmark-list { max-height: 200px; overflow-y: auto; }
@@ -2710,15 +3116,15 @@ export default {
                 justify-content: space-between;
                 align-items: center;
                 padding: 12px 15px;
-                border-bottom: 1px solid #f0f0f0;
+                border-bottom: 1px solid rgba(148,163,184,0.1);
                 transition: background 0.2s;
             }
-            .bookmark-item:hover { background: #f8f9fa; }
+            .bookmark-item:hover { background: rgba(248,250,252,0.8); }
             .bookmark-item:last-child { border-bottom: none; }
             .bookmark-item a {
-                color: #5c6bc0;
+                color: #7c3aed;
                 text-decoration: none;
-                font-weight: 600;
+                font-weight: 500;
                 font-size: 14px;
             }
             .bookmark-item a:hover { text-decoration: underline; }
@@ -2728,17 +3134,20 @@ export default {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: #f5f5f5;
+                background: rgba(248,250,252,0.8);
                 border-radius: 50%;
-                color: #999;
+                color: #94a3b8;
                 cursor: pointer;
                 transition: all 0.2s;
             }
-            .bookmark-delete:hover { background: #ffebee; color: #e53935; }
+            .bookmark-delete:hover { 
+                background: rgba(254,226,226,0.8); 
+                color: #dc2626; 
+            }
             .bookmark-empty {
                 padding: 30px;
                 text-align: center;
-                color: #999;
+                color: #94a3b8;
                 font-size: 13px;
             }
             
@@ -2747,42 +3156,46 @@ export default {
                 text-align: center; 
                 padding: 25px; 
                 font-size: 12px; 
-                color: #888; 
-                background: #fff;
-                border-top: 1px solid #eee;
+                color: #94a3b8; 
+                background: rgba(255,255,255,0.6);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border-top: 1px solid rgba(148,163,184,0.1);
             }
             
             /* Notice */
             .notice {
                 margin-top: 20px;
                 padding: 15px;
-                background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
-                border-radius: 10px;
+                background: rgba(248,250,252,0.8);
+                border: 1px solid rgba(148,163,184,0.1);
+                border-radius: 12px;
                 font-size: 12px;
-                color: #555;
+                color: #64748b;
                 line-height: 1.6;
             }
-            .notice strong { color: #d32f2f; }
+            .notice strong { color: #dc2626; }
             
             /* Title Input Special */
             .title-input-wrapper {
                 margin-top: 15px;
                 padding: 15px;
-                background: #fff;
-                border-radius: 8px;
+                background: rgba(255,255,255,0.6);
+                border-radius: 10px;
             }
             .title-input-wrapper label {
                 font-size: 12px;
-                color: #666;
+                color: #64748b;
                 margin-bottom: 6px;
                 display: block;
             }
             .title-input-wrapper input {
                 width: 100%;
                 padding: 10px 12px;
-                border: 2px solid #e0e0e0;
-                border-radius: 6px;
+                border: 1px solid rgba(148,163,184,0.3);
+                border-radius: 8px;
                 font-size: 13px;
+                background: rgba(255,255,255,0.8);
             }
             
             /* Responsive */
@@ -2910,7 +3323,7 @@ export default {
             const progressOverlay = document.getElementById('yt-progress-overlay');
             const progressStatus = document.getElementById('yt-progress-status');
             const progressBar = document.getElementById('yt-progress-bar');
-            document.querySelector('#yt-progress-overlay > div > div:first-child').textContent = '🔗';
+            document.querySelector('#yt-progress-overlay > div > div:first-child').textContent = '▶';
             document.querySelector('#yt-progress-overlay > div > div:nth-child(2)').textContent = 'Cobalt ダウンロード準備中';
             progressOverlay.style.display = 'flex';
             
@@ -2945,7 +3358,7 @@ export default {
             list.innerHTML = '';
             const bookmarks = JSON.parse(localStorage.getItem('proxy_bookmarks') || '[]');
             if (bookmarks.length === 0) {
-                list.innerHTML = '<div class="bookmark-empty">📭 ブックマークはありません<br><small>URLを入力して ⭐ ボタンで追加</small></div>';
+                list.innerHTML = '<div class="bookmark-empty">ブックマークはありません<br><small>URLを入力してブックマークボタンで追加</small></div>';
                 return;
             }
             bookmarks.forEach((b, index) => {
@@ -3013,9 +3426,9 @@ export default {
               <span>東進学力ＰＯＳ</span>
             </div>
             <div class="header-links">
-              <a href="/downloads">📥 ダウンロード管理</a>
-              <a href="#">📖 利用ガイド</a>
-              <a href="#">❓ FAQ</a>
+              <a href="/downloads">ダウンロード管理</a>
+              <a href="#">利用ガイド</a>
+              <a href="#">FAQ</a>
             </div>
           </div>
           
@@ -3023,44 +3436,44 @@ export default {
             <!-- Main Card: Proxy -->
             <div class="card main-card">
               <div class="card-header">
-                🌐 Web Proxy - プロキシ接続
+                Web Proxy - プロキシ接続
               </div>
               <div class="card-body">
                 <form onsubmit="event.preventDefault(); go();">
                   <div class="input-group">
-                    <label>🔗 URL / 検索キーワード</label>
+                    <label>URL / 検索キーワード</label>
                     <input type="text" id="url" placeholder="https://example.com または 検索ワード" required>
                   </div>
                   
                   <div class="options-grid">
                     <label class="option-item">
                       <input type="checkbox" id="lite" onchange="if(this.checked) document.getElementById('noimg').checked=false">
-                      <span>⚡ 軽量モード</span>
+                      <span>軽量モード</span>
                     </label>
                     <label class="option-item">
                       <input type="checkbox" id="noimg" onchange="if(this.checked) document.getElementById('lite').checked=false">
-                      <span>🚫 画像なし</span>
+                      <span>画像なし</span>
                     </label>
                     <label class="option-item">
                       <input type="checkbox" id="mobile">
-                      <span>📱 モバイル偽装</span>
+                      <span>モバイル偽装</span>
                     </label>
                     <div class="title-input-wrapper" style="grid-column: 1 / -1;">
-                      <label>📝 表示タイトル（偽装用）</label>
+                      <label>表示タイトル（偽装用）</label>
                       <input type="text" id="title" placeholder="任意のタイトル" value="東進学力ＰＯＳ">
                     </div>
                   </div>
 
                   <div class="btn-group">
-                    <button type="submit" class="btn btn-primary">🚀 アクセス開始</button>
-                    <button type="button" onclick="goDuck()" class="btn btn-secondary">🦆 DuckDuckGo</button>
-                    <button type="button" onclick="addBookmark()" class="btn btn-outline">⭐ ブックマーク</button>
+                    <button type="submit" class="btn btn-primary">アクセス開始</button>
+                    <button type="button" onclick="goDuck()" class="btn btn-secondary">DuckDuckGo</button>
+                    <button type="button" onclick="addBookmark()" class="btn btn-outline">ブックマーク追加</button>
                   </div>
                 </form>
                 
                 <div class="notice">
-                  💡 URLを入力するとプロキシ経由でアクセス、キーワードを入力するとGoogle検索を実行します。<br>
-                  🚨 緊急時は <strong>Escキーを3回連打</strong> でGoogleへ移動します。
+                  URLを入力するとプロキシ経由でアクセス、キーワードを入力するとGoogle検索を実行します。<br>
+                  緊急時は <strong>Escキーを3回連打</strong> でGoogleへ移動します。
                 </div>
               </div>
             </div>
@@ -3070,7 +3483,7 @@ export default {
               <!-- YouTube Card -->
               <div class="card side-card">
                 <div class="card-header">
-                  🎬 YouTube ダウンロード
+                  YouTube ダウンロード
                 </div>
                 <div class="card-body">
                   <div class="yt-input-row">
@@ -3083,63 +3496,63 @@ export default {
                       <input type="radio" name="ytformat" value="all" checked> すべて
                     </label>
                     <label class="yt-option">
-                      <input type="radio" name="ytformat" value="video"> 🎥 動画
+                      <input type="radio" name="ytformat" value="video"> 動画
                     </label>
                     <label class="yt-option">
-                      <input type="radio" name="ytformat" value="audio"> 🎵 音声
+                      <input type="radio" name="ytformat" value="audio"> 音声
                     </label>
                     <label class="yt-option">
-                      <input type="radio" name="ytformat" value="best"> ⭐ 最高
+                      <input type="radio" name="ytformat" value="best"> 最高画質
                     </label>
                   </div>
                   
-                  <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee;">
-                    <div style="font-size: 12px; color: #666; margin-bottom: 8px;">🔧 API選択:</div>
+                  <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(148,163,184,0.15);">
+                    <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">API選択:</div>
                     <div class="yt-options" style="flex-wrap: wrap;">
-                      <label class="yt-option" style="border-color: #43a047;">
-                        <input type="radio" name="ytapi" value="auto" checked> 🔄 自動
+                      <label class="yt-option" style="border-color: rgba(134,239,172,0.5);">
+                        <input type="radio" name="ytapi" value="auto" checked> 自動
                       </label>
                       <label class="yt-option">
-                        <input type="radio" name="ytapi" value="piped"> 🟢 Piped
+                        <input type="radio" name="ytapi" value="piped"> Piped
                       </label>
                       <label class="yt-option">
-                        <input type="radio" name="ytapi" value="invidious"> 🟣 Invidious
+                        <input type="radio" name="ytapi" value="invidious"> Invidious
                       </label>
                       <label class="yt-option">
-                        <input type="radio" name="ytapi" value="vevioz"> 🟠 Vevioz
+                        <input type="radio" name="ytapi" value="vevioz"> Vevioz
                       </label>
                       <label class="yt-option">
-                        <input type="radio" name="ytapi" value="cobalt"> 🔷 Cobalt
+                        <input type="radio" name="ytapi" value="cobalt"> Cobalt
                       </label>
                       <label class="yt-option">
-                        <input type="radio" name="ytapi" value="y2mate"> 🔶 Y2Mate
+                        <input type="radio" name="ytapi" value="y2mate"> Y2Mate
                       </label>
-                      <label class="yt-option" style="border-color: #e91e63; background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);">
-                        <input type="radio" name="ytapi" value="allscan"> 🔍 全取得
+                      <label class="yt-option" style="border-color: rgba(244,114,182,0.5); background: rgba(252,231,243,0.5);">
+                        <input type="radio" name="ytapi" value="allscan"> 全取得
                       </label>
                     </div>
-                    <div style="font-size: 10px; color: #e91e63; margin-top: 5px; text-align: center;">
+                    <div style="font-size: 10px; color: #f472b6; margin-top: 5px; text-align: center;">
                       ※ 全取得: すべてのAPIを回して全フォーマットを表示
                     </div>
                   </div>
                   
-                  <div style="font-size: 11px; color: #999; text-align: center; margin-top: 10px;">
+                  <div style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 10px;">
                     youtube.com, youtu.be, shorts に対応
                   </div>
                 </div>
               </div>
               
               <!-- Cobalt Card -->
-              <div class="card side-card" style="border-top: 4px solid #667eea;">
-                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                  🔗 その他サイト (Cobalt)
+              <div class="card side-card" style="border-top: none;">
+                <div class="card-header" style="background: linear-gradient(135deg, rgba(196,181,253,0.3) 0%, rgba(221,214,254,0.2) 100%); color: #5b21b6;">
+                  その他サイト (Cobalt)
                 </div>
                 <div class="card-body">
                   <div class="yt-input-row">
                     <input type="text" id="cobalturl" placeholder="Twitter, TikTok, Instagram...">
-                    <button type="button" onclick="goCobalt()" class="btn" style="padding: 12px 20px; white-space: nowrap; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #fff;">取得</button>
+                    <button type="button" onclick="goCobalt()" class="btn" style="padding: 12px 20px; white-space: nowrap; background: linear-gradient(135deg, rgba(196,181,253,0.8) 0%, rgba(221,214,254,0.8) 100%); color: #5b21b6;">取得</button>
                   </div>
-                  <div style="font-size: 11px; color: #999; text-align: center; line-height: 1.5;">
+                  <div style="font-size: 11px; color: #94a3b8; text-align: center; line-height: 1.5;">
                     Twitter/X, TikTok, Instagram, Vimeo,<br>SoundCloud, Reddit, Tumblr 等
                   </div>
                 </div>
@@ -3148,7 +3561,7 @@ export default {
               <!-- Bookmarks Card -->
               <div class="card side-card bookmarks">
                 <div class="card-header">
-                  📚 ブックマーク
+                  ブックマーク
                 </div>
                 <div class="card-body" style="padding: 0;">
                   <div id="bookmark-list" class="bookmark-list">
@@ -3160,14 +3573,14 @@ export default {
           </div>
           
           <!-- Progress Overlay -->
-          <div id="yt-progress-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(5px);">
-            <div style="background: #fff; padding: 50px 60px; border-radius: 20px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); min-width: 380px;">
-              <div style="font-size: 60px; margin-bottom: 20px;">🎬</div>
-              <div style="font-size: 20px; font-weight: bold; color: #333; margin-bottom: 25px;">YouTube ダウンロード準備中</div>
-              <div style="background: #f0f0f0; border-radius: 12px; height: 14px; overflow: hidden; margin-bottom: 20px;">
-                <div id="yt-progress-bar" style="background: linear-gradient(90deg, #de5833, #ff7043); height: 100%; width: 0%; transition: width 0.4s ease; border-radius: 12px;"></div>
+          <div id="yt-progress-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div style="background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 50px 60px; border-radius: 24px; text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.15); min-width: 380px; border: 1px solid rgba(148,163,184,0.1);">
+              <div style="font-size: 48px; margin-bottom: 20px; color: #64748b;">&#9654;</div>
+              <div style="font-size: 18px; font-weight: 500; color: #374151; margin-bottom: 25px;">ダウンロード準備中</div>
+              <div style="background: rgba(241,245,249,0.8); border-radius: 12px; height: 8px; overflow: hidden; margin-bottom: 20px;">
+                <div id="yt-progress-bar" style="background: linear-gradient(90deg, #86efac, #a7f3d0); height: 100%; width: 0%; transition: width 0.4s ease; border-radius: 12px;"></div>
               </div>
-              <div id="yt-progress-status" style="color: #666; font-size: 15px; margin-bottom: 25px;">準備中...</div>
+              <div id="yt-progress-status" style="color: #64748b; font-size: 14px; margin-bottom: 25px;">準備中...</div>
               <button type="button" onclick="cancelYtdl()" class="btn btn-outline" style="padding: 10px 30px;">キャンセル</button>
             </div>
           </div>
