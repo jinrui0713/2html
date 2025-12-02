@@ -53,7 +53,10 @@ jobs:
       
       - name: Install yt-dlp and ffmpeg
         run: |
-          pip install yt-dlp
+          # Install latest yt-dlp from GitHub releases (most up-to-date)
+          sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
+          sudo chmod a+rx /usr/local/bin/yt-dlp
+          yt-dlp --version
           sudo apt-get update
           sudo apt-get install -y ffmpeg jq
           pip install awscli
@@ -106,27 +109,7 @@ jobs:
           echo "Video ID: $VIDEO_ID"
           
           # Build yt-dlp command with anti-bot options
-          YT_CMD="yt-dlp --no-warnings --progress"
-          
-          # Add cookies if available and valid
-          COOKIES_VALID=false
-          if [ -f "cookies.txt" ] && [ -s "cookies.txt" ]; then
-            # Verify cookies file format
-            if head -1 cookies.txt | grep -qE '^#.*Netscape|^\.youtube'; then
-              YT_CMD="$YT_CMD --cookies cookies.txt"
-              COOKIES_VALID=true
-              echo "Using cookies file for authentication"
-            else
-              echo "Warning: Cookies file may not be in Netscape format, trying anyway"
-              YT_CMD="$YT_CMD --cookies cookies.txt"
-            fi
-          else
-            echo "No valid cookies file found"
-          fi
-          
-          # Try different client configurations
-          # web_creator is often more reliable with cookies
-          YT_CMD="$YT_CMD --extractor-args 'youtube:player_client=web_creator,web'"
+          # (Individual commands are built in each attempt section)
           
           if [ "$AUDIO_ONLY" = "true" ]; then
             YT_CMD="$YT_CMD -x --audio-format mp3 --audio-quality 0"
@@ -181,53 +164,77 @@ jobs:
           # Try yt-dlp with different configurations
           DOWNLOAD_SUCCESS=false
           
-          # Attempt 1: With cookies and web_creator client
-          echo "=== Attempt 1: yt-dlp with web_creator client ==="
-          if eval "$YT_CMD -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
+          # Attempt 1: tv_embedded client (often bypasses restrictions)
+          echo "=== Attempt 1: yt-dlp with tv_embedded client ==="
+          YT_CMD1="yt-dlp --no-warnings"
+          if [ -f "cookies.txt" ]; then
+            YT_CMD1="$YT_CMD1 --cookies cookies.txt"
+          fi
+          YT_CMD1="$YT_CMD1 --extractor-args 'youtube:player_client=tv_embedded'"
+          case "$FORMAT" in
+            "360p") YT_CMD1="$YT_CMD1 -f 'bestvideo[height<=360]+bestaudio/best[height<=360]/best'" ;;
+            "480p") YT_CMD1="$YT_CMD1 -f 'bestvideo[height<=480]+bestaudio/best[height<=480]/best'" ;;
+            "720p") YT_CMD1="$YT_CMD1 -f 'bestvideo[height<=720]+bestaudio/best[height<=720]/best'" ;;
+            *) YT_CMD1="$YT_CMD1 -f 'best'" ;;
+          esac
+          YT_CMD1="$YT_CMD1 --merge-output-format mp4"
+          
+          if eval "$YT_CMD1 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
             if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
               DOWNLOAD_SUCCESS=true
-              echo "yt-dlp download successful"
+              echo "tv_embedded client download successful"
             fi
           fi
           
-          # Attempt 2: Try with android client
+          # Attempt 2: mweb client (mobile web)
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-            echo "=== Attempt 2: yt-dlp with android client ==="
+            echo "=== Attempt 2: yt-dlp with mweb client ==="
             YT_CMD2="yt-dlp --no-warnings"
             if [ -f "cookies.txt" ]; then
               YT_CMD2="$YT_CMD2 --cookies cookies.txt"
             fi
-            YT_CMD2="$YT_CMD2 --extractor-args 'youtube:player_client=android' --user-agent 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip'"
-            
-            case "$FORMAT" in
-              "360p") YT_CMD2="$YT_CMD2 -f 'bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360]' --merge-output-format mp4" ;;
-              "480p") YT_CMD2="$YT_CMD2 -f 'bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]' --merge-output-format mp4" ;;
-              "720p") YT_CMD2="$YT_CMD2 -f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]' --merge-output-format mp4" ;;
-              *) YT_CMD2="$YT_CMD2 -f 'best[ext=mp4]/best' --merge-output-format mp4" ;;
-            esac
+            YT_CMD2="$YT_CMD2 --extractor-args 'youtube:player_client=mweb'"
+            YT_CMD2="$YT_CMD2 -f 'best' --merge-output-format mp4"
             
             if eval "$YT_CMD2 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
               if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
                 DOWNLOAD_SUCCESS=true
-                echo "yt-dlp android client download successful"
+                echo "mweb client download successful"
               fi
             fi
           fi
           
-          # Attempt 3: Try with ios client (sometimes works when others don't)
+          # Attempt 3: mediaconnect client
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-            echo "=== Attempt 3: yt-dlp with ios client ==="
+            echo "=== Attempt 3: yt-dlp with mediaconnect client ==="
             YT_CMD3="yt-dlp --no-warnings"
             if [ -f "cookies.txt" ]; then
               YT_CMD3="$YT_CMD3 --cookies cookies.txt"
             fi
-            YT_CMD3="$YT_CMD3 --extractor-args 'youtube:player_client=ios'"
-            YT_CMD3="$YT_CMD3 -f 'best[ext=mp4]/best' --merge-output-format mp4"
+            YT_CMD3="$YT_CMD3 --extractor-args 'youtube:player_client=mediaconnect'"
+            YT_CMD3="$YT_CMD3 -f 'best' --merge-output-format mp4"
             
             if eval "$YT_CMD3 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
               if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
                 DOWNLOAD_SUCCESS=true
-                echo "yt-dlp ios client download successful"
+                echo "mediaconnect client download successful"
+              fi
+            fi
+          fi
+          
+          # Attempt 4: Try without any special options (default)
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "=== Attempt 4: yt-dlp default ==="
+            YT_CMD4="yt-dlp --no-warnings"
+            if [ -f "cookies.txt" ]; then
+              YT_CMD4="$YT_CMD4 --cookies cookies.txt"
+            fi
+            YT_CMD4="$YT_CMD4 -f 'best' --merge-output-format mp4"
+            
+            if eval "$YT_CMD4 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
+              if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
+                DOWNLOAD_SUCCESS=true
+                echo "default client download successful"
               fi
             fi
           fi
@@ -236,93 +243,112 @@ jobs:
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
             echo "yt-dlp failed with all clients, trying Cobalt API..."
             
-            # Try Cobalt API (most reliable)
-            COBALT_RESPONSE=$(curl -s -X POST "https://api.cobalt.tools/api/json" \
-              -H "Accept: application/json" \
-              -H "Content-Type: application/json" \
-              -d "{\"url\": \"$VIDEO_URL\", \"vQuality\": \"360\"}" 2>/dev/null)
+            # Try multiple Cobalt instances
+            COBALT_INSTANCES=(
+              "https://api.cobalt.tools"
+              "https://cobalt-api.kwiatekmiki.com"
+              "https://cobalt.canine.tools"
+            )
             
-            COBALT_URL=$(echo "$COBALT_RESPONSE" | jq -r '.url // empty')
-            
-            if [ -n "$COBALT_URL" ]; then
-              echo "Cobalt returned URL, downloading..."
-              if curl -L -o "$OUTPUT_FILE" --max-time 300 "$COBALT_URL"; then
-                DOWNLOAD_SUCCESS=true
-                echo "Cobalt download successful"
+            for COBALT_URL in "${COBALT_INSTANCES[@]}"; do
+              echo "Trying Cobalt instance: $COBALT_URL"
+              
+              # Try new v2 API format first
+              COBALT_RESPONSE=$(curl -s -X POST "$COBALT_URL/api/json" \
+                -H "Accept: application/json" \
+                -H "Content-Type: application/json" \
+                -d "{\"url\": \"$VIDEO_URL\", \"vQuality\": \"360\", \"filenamePattern\": \"basic\"}" 2>/dev/null)
+              
+              echo "Cobalt response: $COBALT_RESPONSE"
+              
+              DOWNLOAD_URL=$(echo "$COBALT_RESPONSE" | jq -r '.url // empty')
+              
+              if [ -n "$DOWNLOAD_URL" ] && [ "$DOWNLOAD_URL" != "null" ]; then
+                echo "Cobalt returned URL: $DOWNLOAD_URL"
+                if curl -L -o "$OUTPUT_FILE" --max-time 300 "$DOWNLOAD_URL" 2>&1; then
+                  if [ -f "$OUTPUT_FILE" ] && [ -s "$OUTPUT_FILE" ]; then
+                    DOWNLOAD_SUCCESS=true
+                    echo "Cobalt download successful from $COBALT_URL"
+                    break
+                  fi
+                fi
               fi
-            else
-              echo "Cobalt failed, trying Piped API..."
-              
-              # Try Piped instances
-              PIPED_INSTANCES=(
-                "https://pipedapi.kavin.rocks"
-                "https://pipedapi.adminforge.de"
-                "https://api.piped.yt"
-              )
-              
-              for INSTANCE in "${PIPED_INSTANCES[@]}"; do
-                echo "Trying Piped instance: $INSTANCE"
-                
-                VIDEO_INFO=$(curl -s --max-time 10 "$INSTANCE/streams/$VIDEO_ID" 2>/dev/null)
-                
-                if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.videoStreams' > /dev/null 2>&1; then
-                  # Get 360p video stream
-                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.videoStreams[] | select(.quality == "360p") | .url' | head -1)
-                  
-                  if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
-                    # Fallback to any available stream
-                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.videoStreams[0].url' | head -1)
-                  fi
-                  
-                  if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
-                    echo "Found Piped stream URL, downloading..."
-                    if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
-                      DOWNLOAD_SUCCESS=true
-                      TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
-                      echo "Piped download successful from $INSTANCE"
-                      break
-                    fi
-                  fi
-                fi
-              done
-            fi
+            done
+          fi
+          
+          # Try Piped instances
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "Cobalt failed, trying Piped API..."
             
-            # Last resort: try Invidious instances
-            if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-              echo "Piped failed, trying Invidious fallback..."
+            # Try Piped instances
+            PIPED_INSTANCES=(
+              "https://pipedapi.kavin.rocks"
+              "https://pipedapi.adminforge.de"
+              "https://api.piped.yt"
+            )
+            
+            for INSTANCE in "${PIPED_INSTANCES[@]}"; do
+              echo "Trying Piped instance: $INSTANCE"
               
-              INVIDIOUS_INSTANCES=(
-                "https://inv.nadeko.net"
-                "https://invidious.nerdvpn.de"
-                "https://vid.puffyan.us"
-                "https://y.com.sb"
-              )
+              VIDEO_INFO=$(curl -s --max-time 10 "$INSTANCE/streams/$VIDEO_ID" 2>/dev/null)
               
-              for INSTANCE in "${INVIDIOUS_INSTANCES[@]}"; do
-                echo "Trying Invidious instance: $INSTANCE"
+              if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.videoStreams' > /dev/null 2>&1; then
+                # Get 360p video stream
+                STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.videoStreams[] | select(.quality == "360p") | .url' | head -1)
                 
-                API_URL="$INSTANCE/api/v1/videos/$VIDEO_ID"
-                VIDEO_INFO=$(curl -s --max-time 10 "$API_URL" 2>/dev/null)
+                if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
+                  # Fallback to any available stream
+                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.videoStreams[0].url' | head -1)
+                fi
                 
-                if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.formatStreams' > /dev/null 2>&1; then
-                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "360p" or .qualityLabel == "360p") | .url' | head -1)
-                  
-                  if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
-                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
-                  fi
-                  
-                  if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
-                    echo "Found Invidious stream URL, downloading..."
-                    if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
-                      DOWNLOAD_SUCCESS=true
-                      TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
-                      echo "Invidious download successful from $INSTANCE"
-                      break
-                    fi
+                if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
+                  echo "Found Piped stream URL, downloading..."
+                  if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
+                    DOWNLOAD_SUCCESS=true
+                    TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
+                    echo "Piped download successful from $INSTANCE"
+                    break
                   fi
                 fi
-              done
-            fi
+              fi
+            done
+          fi
+          
+          # Last resort: try Invidious instances
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "Piped failed, trying Invidious fallback..."
+            
+            INVIDIOUS_INSTANCES=(
+              "https://inv.nadeko.net"
+              "https://invidious.nerdvpn.de"
+              "https://vid.puffyan.us"
+              "https://y.com.sb"
+            )
+            
+            for INSTANCE in "${INVIDIOUS_INSTANCES[@]}"; do
+              echo "Trying Invidious instance: $INSTANCE"
+              
+              API_URL="$INSTANCE/api/v1/videos/$VIDEO_ID"
+              VIDEO_INFO=$(curl -s --max-time 10 "$API_URL" 2>/dev/null)
+              
+              if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.formatStreams' > /dev/null 2>&1; then
+                STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "360p" or .qualityLabel == "360p") | .url' | head -1)
+                
+                if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
+                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
+                fi
+                
+                if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
+                  echo "Found Invidious stream URL, downloading..."
+                  if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
+                    DOWNLOAD_SUCCESS=true
+                    TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
+                    echo "Invidious download successful from $INSTANCE"
+                    break
+                  fi
+                fi
+              fi
+            done
           fi
           
           # Find the actual output file (might have different extension)
