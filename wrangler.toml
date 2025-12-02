@@ -18,5 +18,5 @@ bucket_name = "proxy-videos"
 # wrangler secret put GITHUB_REPO
 
 [vars]
-GITHUB_OWNER = "inosisi1102"
+GITHUB_OWNER = "jinrui0713"
 GITHUB_REPO = "2html"
