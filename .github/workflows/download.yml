@@ -58,11 +58,19 @@ jobs:
           sudo apt-get install -y ffmpeg jq
           pip install awscli
       
-      - name: Create output directory
-        run: mkdir -p downloads
+      - name: Create output directory and setup cookies
+        run: |
+          mkdir -p downloads
+          # Create cookies file if YOUTUBE_COOKIES secret is provided
+          if [ -n "${{ secrets.YOUTUBE_COOKIES }}" ]; then
+            echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
+            echo "YouTube cookies file created"
+          fi
       
       - name: Download video
         id: download
+        env:
+          YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
         run: |
           VIDEO_URL="${{ github.event.inputs.video_url || github.event.client_payload.url }}"
           FORMAT="${{ github.event.inputs.format || github.event.client_payload.format }}"
@@ -81,7 +89,16 @@ jobs:
           echo "Video ID: $VIDEO_ID"
           
           # Build yt-dlp command with anti-bot options
-          YT_CMD="yt-dlp --no-warnings --progress --extractor-args 'youtube:player_client=web' --user-agent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'"
+          YT_CMD="yt-dlp --no-warnings --progress"
+          
+          # Add cookies if available
+          if [ -f "cookies.txt" ]; then
+            YT_CMD="$YT_CMD --cookies cookies.txt"
+            echo "Using cookies file for authentication"
+          fi
+          
+          # Add other anti-bot measures
+          YT_CMD="$YT_CMD --extractor-args 'youtube:player_client=android' --user-agent 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip'"
           
           if [ "$AUDIO_ONLY" = "true" ]; then
             YT_CMD="$YT_CMD -x --audio-format mp3 --audio-quality 0"
