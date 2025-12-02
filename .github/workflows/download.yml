@@ -62,9 +62,14 @@ jobs:
         run: |
           mkdir -p downloads
           # Create cookies file if YOUTUBE_COOKIES secret is provided
+          # The secret should be base64 encoded: base64 -w0 cookies.txt
           if [ -n "${{ secrets.YOUTUBE_COOKIES }}" ]; then
-            echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
+            echo "${{ secrets.YOUTUBE_COOKIES }}" | base64 -d > cookies.txt 2>/dev/null || echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
             echo "YouTube cookies file created"
+            echo "Cookies file size: $(wc -c < cookies.txt) bytes"
+            echo "Cookies file lines: $(wc -l < cookies.txt)"
+            # Show first line to verify format (without sensitive data)
+            head -1 cookies.txt | cut -c1-50
           fi
       
       - name: Download video
@@ -89,12 +94,20 @@ jobs:
           echo "Video ID: $VIDEO_ID"
           
           # Build yt-dlp command with anti-bot options
-          YT_CMD="yt-dlp --no-warnings --progress"
+          YT_CMD="yt-dlp --no-warnings --progress --verbose"
           
-          # Add cookies if available
-          if [ -f "cookies.txt" ]; then
-            YT_CMD="$YT_CMD --cookies cookies.txt"
-            echo "Using cookies file for authentication"
+          # Add cookies if available and valid
+          if [ -f "cookies.txt" ] && [ -s "cookies.txt" ]; then
+            # Verify cookies file format
+            if head -1 cookies.txt | grep -qE '^#|^\.'; then
+              YT_CMD="$YT_CMD --cookies cookies.txt"
+              echo "Using cookies file for authentication"
+            else
+              echo "Warning: Cookies file may not be in Netscape format"
+              YT_CMD="$YT_CMD --cookies cookies.txt"
+            fi
+          else
+            echo "No valid cookies file found"
           fi
           
           # Add other anti-bot measures
