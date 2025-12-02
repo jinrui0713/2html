@@ -487,9 +487,13 @@ export default {
             try {
                 const list = await env.VIDEOS_BUCKET.list({ prefix: 'videos/' });
                 const jobIds = new Set<string>();
-                for (const item of list.objects || []) {
-                    const parts = item.name.split('/');
-                    if (parts.length >= 2) jobIds.add(parts[1]);
+                // R2 list returns { objects: R2Object[] }
+                const objects = list.objects || [];
+                for (const item of objects) {
+                    if (item && item.key) {
+                        const parts = item.key.split('/');
+                        if (parts.length >= 2 && parts[1]) jobIds.add(parts[1]);
+                    }
                 }
                 const results: any[] = [];
                 for (const id of jobIds) {
@@ -499,10 +503,11 @@ export default {
                             const txt = await obj.text();
                             results.push(JSON.parse(txt || '{}'));
                         }
-                    } catch (e) {}
+                    } catch (e) { /* ignore individual errors */ }
                 }
                 return new Response(JSON.stringify({ jobs: results }), { status: 200, headers: { 'Content-Type': 'application/json' } });
             } catch (e: any) {
+                console.log('[DownloadAPI] List error:', e.message || e);
                 return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
             }
         }
@@ -2090,6 +2095,336 @@ export default {
         }
     }
 
+    // --- /downloads page: UI to manage download jobs ---
+    if (pathname === '/downloads') {
+      const downloadsHtml = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${customTitle} - ダウンロード管理</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #333; min-height: 100vh; }
+    .wrapper { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+    .back-link { display: inline-block; margin-bottom: 20px; color: #fff; text-decoration: none; font-weight: bold; }
+    .back-link:hover { text-decoration: underline; }
+    .card { background: #fff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden; margin-bottom: 25px; }
+    .card-header { padding: 20px 25px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; font-size: 18px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    .card-header.orange { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .card-header.blue { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .card-body { padding: 25px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #444; font-size: 14px; }
+    .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group select:focus { outline: none; border-color: #11998e; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; font-size: 15px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; transition: all 0.3s; }
+    .btn-submit { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: #fff; box-shadow: 0 4px 15px rgba(17,153,142,0.4); width: 100%; }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(17,153,142,0.5); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .job-list { margin-top: 20px; }
+    .job-item { padding: 18px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; background: #fafafa; transition: all 0.2s; position: relative; overflow: hidden; }
+    .job-item:hover { background: #f5f5f5; }
+    .job-item.processing { border-left: 4px solid #2196f3; }
+    .job-item.completed { border-left: 4px solid #4caf50; }
+    .job-item.failed { border-left: 4px solid #f44336; }
+    .job-item.pending { border-left: 4px solid #ff9800; }
+    .job-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+    .job-id { font-family: monospace; font-size: 11px; color: #888; background: #eee; padding: 4px 8px; border-radius: 4px; }
+    .job-status { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+    .job-status.pending { background: #fff3cd; color: #856404; }
+    .job-status.processing { background: #cce5ff; color: #004085; }
+    .job-status.completed { background: #d4edda; color: #155724; }
+    .job-status.failed { background: #f8d7da; color: #721c24; }
+    .spinner { width: 14px; height: 14px; border: 2px solid #004085; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .job-title { font-weight: 600; font-size: 15px; color: #333; margin-bottom: 8px; word-break: break-all; }
+    .job-meta { font-size: 12px; color: #666; display: flex; flex-wrap: wrap; gap: 10px; }
+    .job-meta span { display: flex; align-items: center; gap: 4px; }
+    .job-actions { margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .job-actions a { padding: 8px 16px; background: #667eea; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: background 0.2s; }
+    .job-actions a:hover { background: #5a67d8; }
+    .empty-state { text-align: center; padding: 40px; color: #999; }
+    .empty-state span { font-size: 48px; display: block; margin-bottom: 15px; }
+    .loading { text-align: center; padding: 30px; color: #666; }
+    .error-msg { background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+    .success-msg { background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+    .progress-bar-container { height: 4px; background: #e0e0e0; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+    .progress-bar { height: 100%; background: linear-gradient(90deg, #4facfe, #00f2fe); animation: progress-anim 2s ease-in-out infinite; }
+    @keyframes progress-anim { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+    
+    /* Usage Stats Card */
+    .usage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .usage-item { background: #f8f9fa; border-radius: 12px; padding: 20px; text-align: center; }
+    .usage-item h4 { margin: 0 0 10px 0; font-size: 13px; color: #666; font-weight: 600; }
+    .usage-value { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 8px; }
+    .usage-limit { font-size: 12px; color: #999; }
+    .usage-bar { height: 8px; background: #e0e0e0; border-radius: 4px; margin-top: 12px; overflow: hidden; }
+    .usage-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+    .usage-bar-fill.green { background: linear-gradient(90deg, #11998e, #38ef7d); }
+    .usage-bar-fill.yellow { background: linear-gradient(90deg, #f7971e, #ffd200); }
+    .usage-bar-fill.red { background: linear-gradient(90deg, #f5576c, #f093fb); }
+    .refresh-btn { background: #eee; color: #333; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; margin-top: 15px; }
+    .refresh-btn:hover { background: #ddd; }
+    
+    /* Status detail */
+    .status-detail { font-size: 11px; color: #666; margin-top: 6px; padding: 8px 12px; background: #f5f5f5; border-radius: 6px; }
+    .status-detail.error { background: #ffebee; color: #c62828; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <a href="/" class="back-link">← ホームに戻る</a>
+    
+    <!-- Usage Stats Card -->
+    <div class="card">
+      <div class="card-header blue">📊 使用状況</div>
+      <div class="card-body">
+        <div class="usage-grid">
+          <div class="usage-item">
+            <h4>☁️ R2 ストレージ使用量</h4>
+            <div class="usage-value" id="r2-usage">--</div>
+            <div class="usage-limit">無料枠: 10 GB / 月</div>
+            <div class="usage-bar"><div class="usage-bar-fill green" id="r2-bar" style="width: 0%"></div></div>
+          </div>
+          <div class="usage-item">
+            <h4>⚡ GitHub Actions 使用時間</h4>
+            <div class="usage-value" id="actions-usage">--</div>
+            <div class="usage-limit">無料枠: 2,000 分 / 月</div>
+            <div class="usage-bar"><div class="usage-bar-fill green" id="actions-bar" style="width: 0%"></div></div>
+          </div>
+          <div class="usage-item">
+            <h4>📦 今月のジョブ数</h4>
+            <div class="usage-value" id="job-count">--</div>
+            <div class="usage-limit">完了 / 処理中 / 失敗</div>
+            <div class="usage-bar"><div class="usage-bar-fill green" id="job-bar" style="width: 0%"></div></div>
+          </div>
+        </div>
+        <button class="refresh-btn" onclick="loadUsageStats()">🔄 使用状況を更新</button>
+        <div style="margin-top: 12px; font-size: 11px; color: #888;">
+          ※ R2 の使用量はジョブメタデータから推計しています。正確な値は Cloudflare ダッシュボードをご確認ください。
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">📥 新規ダウンロードリクエスト</div>
+      <div class="card-body">
+        <div id="form-message"></div>
+        <form id="download-form">
+          <div class="form-group">
+            <label for="video-url">YouTube URL または Video ID</label>
+            <input type="text" id="video-url" name="url" placeholder="https://www.youtube.com/watch?v=... または dQw4w9WgXcQ" required>
+          </div>
+          <div class="form-group">
+            <label for="format">フォーマット (720p以下のみ対応)</label>
+            <select id="format" name="format">
+              <option value="720p">720p (推奨)</option>
+              <option value="480p">480p</option>
+              <option value="360p">360p</option>
+              <option value="bestaudio">音声のみ (MP3)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-submit" id="submit-btn">
+            🚀 ダウンロード開始
+          </button>
+        </form>
+        <div style="margin-top: 15px; padding: 12px; background: #fff3cd; border-radius: 8px; font-size: 12px; color: #856404;">
+          ⚠️ GitHub Actions の無料枠節約のため、720p以下の画質に制限しています。処理には 2〜5 分かかります。
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header orange">📋 ダウンロード履歴</div>
+      <div class="card-body">
+        <div id="job-list" class="job-list">
+          <div class="loading">読み込み中...</div>
+        </div>
+        <button onclick="loadJobs()" class="btn" style="margin-top: 15px; background: #eee; color: #333;">🔄 履歴を更新</button>
+        <div style="margin-top: 10px; font-size: 11px; color: #888;">
+          処理中のジョブは自動的に 10 秒ごとに更新されます。
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const form = document.getElementById('download-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const formMsg = document.getElementById('form-message');
+    const jobListEl = document.getElementById('job-list');
+    let autoRefreshInterval = null;
+    
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      formMsg.innerHTML = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ 送信中...';
+      
+      const url = document.getElementById('video-url').value.trim();
+      const format = document.getElementById('format').value;
+      
+      try {
+        const resp = await fetch('/api/download/request', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ url, format, audio_only: format === 'bestaudio' })
+        });
+        const data = await resp.json();
+        if (resp.ok && data.job_id) {
+          formMsg.innerHTML = '<div class="success-msg">✅ リクエストを送信しました！ Job ID: <code>' + data.job_id + '</code><br><small>処理状況は下の履歴で確認できます。</small></div>';
+          document.getElementById('video-url').value = '';
+          loadJobs();
+          startAutoRefresh();
+        } else {
+          formMsg.innerHTML = '<div class="error-msg">❌ エラー: ' + (data.error || '不明なエラー') + '</div>';
+        }
+      } catch (err) {
+        formMsg.innerHTML = '<div class="error-msg">❌ 通信エラー: ' + err.message + '</div>';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 ダウンロード開始';
+      }
+    });
+    
+    function startAutoRefresh() {
+      if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+      autoRefreshInterval = setInterval(() => {
+        loadJobs(true);
+      }, 10000);
+    }
+    
+    async function loadJobs(silent = false) {
+      if (!silent) jobListEl.innerHTML = '<div class="loading">読み込み中...</div>';
+      try {
+        const resp = await fetch('/api/download/list', { credentials: 'same-origin' });
+        const data = await resp.json();
+        if (!data.jobs || data.jobs.length === 0) {
+          jobListEl.innerHTML = '<div class="empty-state"><span>📭</span>ダウンロード履歴がありません</div>';
+          if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
+          return;
+        }
+        // Sort by created_at desc
+        data.jobs.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        
+        // Check if any job is processing
+        const hasProcessing = data.jobs.some(j => j.status === 'pending' || j.status === 'processing');
+        if (hasProcessing && !autoRefreshInterval) {
+          startAutoRefresh();
+        } else if (!hasProcessing && autoRefreshInterval) {
+          clearInterval(autoRefreshInterval);
+          autoRefreshInterval = null;
+        }
+        
+        jobListEl.innerHTML = data.jobs.map(job => {
+          const statusClass = job.status || 'pending';
+          const statusIcons = { pending: '⏳', processing: '', completed: '✅', failed: '❌' };
+          const statusLabels = { pending: '待機中', processing: 'ダウンロード中...', completed: '完了', failed: '失敗' };
+          const statusIcon = statusIcons[statusClass] || '';
+          const statusLabel = statusLabels[statusClass] || statusClass;
+          const title = job.title || job.video_url || 'Unknown';
+          const createdAt = job.created_at ? new Date(job.created_at).toLocaleString('ja-JP') : '-';
+          const updatedAt = job.updated_at ? new Date(job.updated_at).toLocaleString('ja-JP') : '-';
+          
+          let actionsHtml = '';
+          let statusDetailHtml = '';
+          let progressHtml = '';
+          
+          if (job.status === 'completed' && job.filename) {
+            actionsHtml = '<div class="job-actions"><a href="/video/' + job.job_id + '/' + encodeURIComponent(job.filename) + '" target="_blank">⬇️ ダウンロード</a></div>';
+          } else if (job.status === 'failed') {
+            statusDetailHtml = '<div class="status-detail error">❌ ' + escapeHtml(job.error || '処理中にエラーが発生しました') + '</div>';
+          } else if (job.status === 'processing') {
+            progressHtml = '<div class="progress-bar-container"><div class="progress-bar"></div></div>';
+            statusDetailHtml = '<div class="status-detail">🔄 GitHub Actions でダウンロード処理中です...</div>';
+          } else if (job.status === 'pending') {
+            statusDetailHtml = '<div class="status-detail">⏳ ジョブがキューに追加されました。まもなく処理が開始されます。</div>';
+          }
+          
+          const spinnerHtml = job.status === 'processing' ? '<div class="spinner"></div>' : '';
+          
+          return '<div class="job-item ' + statusClass + '">' +
+            '<div class="job-header">' +
+              '<span class="job-id">' + job.job_id + '</span>' +
+              '<span class="job-status ' + statusClass + '">' + spinnerHtml + statusIcon + ' ' + statusLabel + '</span>' +
+            '</div>' +
+            '<div class="job-title">' + escapeHtml(title) + '</div>' +
+            '<div class="job-meta">' +
+              '<span>📅 作成: ' + createdAt + '</span>' +
+              (job.format ? '<span>🎬 ' + job.format + '</span>' : '') +
+              (job.filesize ? '<span>📦 ' + formatBytes(job.filesize) + '</span>' : '') +
+            '</div>' +
+            progressHtml +
+            statusDetailHtml +
+            actionsHtml +
+          '</div>';
+        }).join('');
+        
+        // Update usage stats
+        updateJobStats(data.jobs);
+      } catch (err) {
+        if (!silent) jobListEl.innerHTML = '<div class="error-msg">読み込みエラー: ' + err.message + '</div>';
+      }
+    }
+    
+    function updateJobStats(jobs) {
+      const completed = jobs.filter(j => j.status === 'completed').length;
+      const processing = jobs.filter(j => j.status === 'processing' || j.status === 'pending').length;
+      const failed = jobs.filter(j => j.status === 'failed').length;
+      document.getElementById('job-count').textContent = completed + ' / ' + processing + ' / ' + failed;
+      
+      // Estimate R2 usage from filesizes
+      const totalBytes = jobs.reduce((sum, j) => sum + (j.filesize || 0), 0);
+      const r2GB = totalBytes / (1024 * 1024 * 1024);
+      document.getElementById('r2-usage').textContent = r2GB.toFixed(2) + ' GB';
+      const r2Percent = Math.min((r2GB / 10) * 100, 100);
+      const r2Bar = document.getElementById('r2-bar');
+      r2Bar.style.width = r2Percent + '%';
+      r2Bar.className = 'usage-bar-fill ' + (r2Percent > 80 ? 'red' : r2Percent > 50 ? 'yellow' : 'green');
+      
+      // Estimate Actions usage (rough: 3 min per job)
+      const totalJobs = completed + failed;
+      const estMinutes = totalJobs * 3;
+      document.getElementById('actions-usage').textContent = estMinutes + ' 分';
+      const actionsPercent = Math.min((estMinutes / 2000) * 100, 100);
+      const actionsBar = document.getElementById('actions-bar');
+      actionsBar.style.width = actionsPercent + '%';
+      actionsBar.className = 'usage-bar-fill ' + (actionsPercent > 80 ? 'red' : actionsPercent > 50 ? 'yellow' : 'green');
+      
+      // Job progress bar
+      const jobTotal = jobs.length;
+      const jobBar = document.getElementById('job-bar');
+      jobBar.style.width = Math.min((completed / Math.max(jobTotal, 1)) * 100, 100) + '%';
+    }
+    
+    async function loadUsageStats() {
+      // Reload jobs to recalculate stats
+      await loadJobs();
+    }
+    
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function formatBytes(bytes) {
+      if (!bytes) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Initial load
+    loadJobs();
+  </script>
+</body>
+</html>
+      `;
+      return new Response(downloadsHtml, { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
+    }
+
     // 1. Session Recovery (Cookie & Referer)
     // If PARAM_URL is missing, try to recover it from Cookies or Referer
     // We only recover if the user is NOT explicitly asking for the root proxy home (i.e., has other params or path)
@@ -2675,9 +3010,9 @@ export default {
               <span>東進学力ＰＯＳ</span>
             </div>
             <div class="header-links">
+              <a href="/downloads">📥 ダウンロード管理</a>
               <a href="#">📖 利用ガイド</a>
               <a href="#">❓ FAQ</a>
-              <a href="#">⚙️ 動作環境</a>
             </div>
           </div>
           
