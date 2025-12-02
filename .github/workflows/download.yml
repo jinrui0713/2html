@@ -139,60 +139,95 @@ jobs:
             DOWNLOAD_SUCCESS=true
             echo "yt-dlp download successful"
           else
-            echo "yt-dlp failed, trying Invidious fallback..."
+            echo "yt-dlp failed, trying Cobalt API..."
             
-            # Try multiple Invidious instances
-            INVIDIOUS_INSTANCES=(
-              "https://inv.nadeko.net"
-              "https://invidious.nerdvpn.de"
-              "https://invidious.protokolla.fi"
-              "https://iv.ggtyler.dev"
-            )
+            # Try Cobalt API (most reliable)
+            COBALT_RESPONSE=$(curl -s -X POST "https://api.cobalt.tools/api/json" \
+              -H "Accept: application/json" \
+              -H "Content-Type: application/json" \
+              -d "{\"url\": \"$VIDEO_URL\", \"vQuality\": \"360\"}" 2>/dev/null)
             
-            for INSTANCE in "${INVIDIOUS_INSTANCES[@]}"; do
-              echo "Trying Invidious instance: $INSTANCE"
+            COBALT_URL=$(echo "$COBALT_RESPONSE" | jq -r '.url // empty')
+            
+            if [ -n "$COBALT_URL" ]; then
+              echo "Cobalt returned URL, downloading..."
+              if curl -L -o "$OUTPUT_FILE" --max-time 300 "$COBALT_URL"; then
+                DOWNLOAD_SUCCESS=true
+                echo "Cobalt download successful"
+              fi
+            else
+              echo "Cobalt failed, trying Piped API..."
               
-              # Get video info from Invidious API
-              API_URL="$INSTANCE/api/v1/videos/$VIDEO_ID"
-              VIDEO_INFO=$(curl -s --max-time 10 "$API_URL" 2>/dev/null)
+              # Try Piped instances
+              PIPED_INSTANCES=(
+                "https://pipedapi.kavin.rocks"
+                "https://pipedapi.adminforge.de"
+                "https://api.piped.yt"
+              )
               
-              if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.formatStreams' > /dev/null 2>&1; then
-                # Find appropriate format based on quality
-                case "$FORMAT" in
-                  "360p")
-                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "360p" or .qualityLabel == "360p") | .url' | head -1)
-                    ;;
-                  "480p")
-                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "480p" or .qualityLabel == "480p") | .url' | head -1)
-                    ;;
-                  "720p")
-                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "720p" or .qualityLabel == "720p") | .url' | head -1)
-                    ;;
-                  *)
-                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
-                    ;;
-                esac
+              for INSTANCE in "${PIPED_INSTANCES[@]}"; do
+                echo "Trying Piped instance: $INSTANCE"
                 
-                # Fallback to first available stream
-                if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
-                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
-                fi
+                VIDEO_INFO=$(curl -s --max-time 10 "$INSTANCE/streams/$VIDEO_ID" 2>/dev/null)
                 
-                if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
-                  echo "Found stream URL, downloading..."
-                  if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
-                    DOWNLOAD_SUCCESS=true
-                    echo "Invidious download successful from $INSTANCE"
-                    
-                    # Get title from API if not already set
-                    if [ "$TITLE" = "video_$JOB_ID" ]; then
+                if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.videoStreams' > /dev/null 2>&1; then
+                  # Get 360p video stream
+                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.videoStreams[] | select(.quality == "360p") | .url' | head -1)
+                  
+                  if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
+                    # Fallback to any available stream
+                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.videoStreams[0].url' | head -1)
+                  fi
+                  
+                  if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
+                    echo "Found Piped stream URL, downloading..."
+                    if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
+                      DOWNLOAD_SUCCESS=true
                       TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
+                      echo "Piped download successful from $INSTANCE"
+                      break
                     fi
-                    break
                   fi
                 fi
-              fi
-            done
+              done
+            fi
+            
+            # Last resort: try Invidious instances
+            if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+              echo "Piped failed, trying Invidious fallback..."
+              
+              INVIDIOUS_INSTANCES=(
+                "https://inv.nadeko.net"
+                "https://invidious.nerdvpn.de"
+                "https://vid.puffyan.us"
+                "https://y.com.sb"
+              )
+              
+              for INSTANCE in "${INVIDIOUS_INSTANCES[@]}"; do
+                echo "Trying Invidious instance: $INSTANCE"
+                
+                API_URL="$INSTANCE/api/v1/videos/$VIDEO_ID"
+                VIDEO_INFO=$(curl -s --max-time 10 "$API_URL" 2>/dev/null)
+                
+                if [ -n "$VIDEO_INFO" ] && echo "$VIDEO_INFO" | jq -e '.formatStreams' > /dev/null 2>&1; then
+                  STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[] | select(.quality == "360p" or .qualityLabel == "360p") | .url' | head -1)
+                  
+                  if [ -z "$STREAM_URL" ] || [ "$STREAM_URL" = "null" ]; then
+                    STREAM_URL=$(echo "$VIDEO_INFO" | jq -r '.formatStreams[0].url' | head -1)
+                  fi
+                  
+                  if [ -n "$STREAM_URL" ] && [ "$STREAM_URL" != "null" ]; then
+                    echo "Found Invidious stream URL, downloading..."
+                    if curl -L -o "$OUTPUT_FILE" --max-time 300 "$STREAM_URL"; then
+                      DOWNLOAD_SUCCESS=true
+                      TITLE=$(echo "$VIDEO_INFO" | jq -r '.title' | tr -cd '[:alnum:] ._-' | head -c 100)
+                      echo "Invidious download successful from $INSTANCE"
+                      break
+                    fi
+                  fi
+                fi
+              done
+            fi
           fi
           
           # Find the actual output file (might have different extension)
