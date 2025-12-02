@@ -62,14 +62,26 @@ jobs:
         run: |
           mkdir -p downloads
           # Create cookies file if YOUTUBE_COOKIES secret is provided
-          # The secret should be base64 encoded: base64 -w0 cookies.txt
+          # The secret should be base64 encoded
           if [ -n "${{ secrets.YOUTUBE_COOKIES }}" ]; then
-            echo "${{ secrets.YOUTUBE_COOKIES }}" | base64 -d > cookies.txt 2>/dev/null || echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies.txt
+            echo "${{ secrets.YOUTUBE_COOKIES }}" | base64 -d > cookies_raw.txt 2>/dev/null || echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies_raw.txt
+            # Convert Windows CRLF to Unix LF
+            sed 's/\r$//' cookies_raw.txt > cookies.txt
+            rm -f cookies_raw.txt
             echo "YouTube cookies file created"
             echo "Cookies file size: $(wc -c < cookies.txt) bytes"
             echo "Cookies file lines: $(wc -l < cookies.txt)"
-            # Show first line to verify format (without sensitive data)
-            head -1 cookies.txt | cut -c1-50
+            # Verify format
+            if head -1 cookies.txt | grep -q "Netscape"; then
+              echo "✓ Valid Netscape cookie format detected"
+            else
+              echo "First line: $(head -1 cookies.txt | cut -c1-30)"
+            fi
+            # Count cookie entries (lines not starting with #)
+            COOKIE_COUNT=$(grep -v '^#' cookies.txt | grep -v '^$' | wc -l)
+            echo "Cookie entries found: $COOKIE_COUNT"
+          else
+            echo "Warning: YOUTUBE_COOKIES secret not set"
           fi
       
       - name: Download video
@@ -94,24 +106,27 @@ jobs:
           echo "Video ID: $VIDEO_ID"
           
           # Build yt-dlp command with anti-bot options
-          YT_CMD="yt-dlp --no-warnings --progress --verbose"
+          YT_CMD="yt-dlp --no-warnings --progress"
           
           # Add cookies if available and valid
+          COOKIES_VALID=false
           if [ -f "cookies.txt" ] && [ -s "cookies.txt" ]; then
             # Verify cookies file format
-            if head -1 cookies.txt | grep -qE '^#|^\.'; then
+            if head -1 cookies.txt | grep -qE '^#.*Netscape|^\.youtube'; then
               YT_CMD="$YT_CMD --cookies cookies.txt"
+              COOKIES_VALID=true
               echo "Using cookies file for authentication"
             else
-              echo "Warning: Cookies file may not be in Netscape format"
+              echo "Warning: Cookies file may not be in Netscape format, trying anyway"
               YT_CMD="$YT_CMD --cookies cookies.txt"
             fi
           else
             echo "No valid cookies file found"
           fi
           
-          # Add other anti-bot measures
-          YT_CMD="$YT_CMD --extractor-args 'youtube:player_client=android' --user-agent 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip'"
+          # Try different client configurations
+          # web_creator is often more reliable with cookies
+          YT_CMD="$YT_CMD --extractor-args 'youtube:player_client=web_creator,web'"
           
           if [ "$AUDIO_ONLY" = "true" ]; then
             YT_CMD="$YT_CMD -x --audio-format mp3 --audio-quality 0"
@@ -163,13 +178,63 @@ jobs:
           
           echo "Output file: $OUTPUT_FILE"
           
-          # Try yt-dlp first
+          # Try yt-dlp with different configurations
           DOWNLOAD_SUCCESS=false
-          if eval "$YT_CMD -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>/dev/null; then
-            DOWNLOAD_SUCCESS=true
-            echo "yt-dlp download successful"
-          else
-            echo "yt-dlp failed, trying Cobalt API..."
+          
+          # Attempt 1: With cookies and web_creator client
+          echo "=== Attempt 1: yt-dlp with web_creator client ==="
+          if eval "$YT_CMD -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
+            if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
+              DOWNLOAD_SUCCESS=true
+              echo "yt-dlp download successful"
+            fi
+          fi
+          
+          # Attempt 2: Try with android client
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "=== Attempt 2: yt-dlp with android client ==="
+            YT_CMD2="yt-dlp --no-warnings"
+            if [ -f "cookies.txt" ]; then
+              YT_CMD2="$YT_CMD2 --cookies cookies.txt"
+            fi
+            YT_CMD2="$YT_CMD2 --extractor-args 'youtube:player_client=android' --user-agent 'com.google.android.youtube/19.09.37 (Linux; U; Android 11) gzip'"
+            
+            case "$FORMAT" in
+              "360p") YT_CMD2="$YT_CMD2 -f 'bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360]' --merge-output-format mp4" ;;
+              "480p") YT_CMD2="$YT_CMD2 -f 'bestvideo[height<=480][ext=mp4]+bestaudio[ext=m4a]/best[height<=480]' --merge-output-format mp4" ;;
+              "720p") YT_CMD2="$YT_CMD2 -f 'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]' --merge-output-format mp4" ;;
+              *) YT_CMD2="$YT_CMD2 -f 'best[ext=mp4]/best' --merge-output-format mp4" ;;
+            esac
+            
+            if eval "$YT_CMD2 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
+              if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
+                DOWNLOAD_SUCCESS=true
+                echo "yt-dlp android client download successful"
+              fi
+            fi
+          fi
+          
+          # Attempt 3: Try with ios client (sometimes works when others don't)
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "=== Attempt 3: yt-dlp with ios client ==="
+            YT_CMD3="yt-dlp --no-warnings"
+            if [ -f "cookies.txt" ]; then
+              YT_CMD3="$YT_CMD3 --cookies cookies.txt"
+            fi
+            YT_CMD3="$YT_CMD3 --extractor-args 'youtube:player_client=ios'"
+            YT_CMD3="$YT_CMD3 -f 'best[ext=mp4]/best' --merge-output-format mp4"
+            
+            if eval "$YT_CMD3 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
+              if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
+                DOWNLOAD_SUCCESS=true
+                echo "yt-dlp ios client download successful"
+              fi
+            fi
+          fi
+          
+          # Fallback to external services if yt-dlp fails
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "yt-dlp failed with all clients, trying Cobalt API..."
             
             # Try Cobalt API (most reliable)
             COBALT_RESPONSE=$(curl -s -X POST "https://api.cobalt.tools/api/json" \
