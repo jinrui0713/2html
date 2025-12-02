@@ -55,7 +55,8 @@ jobs:
         run: |
           pip install yt-dlp
           sudo apt-get update
-          sudo apt-get install -y ffmpeg awscli
+          sudo apt-get install -y ffmpeg
+          pip install awscli
       
       - name: Create output directory
         run: mkdir -p downloads
