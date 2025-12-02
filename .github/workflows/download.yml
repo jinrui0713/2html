@@ -39,11 +39,23 @@ jobs:
         with:
           python-version: '3.11'
       
+      - name: Debug - Show event payload
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Job ID (inputs): ${{ github.event.inputs.job_id }}"
+          echo "Job ID (client_payload): ${{ github.event.client_payload.job_id }}"
+          echo "URL (inputs): ${{ github.event.inputs.video_url }}"
+          echo "URL (client_payload): ${{ github.event.client_payload.url }}"
+          echo "Format (inputs): ${{ github.event.inputs.format }}"
+          echo "Format (client_payload): ${{ github.event.client_payload.format }}"
+          echo "Callback (inputs): ${{ github.event.inputs.callback_url }}"
+          echo "Callback (client_payload): ${{ github.event.client_payload.callback_url }}"
+      
       - name: Install yt-dlp and ffmpeg
         run: |
           pip install yt-dlp
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg awscli
       
       - name: Create output directory
         run: mkdir -p downloads
