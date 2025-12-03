@@ -67,9 +67,10 @@ jobs:
           # Create cookies file if YOUTUBE_COOKIES secret is provided
           # The secret should be base64 encoded
           if [ -n "${{ secrets.YOUTUBE_COOKIES }}" ]; then
+            echo "Decoding YouTube cookies..."
             echo "${{ secrets.YOUTUBE_COOKIES }}" | base64 -d > cookies_raw.txt 2>/dev/null || echo "${{ secrets.YOUTUBE_COOKIES }}" > cookies_raw.txt
-            # Convert Windows CRLF to Unix LF
-            sed 's/\r$//' cookies_raw.txt > cookies.txt
+            # Convert Windows CRLF to Unix LF and remove any BOM
+            sed 's/\r$//' cookies_raw.txt | sed '1s/^\xEF\xBB\xBF//' > cookies.txt
             rm -f cookies_raw.txt
             echo "YouTube cookies file created"
             echo "Cookies file size: $(wc -c < cookies.txt) bytes"
@@ -78,13 +79,17 @@ jobs:
             if head -1 cookies.txt | grep -q "Netscape"; then
               echo "✓ Valid Netscape cookie format detected"
             else
-              echo "First line: $(head -1 cookies.txt | cut -c1-30)"
+              echo "⚠ Warning: First line doesn't contain Netscape marker"
+              echo "First line: $(head -1 cookies.txt | cut -c1-50)"
             fi
             # Count cookie entries (lines not starting with #)
             COOKIE_COUNT=$(grep -v '^#' cookies.txt | grep -v '^$' | wc -l)
             echo "Cookie entries found: $COOKIE_COUNT"
+            # Show domain info (sanitized)
+            echo "Domains in cookies:"
+            grep -v '^#' cookies.txt | grep -v '^$' | cut -f1 | sort -u | head -10
           else
-            echo "Warning: YOUTUBE_COOKIES secret not set"
+            echo "⚠ Warning: YOUTUBE_COOKIES secret not set"
           fi
       
       - name: Download video
@@ -164,13 +169,23 @@ jobs:
           # Try yt-dlp with different configurations
           DOWNLOAD_SUCCESS=false
           
-          # Attempt 1: tv_embedded client (often bypasses restrictions)
-          echo "=== Attempt 1: yt-dlp with tv_embedded client ==="
-          YT_CMD1="yt-dlp --no-warnings"
+          # Check if cookies file exists and is valid
           if [ -f "cookies.txt" ]; then
-            YT_CMD1="$YT_CMD1 --cookies cookies.txt"
+            echo "=== Cookies file verification ==="
+            echo "File exists: YES"
+            echo "File size: $(wc -c < cookies.txt) bytes"
+            echo "Cookie domains: $(grep -v '^#' cookies.txt | grep -v '^$' | cut -f1 | sort -u | tr '\n' ' ')"
+            COOKIES_OPT="--cookies cookies.txt"
+          else
+            echo "=== Cookies file NOT found! ==="
+            COOKIES_OPT=""
           fi
+          
+          # Attempt 1: tv_embedded client with cookies
+          echo "=== Attempt 1: yt-dlp with tv_embedded client ==="
+          YT_CMD1="yt-dlp --verbose --no-warnings $COOKIES_OPT"
           YT_CMD1="$YT_CMD1 --extractor-args 'youtube:player_client=tv_embedded'"
+          YT_CMD1="$YT_CMD1 --user-agent 'Mozilla/5.0 (ChromiumStylePlatform) Cobalt/Version'"
           case "$FORMAT" in
             "360p") YT_CMD1="$YT_CMD1 -f 'bestvideo[height<=360]+bestaudio/best[height<=360]/best'" ;;
             "480p") YT_CMD1="$YT_CMD1 -f 'bestvideo[height<=480]+bestaudio/best[height<=480]/best'" ;;
@@ -179,101 +194,120 @@ jobs:
           esac
           YT_CMD1="$YT_CMD1 --merge-output-format mp4"
           
+          echo "Running: $YT_CMD1 -o '$OUTPUT_FILE' '$VIDEO_URL'"
           if eval "$YT_CMD1 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
             if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
               DOWNLOAD_SUCCESS=true
-              echo "tv_embedded client download successful"
+              echo "✓ tv_embedded client download successful"
             fi
           fi
           
-          # Attempt 2: mweb client (mobile web)
+          # Attempt 2: web client with cookies (often works better)
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-            echo "=== Attempt 2: yt-dlp with mweb client ==="
-            YT_CMD2="yt-dlp --no-warnings"
-            if [ -f "cookies.txt" ]; then
-              YT_CMD2="$YT_CMD2 --cookies cookies.txt"
-            fi
-            YT_CMD2="$YT_CMD2 --extractor-args 'youtube:player_client=mweb'"
+            echo "=== Attempt 2: yt-dlp with web client ==="
+            YT_CMD2="yt-dlp --verbose --no-warnings $COOKIES_OPT"
+            YT_CMD2="$YT_CMD2 --extractor-args 'youtube:player_client=web'"
             YT_CMD2="$YT_CMD2 -f 'best' --merge-output-format mp4"
             
+            echo "Running: $YT_CMD2 -o '$OUTPUT_FILE' '$VIDEO_URL'"
             if eval "$YT_CMD2 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
               if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
                 DOWNLOAD_SUCCESS=true
-                echo "mweb client download successful"
+                echo "✓ web client download successful"
               fi
             fi
           fi
           
-          # Attempt 3: mediaconnect client
+          # Attempt 3: ios client (sometimes bypasses)
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-            echo "=== Attempt 3: yt-dlp with mediaconnect client ==="
-            YT_CMD3="yt-dlp --no-warnings"
-            if [ -f "cookies.txt" ]; then
-              YT_CMD3="$YT_CMD3 --cookies cookies.txt"
-            fi
-            YT_CMD3="$YT_CMD3 --extractor-args 'youtube:player_client=mediaconnect'"
+            echo "=== Attempt 3: yt-dlp with ios client ==="
+            YT_CMD3="yt-dlp --verbose --no-warnings $COOKIES_OPT"
+            YT_CMD3="$YT_CMD3 --extractor-args 'youtube:player_client=ios'"
             YT_CMD3="$YT_CMD3 -f 'best' --merge-output-format mp4"
             
+            echo "Running: $YT_CMD3 -o '$OUTPUT_FILE' '$VIDEO_URL'"
             if eval "$YT_CMD3 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
               if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
                 DOWNLOAD_SUCCESS=true
-                echo "mediaconnect client download successful"
+                echo "✓ ios client download successful"
               fi
             fi
           fi
           
-          # Attempt 4: Try without any special options (default)
+          # Attempt 4: android client
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-            echo "=== Attempt 4: yt-dlp default ==="
-            YT_CMD4="yt-dlp --no-warnings"
-            if [ -f "cookies.txt" ]; then
-              YT_CMD4="$YT_CMD4 --cookies cookies.txt"
-            fi
+            echo "=== Attempt 4: yt-dlp with android client ==="
+            YT_CMD4="yt-dlp --verbose --no-warnings $COOKIES_OPT"
+            YT_CMD4="$YT_CMD4 --extractor-args 'youtube:player_client=android'"
             YT_CMD4="$YT_CMD4 -f 'best' --merge-output-format mp4"
             
+            echo "Running: $YT_CMD4 -o '$OUTPUT_FILE' '$VIDEO_URL'"
             if eval "$YT_CMD4 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
               if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
                 DOWNLOAD_SUCCESS=true
-                echo "default client download successful"
+                echo "✓ android client download successful"
+              fi
+            fi
+          fi
+          
+          # Attempt 5: Try without any special client but with cookies
+          if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
+            echo "=== Attempt 5: yt-dlp default with cookies ==="
+            YT_CMD5="yt-dlp --verbose --no-warnings $COOKIES_OPT"
+            YT_CMD5="$YT_CMD5 -f 'best' --merge-output-format mp4"
+            
+            echo "Running: $YT_CMD5 -o '$OUTPUT_FILE' '$VIDEO_URL'"
+            if eval "$YT_CMD5 -o '$OUTPUT_FILE' '$VIDEO_URL'" 2>&1; then
+              if [ -f "$OUTPUT_FILE" ] || [ -n "$(ls downloads/ 2>/dev/null)" ]; then
+                DOWNLOAD_SUCCESS=true
+                echo "✓ default client download successful"
               fi
             fi
           fi
           
           # Fallback to external services if yt-dlp fails
           if [ "$DOWNLOAD_SUCCESS" = "false" ]; then
-            echo "yt-dlp failed with all clients, trying Cobalt API..."
+            echo "yt-dlp failed with all clients, trying alternative APIs..."
             
-            # Try multiple Cobalt instances
-            COBALT_INSTANCES=(
-              "https://api.cobalt.tools"
-              "https://cobalt-api.kwiatekmiki.com"
-              "https://cobalt.canine.tools"
-            )
+            # Try Y2Mate style APIs
+            echo "=== Trying Y2Mate API ==="
             
-            for COBALT_URL in "${COBALT_INSTANCES[@]}"; do
-              echo "Trying Cobalt instance: $COBALT_URL"
+            # First get video info
+            Y2_ANALYZE=$(curl -s 'https://www.y2mate.com/mates/analyzeV2/ajax' \
+              -H 'Content-Type: application/x-www-form-urlencoded' \
+              --data-urlencode "k_query=$VIDEO_URL" \
+              --data-urlencode "k_page=home" \
+              --data-urlencode "hl=en" \
+              --data-urlencode "q_auto=0" 2>/dev/null)
+            
+            echo "Y2Mate analyze response received"
+            
+            if echo "$Y2_ANALYZE" | jq -e '.links' > /dev/null 2>&1; then
+              # Get 360p mp4 link
+              VID_KEY=$(echo "$Y2_ANALYZE" | jq -r '.links.mp4."18".k // .links.mp4 | to_entries[0].value.k // empty' 2>/dev/null)
+              VID=$(echo "$Y2_ANALYZE" | jq -r '.vid // empty' 2>/dev/null)
               
-              # Try new v2 API format first
-              COBALT_RESPONSE=$(curl -s -X POST "$COBALT_URL/api/json" \
-                -H "Accept: application/json" \
-                -H "Content-Type: application/json" \
-                -d "{\"url\": \"$VIDEO_URL\", \"vQuality\": \"360\", \"filenamePattern\": \"basic\"}" 2>/dev/null)
-              
-              echo "Cobalt response: $COBALT_RESPONSE"
-              
-              DOWNLOAD_URL=$(echo "$COBALT_RESPONSE" | jq -r '.url // empty')
-              
-              if [ -n "$DOWNLOAD_URL" ] && [ "$DOWNLOAD_URL" != "null" ]; then
-                echo "Cobalt returned URL: $DOWNLOAD_URL"
-                if curl -L -o "$OUTPUT_FILE" --max-time 300 "$DOWNLOAD_URL" 2>&1; then
-                  if [ -f "$OUTPUT_FILE" ] && [ -s "$OUTPUT_FILE" ]; then
-                    DOWNLOAD_SUCCESS=true
-                    echo "Cobalt download successful from $COBALT_URL"
-                    break
+              if [ -n "$VID_KEY" ] && [ -n "$VID" ]; then
+                echo "Found Y2Mate video key, converting..."
+                
+                Y2_CONVERT=$(curl -s 'https://www.y2mate.com/mates/convertV2/index' \
+                  -H 'Content-Type: application/x-www-form-urlencoded' \
+                  --data-urlencode "vid=$VID" \
+                  --data-urlencode "k=$VID_KEY" 2>/dev/null)
+                
+                DOWNLOAD_URL=$(echo "$Y2_CONVERT" | jq -r '.dlink // empty' 2>/dev/null)
+                
+                if [ -n "$DOWNLOAD_URL" ] && [ "$DOWNLOAD_URL" != "null" ]; then
+                  echo "Y2Mate download URL obtained, downloading..."
+                  if curl -L -o "$OUTPUT_FILE" --max-time 600 "$DOWNLOAD_URL" 2>&1; then
+                    if [ -f "$OUTPUT_FILE" ] && [ -s "$OUTPUT_FILE" ]; then
+                      DOWNLOAD_SUCCESS=true
+                      echo "✓ Y2Mate download successful"
+                    fi
                   fi
                 fi
               fi
-            done
+            fi
           fi
           
           # Try Piped instances
