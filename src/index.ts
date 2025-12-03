@@ -381,6 +381,97 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
     }
   }
 
+  // GET /api/hls-proxy?url=... -> Proxy HLS manifests and segments to bypass CORS
+  if (pathname === '/api/hls-proxy' && request.method === 'GET') {
+    const targetUrl = url.searchParams.get('url');
+    if (!targetUrl) {
+      return new Response(JSON.stringify({ error: 'url parameter required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    try {
+      // Validate URL is from Google/YouTube
+      const targetUrlObj = new URL(targetUrl);
+      const allowedHosts = ['googlevideo.com', 'youtube.com', 'ytimg.com', 'ggpht.com'];
+      const isAllowed = allowedHosts.some(host => targetUrlObj.hostname.endsWith(host));
+      
+      if (!isAllowed) {
+        return new Response(JSON.stringify({ error: 'URL not allowed' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+      }
+
+      // Fetch the resource
+      const proxyResponse = await fetch(targetUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': '*/*',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Origin': 'https://www.youtube.com',
+          'Referer': 'https://www.youtube.com/',
+        },
+      });
+
+      if (!proxyResponse.ok) {
+        return new Response(JSON.stringify({ error: `Upstream error: ${proxyResponse.status}` }), { 
+          status: proxyResponse.status, 
+          headers: { 'Content-Type': 'application/json' } 
+        });
+      }
+
+      const contentType = proxyResponse.headers.get('Content-Type') || 'application/octet-stream';
+      let body: string | ArrayBuffer;
+      
+      // If it's an m3u8 playlist, rewrite URLs to go through proxy
+      if (contentType.includes('mpegurl') || targetUrl.includes('.m3u8') || contentType.includes('text')) {
+        const text = await proxyResponse.text();
+        const proxyBase = `${url.origin}/api/hls-proxy?url=`;
+        
+        // Rewrite URLs in playlist
+        const rewritten = text.split('\n').map(line => {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('#')) return line;
+          if (trimmed.startsWith('http')) {
+            return proxyBase + encodeURIComponent(trimmed);
+          }
+          if (trimmed && !trimmed.startsWith('#')) {
+            // Relative URL
+            const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
+            return proxyBase + encodeURIComponent(baseUrl + trimmed);
+          }
+          return line;
+        }).join('\n');
+        
+        body = rewritten;
+      } else {
+        body = await proxyResponse.arrayBuffer();
+      }
+
+      return new Response(body, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers': '*',
+          'Cache-Control': 'no-cache',
+        },
+      });
+    } catch (e: any) {
+      console.log('[HLS Proxy] Error:', e.message || e);
+      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+    }
+  }
+
+  // OPTIONS for CORS preflight
+  if (pathname === '/api/hls-proxy' && request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': '*',
+      },
+    });
+  }
+
   // GET /api/download/list -> list job meta entries
   if (pathname === '/api/download/list' && request.method === 'GET') {
     try {
@@ -3014,42 +3105,45 @@ export default {
         const videoUrl = urls[0];
         const isHLS = videoUrl.includes('.m3u8') || videoUrl.includes('manifest');
         
+        // Use HLS proxy to bypass CORS
+        const proxyUrl = '/api/hls-proxy?url=' + encodeURIComponent(videoUrl);
+        
         if (isHLS) {
           // HLS stream - need HLS.js or native support
           playerContainer.innerHTML = \`
             <div class="video-player-container">
               <video id="video-\${jobId}" class="video-player" controls playsinline></video>
             </div>
-            <div class="player-notice">HLSストリームを再生中... ブラウザによっては再生できない場合があります。</div>
+            <div class="player-notice">プロキシ経由でHLSストリームを再生中...</div>
           \`;
           
           const video = document.getElementById('video-' + jobId);
           
           // Check for native HLS support (Safari)
           if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoUrl;
+            video.src = proxyUrl;
             video.play().catch(e => console.log('Autoplay blocked:', e));
           } else {
             // Load HLS.js dynamically
             if (typeof Hls === 'undefined') {
               const script = document.createElement('script');
               script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
-              script.onload = () => initHLS(video, videoUrl);
+              script.onload = () => initHLS(video, proxyUrl);
               document.head.appendChild(script);
             } else {
-              initHLS(video, videoUrl);
+              initHLS(video, proxyUrl);
             }
           }
         } else {
-          // Direct video URL
+          // Direct video URL - also use proxy
           playerContainer.innerHTML = \`
             <div class="video-player-container">
               <video class="video-player" controls playsinline>
-                <source src="\${escapeHtml(videoUrl)}" type="video/mp4">
+                <source src="\${escapeHtml(proxyUrl)}" type="video/mp4">
                 お使いのブラウザはこの動画形式をサポートしていません。
               </video>
             </div>
-            <div class="player-notice">CORSの制限により再生できない場合があります。その場合はURLをコピーしてVLCなどで開いてください。</div>
+            <div class="player-notice">プロキシ経由で再生中...</div>
           \`;
           const video = playerContainer.querySelector('video');
           video.play().catch(e => console.log('Autoplay blocked:', e));
