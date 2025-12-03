@@ -139,14 +139,13 @@ jobs:
           if [ "$EXTRACT_URL_ONLY" = "true" ]; then
             echo "=== URL Extraction Mode ==="
             
-            # For URL extraction, use simpler format selectors
-            # -g returns separate video/audio URLs for combined formats
-            # Use single stream formats for cleaner output
+            # For URL extraction, use format IDs from available HLS streams
+            # The --list-formats showed m3u8 formats: 91(144p), 92(240p), 93(360p), 94(480p), 95(720p), 96(1080p)
             case "$FORMAT" in
-              "360p") FORMAT_SEL="worst[height>=360]/worst/best" ;;
-              "480p") FORMAT_SEL="worst[height>=480]/worst/best" ;;
-              "720p") FORMAT_SEL="best[height<=720]/best" ;;
-              "1080p") FORMAT_SEL="best[height<=1080]/best" ;;
+              "360p") FORMAT_SEL="93/92/91/best" ;;
+              "480p") FORMAT_SEL="94/93/92/best" ;;
+              "720p") FORMAT_SEL="95/94/93/best" ;;
+              "1080p") FORMAT_SEL="96/95/94/best" ;;
               "bestaudio") FORMAT_SEL="bestaudio/best" ;;
               *) FORMAT_SEL="best" ;;
             esac
@@ -160,66 +159,84 @@ jobs:
             
             # List available formats first for debugging
             echo "=== Listing available formats ==="
-            yt-dlp $COOKIES_OPT --list-formats "$VIDEO_URL" 2>&1 | head -30 || true
+            yt-dlp $COOKIES_OPT --list-formats "$VIDEO_URL" 2>&1 | head -40 || true
             
-            # Try different clients for URL extraction
-            # web client works best with cookies
-            for CLIENT in "web" "ios" "tv_embedded" "android" "mweb"; do
-              echo "=== Trying client: $CLIENT ==="
-              
-              # Run yt-dlp and capture both stdout and stderr
+            # APPROACH 1: Try WITHOUT specifying player_client (let yt-dlp use its default)
+            # This allows yt-dlp to use the working clients (tv_downgraded, web_safari)
+            echo "=== Trying URL extraction without client override ==="
+            set +e
+            URLS=$(yt-dlp $COOKIES_OPT \
+              -f "$FORMAT_SEL" \
+              -g "$VIDEO_URL" 2>&1)
+            EXIT_CODE=$?
+            set -e
+            
+            echo "Exit code: $EXIT_CODE"
+            echo "Output (first 500 chars): ${URLS:0:500}"
+            
+            if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
+              EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
+              EXTRACTION_SUCCESS=true
+              echo "✓ URL extraction successful with default client"
+            fi
+            
+            # APPROACH 2: If that failed, try with HLS m3u8 URLs directly
+            if [ "$EXTRACTION_SUCCESS" = "false" ]; then
+              echo "=== Trying with m3u8/HLS format preference ==="
               set +e
               URLS=$(yt-dlp $COOKIES_OPT \
-                --extractor-args "youtube:player_client=$CLIENT" \
-                -f "$FORMAT_SEL" \
-                --no-warnings \
+                -f "best[protocol=m3u8]/best[protocol=m3u8_native]/best" \
                 -g "$VIDEO_URL" 2>&1)
               EXIT_CODE=$?
               set -e
               
               echo "Exit code: $EXIT_CODE"
-              echo "Output: $URLS"
+              echo "Output: ${URLS:0:500}"
               
-              # Check if URLs were extracted successfully
-              if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://.*\.(googlevideo\.com|youtube\.com)"; then
+              if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
                 EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
                 EXTRACTION_SUCCESS=true
-                echo "✓ URL extraction successful with $CLIENT client"
-                break
-              else
-                echo "✗ Failed with $CLIENT client"
+                echo "✓ URL extraction successful with m3u8"
               fi
-            done
-            
-            # If all clients failed, try with 'best' format (simplest)
-            if [ "$EXTRACTION_SUCCESS" = "false" ]; then
-              echo "=== Trying fallback with 'best' format ==="
-              for CLIENT in "web" "ios"; do
-                set +e
-                URLS=$(yt-dlp $COOKIES_OPT \
-                  --extractor-args "youtube:player_client=$CLIENT" \
-                  -f "best" \
-                  --no-warnings \
-                  -g "$VIDEO_URL" 2>&1)
-                EXIT_CODE=$?
-                set -e
-                
-                if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
-                  EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
-                  EXTRACTION_SUCCESS=true
-                  echo "✓ URL extraction successful with fallback ($CLIENT)"
-                  break
-                fi
-              done
             fi
             
-            # Final fallback: try without format specification
+            # APPROACH 3: Try to get the manifest URL instead
             if [ "$EXTRACTION_SUCCESS" = "false" ]; then
-              echo "=== Trying final fallback without format ==="
+              echo "=== Trying to get manifest/playlist URL ==="
+              set +e
+              # Get JSON info and extract manifest URL
+              JSON_OUT=$(yt-dlp $COOKIES_OPT \
+                --dump-json \
+                --no-download \
+                "$VIDEO_URL" 2>&1)
+              EXIT_CODE=$?
+              set -e
+              
+              if [ $EXIT_CODE -eq 0 ]; then
+                # Try to extract HLS manifest URL from JSON
+                MANIFEST_URL=$(echo "$JSON_OUT" | grep -oP '"manifest_url"\s*:\s*"\K[^"]+' | head -1)
+                if [ -n "$MANIFEST_URL" ]; then
+                  EXTRACTED_URLS="$MANIFEST_URL"
+                  EXTRACTION_SUCCESS=true
+                  echo "✓ Manifest URL extracted"
+                else
+                  # Try to get any URL from the formats
+                  FORMAT_URL=$(echo "$JSON_OUT" | grep -oP '"url"\s*:\s*"\K[^"]+' | head -1)
+                  if [ -n "$FORMAT_URL" ]; then
+                    EXTRACTED_URLS="$FORMAT_URL"
+                    EXTRACTION_SUCCESS=true
+                    echo "✓ Format URL extracted from JSON"
+                  fi
+                fi
+              fi
+            fi
+            
+            # APPROACH 4: Final fallback with simplest options
+            if [ "$EXTRACTION_SUCCESS" = "false" ]; then
+              echo "=== Final fallback with 'best' format ==="
               set +e
               URLS=$(yt-dlp $COOKIES_OPT \
-                --extractor-args "youtube:player_client=web" \
-                --no-warnings \
+                -f "best" \
                 -g "$VIDEO_URL" 2>&1)
               EXIT_CODE=$?
               set -e
