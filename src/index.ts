@@ -459,8 +459,8 @@ export default {
     const pathname = url.pathname || '/';
 
     // --- API endpoints that bypass authentication ---
-    // /api/download/* endpoints need to be accessible without login
-    if (pathname.startsWith('/api/download/')) {
+    // /api/download endpoints need to be accessible without login
+    if (pathname === '/api/download' || pathname.startsWith('/api/download/')) {
       return handleDownloadAPI(request, env, url, pathname);
     }
     
