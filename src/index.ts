@@ -2644,6 +2644,15 @@ export default {
       border-color: #8b5cf6;
       box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
     }
+    .url-help {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: rgba(249, 250, 251, 0.8);
+      border-radius: 6px;
+      line-height: 1.5;
+    }
     
     /* Video Player Modal */
     .video-player-container {
@@ -2963,15 +2972,16 @@ export default {
             // URL extraction mode - show extracted URLs
             const urls = job.extracted_urls.split('\\n').filter(u => u.trim() && u.startsWith('http'));
             let urlsHtml = '<div class="extracted-urls">';
-            urlsHtml += '<div class="urls-label">抽出されたURL:</div>';
+            urlsHtml += '<div class="urls-label">抽出されたURL（約6時間有効）:</div>';
             urls.forEach((url, idx) => {
               const label = urls.length > 1 ? (idx === 0 ? '動画' : '音声') : 'URL';
               urlsHtml += '<div class="url-item"><span class="url-type">' + label + ':</span><input type="text" value="' + escapeHtml(url) + '" readonly onclick="this.select();" class="url-input"></div>';
             });
+            urlsHtml += '<div class="url-help">VLC等の外部プレーヤーで再生: URLをコピー → VLCのメディア → ネットワークストリームを開く → 貼り付け</div>';
             urlsHtml += '<div id="player-' + job.job_id + '"></div>';
             urlsHtml += '</div>';
             statusDetailHtml = urlsHtml;
-            actionsHtml = '<div class="job-actions"><button onclick="playVideo(\\'' + job.job_id + '\\')" class="btn-play">再生</button><button onclick="copyUrls(\\'' + job.job_id + '\\')" class="btn-copy">URLをコピー</button>' + deleteBtn + '</div>';
+            actionsHtml = '<div class="job-actions"><button onclick="openInNewTab(\\'' + job.job_id + '\\')" class="btn-play">新しいタブで開く</button><button onclick="copyUrls(\\'' + job.job_id + '\\')" class="btn-copy">URLをコピー</button>' + deleteBtn + '</div>';
           } else if (job.status === 'completed' && job.filename) {
             actionsHtml = '<div class="job-actions"><a href="/video/' + job.job_id + '/' + encodeURIComponent(job.filename) + '" target="_blank" class="btn-download">ダウンロード</a>' + deleteBtn + '</div>';
           } else if (job.status === 'failed') {
@@ -3060,6 +3070,25 @@ export default {
     
     // Store extracted URLs for copy function
     const extractedUrlsCache = {};
+    
+    async function openInNewTab(jobId) {
+      try {
+        const resp = await fetch('/api/download/status/' + jobId);
+        const job = await resp.json();
+        if (job.extracted_urls) {
+          const urls = job.extracted_urls.split('\\n').filter(u => u.trim() && u.startsWith('http'));
+          if (urls.length > 0) {
+            window.open(urls[0], '_blank');
+          } else {
+            alert('有効なURLがありません');
+          }
+        } else {
+          alert('URLが見つかりません');
+        }
+      } catch (err) {
+        alert('エラー: ' + err.message);
+      }
+    }
     
     async function copyUrls(jobId) {
       // Find the job and copy URLs
