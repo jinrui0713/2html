@@ -239,6 +239,101 @@ class AdBlockRewriter {
   }
 }
 
+// --- HLS Proxy Handler (extracted to bypass auth) ---
+async function handleHLSProxy(request: Request, env: Env, url: URL): Promise<Response> {
+  // OPTIONS for CORS preflight
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': '*',
+      },
+    });
+  }
+  
+  if (request.method !== 'GET') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  const targetUrl = url.searchParams.get('url');
+  if (!targetUrl) {
+    return new Response(JSON.stringify({ error: 'url parameter required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+  }
+
+  try {
+    // Validate URL is from Google/YouTube
+    const targetUrlObj = new URL(targetUrl);
+    const allowedHosts = ['googlevideo.com', 'youtube.com', 'ytimg.com', 'ggpht.com'];
+    const isAllowed = allowedHosts.some(host => targetUrlObj.hostname.endsWith(host));
+    
+    if (!isAllowed) {
+      return new Response(JSON.stringify({ error: 'URL not allowed' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    // Fetch the resource
+    const proxyResponse = await fetch(targetUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Origin': 'https://www.youtube.com',
+        'Referer': 'https://www.youtube.com/',
+      },
+    });
+
+    if (!proxyResponse.ok) {
+      return new Response(JSON.stringify({ error: `Upstream error: ${proxyResponse.status}` }), { 
+        status: proxyResponse.status, 
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } 
+      });
+    }
+
+    const contentType = proxyResponse.headers.get('Content-Type') || 'application/octet-stream';
+    let body: string | ArrayBuffer;
+    
+    // If it's an m3u8 playlist, rewrite URLs to go through proxy
+    if (contentType.includes('mpegurl') || targetUrl.includes('.m3u8') || targetUrl.includes('manifest')) {
+      const text = await proxyResponse.text();
+      const proxyBase = `${url.origin}/api/hls-proxy?url=`;
+      
+      // Rewrite URLs in playlist
+      const rewritten = text.split('\n').map(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('#')) return line;
+        if (trimmed.startsWith('http')) {
+          return proxyBase + encodeURIComponent(trimmed);
+        }
+        if (trimmed && !trimmed.startsWith('#')) {
+          // Relative URL
+          const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
+          return proxyBase + encodeURIComponent(baseUrl + trimmed);
+        }
+        return line;
+      }).join('\n');
+      
+      body = rewritten;
+    } else {
+      body = await proxyResponse.arrayBuffer();
+    }
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'Content-Type': contentType,
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': '*',
+        'Cache-Control': 'no-cache',
+      },
+    });
+  } catch (e: any) {
+    console.log('[HLS Proxy] Error:', e.message || e);
+    return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+  }
+}
+
 // --- Download API Handler (extracted to bypass auth) ---
 async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname: string): Promise<Response> {
   function genJobId() {
@@ -255,6 +350,7 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
       console.log('[DownloadAPI] Error writing meta to R2:', e);
     }
   }
+
 
   // POST /api/download/request
   if (pathname === '/api/download/request' && request.method === 'POST') {
@@ -381,97 +477,6 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
     }
   }
 
-  // GET /api/hls-proxy?url=... -> Proxy HLS manifests and segments to bypass CORS
-  if (pathname === '/api/hls-proxy' && request.method === 'GET') {
-    const targetUrl = url.searchParams.get('url');
-    if (!targetUrl) {
-      return new Response(JSON.stringify({ error: 'url parameter required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
-    }
-
-    try {
-      // Validate URL is from Google/YouTube
-      const targetUrlObj = new URL(targetUrl);
-      const allowedHosts = ['googlevideo.com', 'youtube.com', 'ytimg.com', 'ggpht.com'];
-      const isAllowed = allowedHosts.some(host => targetUrlObj.hostname.endsWith(host));
-      
-      if (!isAllowed) {
-        return new Response(JSON.stringify({ error: 'URL not allowed' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
-      }
-
-      // Fetch the resource
-      const proxyResponse = await fetch(targetUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': '*/*',
-          'Accept-Language': 'en-US,en;q=0.9',
-          'Origin': 'https://www.youtube.com',
-          'Referer': 'https://www.youtube.com/',
-        },
-      });
-
-      if (!proxyResponse.ok) {
-        return new Response(JSON.stringify({ error: `Upstream error: ${proxyResponse.status}` }), { 
-          status: proxyResponse.status, 
-          headers: { 'Content-Type': 'application/json' } 
-        });
-      }
-
-      const contentType = proxyResponse.headers.get('Content-Type') || 'application/octet-stream';
-      let body: string | ArrayBuffer;
-      
-      // If it's an m3u8 playlist, rewrite URLs to go through proxy
-      if (contentType.includes('mpegurl') || targetUrl.includes('.m3u8') || contentType.includes('text')) {
-        const text = await proxyResponse.text();
-        const proxyBase = `${url.origin}/api/hls-proxy?url=`;
-        
-        // Rewrite URLs in playlist
-        const rewritten = text.split('\n').map(line => {
-          const trimmed = line.trim();
-          if (trimmed.startsWith('#')) return line;
-          if (trimmed.startsWith('http')) {
-            return proxyBase + encodeURIComponent(trimmed);
-          }
-          if (trimmed && !trimmed.startsWith('#')) {
-            // Relative URL
-            const baseUrl = targetUrl.substring(0, targetUrl.lastIndexOf('/') + 1);
-            return proxyBase + encodeURIComponent(baseUrl + trimmed);
-          }
-          return line;
-        }).join('\n');
-        
-        body = rewritten;
-      } else {
-        body = await proxyResponse.arrayBuffer();
-      }
-
-      return new Response(body, {
-        status: 200,
-        headers: {
-          'Content-Type': contentType,
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, OPTIONS',
-          'Access-Control-Allow-Headers': '*',
-          'Cache-Control': 'no-cache',
-        },
-      });
-    } catch (e: any) {
-      console.log('[HLS Proxy] Error:', e.message || e);
-      return new Response(JSON.stringify({ error: e.message || String(e) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-    }
-  }
-
-  // OPTIONS for CORS preflight
-  if (pathname === '/api/hls-proxy' && request.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, OPTIONS',
-        'Access-Control-Allow-Headers': '*',
-      },
-    });
-  }
-
   // GET /api/download/list -> list job meta entries
   if (pathname === '/api/download/list' && request.method === 'GET') {
     try {
@@ -558,6 +563,11 @@ export default {
     // /api/download endpoints need to be accessible without login
     if (pathname === '/api/download' || pathname.startsWith('/api/download/')) {
       return handleDownloadAPI(request, env, url, pathname);
+    }
+    
+    // /api/hls-proxy endpoint to proxy HLS streams (bypasses auth for CORS)
+    if (pathname === '/api/hls-proxy') {
+      return handleHLSProxy(request, env, url);
     }
     
     // /video/* endpoint to serve R2 files (also bypasses auth)
