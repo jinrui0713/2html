@@ -157,25 +157,62 @@ jobs:
             EXTRACTION_SUCCESS=false
             
             # Try different clients for URL extraction
-            for CLIENT in "web" "tv_embedded" "ios" "android"; do
-              echo "Trying client: $CLIENT"
+            for CLIENT in "tv_embedded" "web" "ios" "android" "mweb"; do
+              echo "=== Trying client: $CLIENT ==="
               
+              # Run yt-dlp and capture both stdout and stderr
+              set +e
               URLS=$(yt-dlp $COOKIES_OPT \
                 --extractor-args "youtube:player_client=$CLIENT" \
                 -f "$FORMAT_SEL" \
+                --no-warnings \
                 -g "$VIDEO_URL" 2>&1)
+              EXIT_CODE=$?
+              set -e
               
-              if [ $? -eq 0 ] && echo "$URLS" | grep -q "googlevideo.com\|youtube.com"; then
-                EXTRACTED_URLS="$URLS"
+              echo "Exit code: $EXIT_CODE"
+              echo "Output: $URLS"
+              
+              # Check if URLs were extracted successfully
+              if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://.*\.(googlevideo\.com|youtube\.com)"; then
+                EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
                 EXTRACTION_SUCCESS=true
                 echo "✓ URL extraction successful with $CLIENT client"
                 break
+              else
+                echo "✗ Failed with $CLIENT client"
               fi
             done
             
+            # If all clients failed, try with simpler format
             if [ "$EXTRACTION_SUCCESS" = "false" ]; then
-              echo "URL extraction failed with all clients"
+              echo "=== Trying fallback with simple format ==="
+              for CLIENT in "tv_embedded" "web"; do
+                set +e
+                URLS=$(yt-dlp $COOKIES_OPT \
+                  --extractor-args "youtube:player_client=$CLIENT" \
+                  -f "best" \
+                  --no-warnings \
+                  -g "$VIDEO_URL" 2>&1)
+                EXIT_CODE=$?
+                set -e
+                
+                if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
+                  EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
+                  EXTRACTION_SUCCESS=true
+                  echo "✓ URL extraction successful with fallback ($CLIENT)"
+                  break
+                fi
+              done
+            fi
+            
+            if [ "$EXTRACTION_SUCCESS" = "false" ]; then
+              echo "❌ URL extraction failed with all clients"
+              echo "Last output: $URLS"
+              # Set empty output so callback can handle the failure
               echo "extracted_urls=" >> $GITHUB_OUTPUT
+              echo "title=extraction_failed" >> $GITHUB_OUTPUT
+              echo "extract_mode=true" >> $GITHUB_OUTPUT
               exit 1
             fi
             
