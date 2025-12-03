@@ -2544,6 +2544,57 @@ export default {
       box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
     }
     
+    /* Video Player Modal */
+    .video-player-container {
+      margin-top: 12px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #000;
+    }
+    .video-player {
+      width: 100%;
+      max-height: 300px;
+      display: block;
+    }
+    .btn-play {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-play:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    .btn-play::before {
+      content: '▶';
+      font-size: 10px;
+    }
+    .player-notice {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: rgba(249, 250, 251, 0.8);
+      border-radius: 6px;
+    }
+    .player-error {
+      color: #dc2626;
+      font-size: 12px;
+      padding: 10px;
+      background: #fef2f2;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    
     .status-detail {
       font-size: 12px;
       color: #6b7280;
@@ -2809,16 +2860,17 @@ export default {
           
           if (job.status === 'completed' && job.extract_url_only && job.extracted_urls) {
             // URL extraction mode - show extracted URLs
-            const urls = job.extracted_urls.split('\\n').filter(u => u.trim());
+            const urls = job.extracted_urls.split('\\n').filter(u => u.trim() && u.startsWith('http'));
             let urlsHtml = '<div class="extracted-urls">';
             urlsHtml += '<div class="urls-label">抽出されたURL:</div>';
             urls.forEach((url, idx) => {
               const label = urls.length > 1 ? (idx === 0 ? '動画' : '音声') : 'URL';
               urlsHtml += '<div class="url-item"><span class="url-type">' + label + ':</span><input type="text" value="' + escapeHtml(url) + '" readonly onclick="this.select();" class="url-input"></div>';
             });
+            urlsHtml += '<div id="player-' + job.job_id + '"></div>';
             urlsHtml += '</div>';
             statusDetailHtml = urlsHtml;
-            actionsHtml = '<div class="job-actions"><button onclick="copyUrls(\\'' + job.job_id + '\\')" class="btn-copy">URLをコピー</button>' + deleteBtn + '</div>';
+            actionsHtml = '<div class="job-actions"><button onclick="playVideo(\\'' + job.job_id + '\\')" class="btn-play">再生</button><button onclick="copyUrls(\\'' + job.job_id + '\\')" class="btn-copy">URLをコピー</button>' + deleteBtn + '</div>';
           } else if (job.status === 'completed' && job.filename) {
             actionsHtml = '<div class="job-actions"><a href="/video/' + job.job_id + '/' + encodeURIComponent(job.filename) + '" target="_blank" class="btn-download">ダウンロード</a>' + deleteBtn + '</div>';
           } else if (job.status === 'failed') {
@@ -2914,7 +2966,8 @@ export default {
         const resp = await fetch('/api/download/status/' + jobId);
         const job = await resp.json();
         if (job.extracted_urls) {
-          await navigator.clipboard.writeText(job.extracted_urls.replace(/\\\\n/g, '\\n'));
+          const urls = job.extracted_urls.split('\\n').filter(u => u.trim() && u.startsWith('http'));
+          await navigator.clipboard.writeText(urls.join('\\n'));
           alert('URLをクリップボードにコピーしました');
         } else {
           alert('URLが見つかりません');
@@ -2931,6 +2984,105 @@ export default {
             alert('クリップボードへのコピーに失敗しました。手動でコピーしてください。');
           }
         }
+      }
+    }
+    
+    async function playVideo(jobId) {
+      const playerContainer = document.getElementById('player-' + jobId);
+      if (!playerContainer) return;
+      
+      // Toggle: if already has video, remove it
+      if (playerContainer.innerHTML) {
+        playerContainer.innerHTML = '';
+        return;
+      }
+      
+      try {
+        const resp = await fetch('/api/download/status/' + jobId);
+        const job = await resp.json();
+        if (!job.extracted_urls) {
+          playerContainer.innerHTML = '<div class="player-error">URLが見つかりません</div>';
+          return;
+        }
+        
+        const urls = job.extracted_urls.split('\\n').filter(u => u.trim() && u.startsWith('http'));
+        if (urls.length === 0) {
+          playerContainer.innerHTML = '<div class="player-error">有効なURLがありません</div>';
+          return;
+        }
+        
+        const videoUrl = urls[0];
+        const isHLS = videoUrl.includes('.m3u8') || videoUrl.includes('manifest');
+        
+        if (isHLS) {
+          // HLS stream - need HLS.js or native support
+          playerContainer.innerHTML = \`
+            <div class="video-player-container">
+              <video id="video-\${jobId}" class="video-player" controls playsinline></video>
+            </div>
+            <div class="player-notice">HLSストリームを再生中... ブラウザによっては再生できない場合があります。</div>
+          \`;
+          
+          const video = document.getElementById('video-' + jobId);
+          
+          // Check for native HLS support (Safari)
+          if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoUrl;
+            video.play().catch(e => console.log('Autoplay blocked:', e));
+          } else {
+            // Load HLS.js dynamically
+            if (typeof Hls === 'undefined') {
+              const script = document.createElement('script');
+              script.src = 'https://cdn.jsdelivr.net/npm/hls.js@latest';
+              script.onload = () => initHLS(video, videoUrl);
+              document.head.appendChild(script);
+            } else {
+              initHLS(video, videoUrl);
+            }
+          }
+        } else {
+          // Direct video URL
+          playerContainer.innerHTML = \`
+            <div class="video-player-container">
+              <video class="video-player" controls playsinline>
+                <source src="\${escapeHtml(videoUrl)}" type="video/mp4">
+                お使いのブラウザはこの動画形式をサポートしていません。
+              </video>
+            </div>
+            <div class="player-notice">CORSの制限により再生できない場合があります。その場合はURLをコピーしてVLCなどで開いてください。</div>
+          \`;
+          const video = playerContainer.querySelector('video');
+          video.play().catch(e => console.log('Autoplay blocked:', e));
+        }
+      } catch (err) {
+        playerContainer.innerHTML = '<div class="player-error">エラー: ' + err.message + '</div>';
+      }
+    }
+    
+    function initHLS(video, url) {
+      if (Hls.isSupported()) {
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+        });
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play().catch(e => console.log('Autoplay blocked:', e));
+        });
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          console.error('HLS error:', data);
+          if (data.fatal) {
+            const container = video.parentElement.parentElement;
+            const notice = container.querySelector('.player-notice');
+            if (notice) {
+              notice.innerHTML = '<span style="color:#dc2626">HLS再生エラー: ' + (data.details || 'Unknown error') + '<br>URLをコピーしてVLC等で再生してください。</span>';
+            }
+          }
+        });
+      } else {
+        const container = video.parentElement.parentElement;
+        container.innerHTML = '<div class="player-error">お使いのブラウザはHLSをサポートしていません。URLをコピーしてVLC等で再生してください。</div>';
       }
     }
     
