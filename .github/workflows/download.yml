@@ -165,17 +165,19 @@ jobs:
             # This allows yt-dlp to use the working clients (tv_downgraded, web_safari)
             echo "=== Trying URL extraction without client override ==="
             set +e
+            # Capture stdout (URLs) and stderr (warnings) separately
             URLS=$(yt-dlp $COOKIES_OPT \
               -f "$FORMAT_SEL" \
-              -g "$VIDEO_URL" 2>&1)
+              -g "$VIDEO_URL" 2>/dev/null)
             EXIT_CODE=$?
             set -e
             
             echo "Exit code: $EXIT_CODE"
-            echo "Output (first 500 chars): ${URLS:0:500}"
+            echo "Output: $URLS"
             
             if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
-              EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
+              # Filter only URLs (lines starting with http)
+              EXTRACTED_URLS=$(echo "$URLS" | grep -E "^https?://")
               EXTRACTION_SUCCESS=true
               echo "✓ URL extraction successful with default client"
             fi
@@ -186,15 +188,15 @@ jobs:
               set +e
               URLS=$(yt-dlp $COOKIES_OPT \
                 -f "best[protocol=m3u8]/best[protocol=m3u8_native]/best" \
-                -g "$VIDEO_URL" 2>&1)
+                -g "$VIDEO_URL" 2>/dev/null)
               EXIT_CODE=$?
               set -e
               
               echo "Exit code: $EXIT_CODE"
-              echo "Output: ${URLS:0:500}"
+              echo "Output: $URLS"
               
               if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
-                EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
+                EXTRACTED_URLS=$(echo "$URLS" | grep -E "^https?://")
                 EXTRACTION_SUCCESS=true
                 echo "✓ URL extraction successful with m3u8"
               fi
@@ -208,7 +210,7 @@ jobs:
               JSON_OUT=$(yt-dlp $COOKIES_OPT \
                 --dump-json \
                 --no-download \
-                "$VIDEO_URL" 2>&1)
+                "$VIDEO_URL" 2>/dev/null)
               EXIT_CODE=$?
               set -e
               
