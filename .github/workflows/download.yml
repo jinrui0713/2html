@@ -139,25 +139,32 @@ jobs:
           if [ "$EXTRACT_URL_ONLY" = "true" ]; then
             echo "=== URL Extraction Mode ==="
             
-            # Build format selector based on format
+            # For URL extraction, use simpler format selectors
+            # -g returns separate video/audio URLs for combined formats
+            # Use single stream formats for cleaner output
             case "$FORMAT" in
-              "360p") FORMAT_SEL="bestvideo[height<=360]+bestaudio/best[height<=360]/best" ;;
-              "480p") FORMAT_SEL="bestvideo[height<=480]+bestaudio/best[height<=480]/best" ;;
-              "720p") FORMAT_SEL="bestvideo[height<=720]+bestaudio/best[height<=720]/best" ;;
-              "1080p") FORMAT_SEL="bestvideo[height<=1080]+bestaudio/best[height<=1080]/best" ;;
-              "bestaudio") FORMAT_SEL="bestaudio" ;;
+              "360p") FORMAT_SEL="worst[height>=360]/worst/best" ;;
+              "480p") FORMAT_SEL="worst[height>=480]/worst/best" ;;
+              "720p") FORMAT_SEL="best[height<=720]/best" ;;
+              "1080p") FORMAT_SEL="best[height<=1080]/best" ;;
+              "bestaudio") FORMAT_SEL="bestaudio/best" ;;
               *) FORMAT_SEL="best" ;;
             esac
             
             if [ "$AUDIO_ONLY" = "true" ]; then
-              FORMAT_SEL="bestaudio"
+              FORMAT_SEL="bestaudio/best"
             fi
             
             EXTRACTED_URLS=""
             EXTRACTION_SUCCESS=false
             
+            # List available formats first for debugging
+            echo "=== Listing available formats ==="
+            yt-dlp $COOKIES_OPT --list-formats "$VIDEO_URL" 2>&1 | head -30 || true
+            
             # Try different clients for URL extraction
-            for CLIENT in "tv_embedded" "web" "ios" "android" "mweb"; do
+            # web client works best with cookies
+            for CLIENT in "web" "ios" "tv_embedded" "android" "mweb"; do
               echo "=== Trying client: $CLIENT ==="
               
               # Run yt-dlp and capture both stdout and stderr
@@ -184,10 +191,10 @@ jobs:
               fi
             done
             
-            # If all clients failed, try with simpler format
+            # If all clients failed, try with 'best' format (simplest)
             if [ "$EXTRACTION_SUCCESS" = "false" ]; then
-              echo "=== Trying fallback with simple format ==="
-              for CLIENT in "tv_embedded" "web"; do
+              echo "=== Trying fallback with 'best' format ==="
+              for CLIENT in "web" "ios"; do
                 set +e
                 URLS=$(yt-dlp $COOKIES_OPT \
                   --extractor-args "youtube:player_client=$CLIENT" \
@@ -204,6 +211,24 @@ jobs:
                   break
                 fi
               done
+            fi
+            
+            # Final fallback: try without format specification
+            if [ "$EXTRACTION_SUCCESS" = "false" ]; then
+              echo "=== Trying final fallback without format ==="
+              set +e
+              URLS=$(yt-dlp $COOKIES_OPT \
+                --extractor-args "youtube:player_client=web" \
+                --no-warnings \
+                -g "$VIDEO_URL" 2>&1)
+              EXIT_CODE=$?
+              set -e
+              
+              if [ $EXIT_CODE -eq 0 ] && echo "$URLS" | grep -qE "https?://"; then
+                EXTRACTED_URLS=$(echo "$URLS" | grep -E "https?://")
+                EXTRACTION_SUCCESS=true
+                echo "✓ URL extraction successful with final fallback"
+              fi
             fi
             
             if [ "$EXTRACTION_SUCCESS" = "false" ]; then
