@@ -21,6 +21,11 @@ on:
         required: false
         default: 'false'
         type: string
+      extract_url_only:
+        description: 'Extract direct URL only without downloading (true/false)'
+        required: false
+        default: 'false'
+        type: string
       callback_url:
         description: 'Callback URL after completion'
         required: true
@@ -50,6 +55,8 @@ jobs:
           echo "Format (client_payload): ${{ github.event.client_payload.format }}"
           echo "Callback (inputs): ${{ github.event.inputs.callback_url }}"
           echo "Callback (client_payload): ${{ github.event.client_payload.callback_url }}"
+          echo "Extract URL only (inputs): ${{ github.event.inputs.extract_url_only }}"
+          echo "Extract URL only (client_payload): ${{ github.event.client_payload.extract_url_only }}"
       
       - name: Install yt-dlp and ffmpeg
         run: |
@@ -100,11 +107,13 @@ jobs:
           VIDEO_URL="${{ github.event.inputs.video_url || github.event.client_payload.url }}"
           FORMAT="${{ github.event.inputs.format || github.event.client_payload.format }}"
           AUDIO_ONLY="${{ github.event.inputs.audio_only || github.event.client_payload.audio_only }}"
+          EXTRACT_URL_ONLY="${{ github.event.inputs.extract_url_only || github.event.client_payload.extract_url_only }}"
           JOB_ID="${{ github.event.inputs.job_id || github.event.client_payload.job_id }}"
           
           echo "Downloading: $VIDEO_URL"
           echo "Format: $FORMAT"
           echo "Audio only: $AUDIO_ONLY"
+          echo "Extract URL only: $EXTRACT_URL_ONLY"
           
           # Extract video ID from YouTube URL
           VIDEO_ID=$(echo "$VIDEO_URL" | grep -oP '(?:v=|youtu\.be/|shorts/)([a-zA-Z0-9_-]{11})' | head -1 | sed 's/v=//;s/youtu\.be\///;s/shorts\///')
@@ -112,6 +121,90 @@ jobs:
             VIDEO_ID=$(echo "$VIDEO_URL" | grep -oE '[a-zA-Z0-9_-]{11}')
           fi
           echo "Video ID: $VIDEO_ID"
+          
+          # Check if cookies file exists and is valid
+          if [ -f "cookies.txt" ]; then
+            echo "=== Cookies file verification ==="
+            echo "File exists: YES"
+            echo "File size: $(wc -c < cookies.txt) bytes"
+            COOKIES_OPT="--cookies cookies.txt"
+          else
+            echo "=== Cookies file NOT found! ==="
+            COOKIES_OPT=""
+          fi
+          
+          # ========================================
+          # URL EXTRACTION ONLY MODE
+          # ========================================
+          if [ "$EXTRACT_URL_ONLY" = "true" ]; then
+            echo "=== URL Extraction Mode ==="
+            
+            # Build format selector based on format
+            case "$FORMAT" in
+              "360p") FORMAT_SEL="bestvideo[height<=360]+bestaudio/best[height<=360]/best" ;;
+              "480p") FORMAT_SEL="bestvideo[height<=480]+bestaudio/best[height<=480]/best" ;;
+              "720p") FORMAT_SEL="bestvideo[height<=720]+bestaudio/best[height<=720]/best" ;;
+              "1080p") FORMAT_SEL="bestvideo[height<=1080]+bestaudio/best[height<=1080]/best" ;;
+              "bestaudio") FORMAT_SEL="bestaudio" ;;
+              *) FORMAT_SEL="best" ;;
+            esac
+            
+            if [ "$AUDIO_ONLY" = "true" ]; then
+              FORMAT_SEL="bestaudio"
+            fi
+            
+            EXTRACTED_URLS=""
+            EXTRACTION_SUCCESS=false
+            
+            # Try different clients for URL extraction
+            for CLIENT in "web" "tv_embedded" "ios" "android"; do
+              echo "Trying client: $CLIENT"
+              
+              URLS=$(yt-dlp $COOKIES_OPT \
+                --extractor-args "youtube:player_client=$CLIENT" \
+                -f "$FORMAT_SEL" \
+                -g "$VIDEO_URL" 2>&1)
+              
+              if [ $? -eq 0 ] && echo "$URLS" | grep -q "googlevideo.com\|youtube.com"; then
+                EXTRACTED_URLS="$URLS"
+                EXTRACTION_SUCCESS=true
+                echo "✓ URL extraction successful with $CLIENT client"
+                break
+              fi
+            done
+            
+            if [ "$EXTRACTION_SUCCESS" = "false" ]; then
+              echo "URL extraction failed with all clients"
+              echo "extracted_urls=" >> $GITHUB_OUTPUT
+              exit 1
+            fi
+            
+            # Get video title
+            TITLE=$(yt-dlp $COOKIES_OPT --get-title "$VIDEO_URL" 2>/dev/null | head -1 | tr -cd '[:alnum:] ._-' | head -c 100)
+            if [ -z "$TITLE" ]; then
+              TITLE="video_$JOB_ID"
+            fi
+            
+            # Output the extracted URLs (may be multiple lines for video+audio)
+            echo "=== Extracted URLs ==="
+            echo "$EXTRACTED_URLS"
+            
+            # Save URLs to file for the callback step
+            echo "$EXTRACTED_URLS" > extracted_urls.txt
+            
+            # Set outputs
+            echo "extracted_urls<<EOF" >> $GITHUB_OUTPUT
+            echo "$EXTRACTED_URLS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+            echo "title=$TITLE" >> $GITHUB_OUTPUT
+            echo "extract_mode=true" >> $GITHUB_OUTPUT
+            
+            exit 0
+          fi
+          
+          # ========================================
+          # NORMAL DOWNLOAD MODE
+          # ========================================
           
           # Build yt-dlp command with anti-bot options
           # (Individual commands are built in each attempt section)
@@ -168,18 +261,6 @@ jobs:
           
           # Try yt-dlp with different configurations
           DOWNLOAD_SUCCESS=false
-          
-          # Check if cookies file exists and is valid
-          if [ -f "cookies.txt" ]; then
-            echo "=== Cookies file verification ==="
-            echo "File exists: YES"
-            echo "File size: $(wc -c < cookies.txt) bytes"
-            echo "Cookie domains: $(grep -v '^#' cookies.txt | grep -v '^$' | cut -f1 | sort -u | tr '\n' ' ')"
-            COOKIES_OPT="--cookies cookies.txt"
-          else
-            echo "=== Cookies file NOT found! ==="
-            COOKIES_OPT=""
-          fi
           
           # Attempt 1: tv_embedded client with cookies
           echo "=== Attempt 1: yt-dlp with tv_embedded client ==="
@@ -405,12 +486,14 @@ jobs:
           echo "title=$TITLE" >> $GITHUB_OUTPUT
       
       - name: Configure AWS CLI for R2
+        if: steps.download.outputs.extract_mode != 'true'
         run: |
           aws configure set aws_access_key_id ${{ secrets.R2_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.R2_SECRET_ACCESS_KEY }}
           aws configure set default.region auto
       
       - name: Upload to R2
+        if: steps.download.outputs.extract_mode != 'true'
         id: upload
         run: |
           JOB_ID="${{ github.event.inputs.job_id || github.event.client_payload.job_id }}"
@@ -434,25 +517,47 @@ jobs:
         run: |
           JOB_ID="${{ github.event.inputs.job_id || github.event.client_payload.job_id }}"
           CALLBACK_URL="${{ github.event.inputs.callback_url || github.event.client_payload.callback_url }}"
+          EXTRACT_MODE="${{ steps.download.outputs.extract_mode }}"
           
           if [ "${{ job.status }}" = "success" ]; then
             STATUS="completed"
-            FILENAME="${{ steps.download.outputs.filename }}"
-            FILESIZE="${{ steps.download.outputs.filesize }}"
             TITLE="${{ steps.download.outputs.title }}"
-            R2_PATH="${{ steps.upload.outputs.r2_path }}"
             
-            curl -X POST "$CALLBACK_URL" \
-              -H "Content-Type: application/json" \
-              -H "X-Job-Secret: ${{ secrets.JOB_SECRET }}" \
-              -d "{
-                \"job_id\": \"$JOB_ID\",
-                \"status\": \"$STATUS\",
-                \"filename\": \"$FILENAME\",
-                \"filesize\": $FILESIZE,
-                \"title\": \"$TITLE\",
-                \"r2_path\": \"$R2_PATH\"
-              }"
+            if [ "$EXTRACT_MODE" = "true" ]; then
+              # URL extraction mode - send extracted URLs
+              EXTRACTED_URLS="${{ steps.download.outputs.extracted_urls }}"
+              
+              # Escape newlines for JSON
+              ESCAPED_URLS=$(echo "$EXTRACTED_URLS" | sed ':a;N;$!ba;s/\n/\\n/g')
+              
+              curl -X POST "$CALLBACK_URL" \
+                -H "Content-Type: application/json" \
+                -H "X-Job-Secret: ${{ secrets.JOB_SECRET }}" \
+                -d "{
+                  \"job_id\": \"$JOB_ID\",
+                  \"status\": \"$STATUS\",
+                  \"title\": \"$TITLE\",
+                  \"extract_url_only\": true,
+                  \"extracted_urls\": \"$ESCAPED_URLS\"
+                }"
+            else
+              # Normal download mode
+              FILENAME="${{ steps.download.outputs.filename }}"
+              FILESIZE="${{ steps.download.outputs.filesize }}"
+              R2_PATH="${{ steps.upload.outputs.r2_path }}"
+              
+              curl -X POST "$CALLBACK_URL" \
+                -H "Content-Type: application/json" \
+                -H "X-Job-Secret: ${{ secrets.JOB_SECRET }}" \
+                -d "{
+                  \"job_id\": \"$JOB_ID\",
+                  \"status\": \"$STATUS\",
+                  \"filename\": \"$FILENAME\",
+                  \"filesize\": $FILESIZE,
+                  \"title\": \"$TITLE\",
+                  \"r2_path\": \"$R2_PATH\"
+                }"
+            fi
           else
             STATUS="failed"
             curl -X POST "$CALLBACK_URL" \
@@ -461,7 +566,7 @@ jobs:
               -d "{
                 \"job_id\": \"$JOB_ID\",
                 \"status\": \"$STATUS\",
-                \"error\": \"Download or upload failed\"
+                \"error\": \"Download or URL extraction failed\"
               }"
           fi
           

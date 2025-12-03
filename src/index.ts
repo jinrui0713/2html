@@ -263,11 +263,13 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
       if (!body || !body.url) return new Response(JSON.stringify({ error: 'url required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
 
       const jobId = genJobId();
+      const extractUrlOnly = body.extract_url_only === true || body.extract_url_only === 'true';
       const meta: DownloadJob = {
         job_id: jobId,
         video_url: body.url,
         format: body.format || body.f || 'best',
         audio_only: !!body.audio_only,
+        extract_url_only: extractUrlOnly,
         status: 'pending',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -286,6 +288,7 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
               job_id: jobId,
               url: body.url,
               format: meta.format,
+              extract_url_only: extractUrlOnly,
               callback_url: body.callback_url || `${new URL(request.url).origin}/api/download/callback`
             }
           };
@@ -347,6 +350,8 @@ async function handleDownloadAPI(request: Request, env: Env, url: URL, pathname:
       if (body.title) metaObj.title = body.title;
       if (body.r2_path) metaObj.r2_path = body.r2_path;
       if (body.error) metaObj.error = body.error;
+      if (body.extract_url_only) metaObj.extract_url_only = true;
+      if (body.extracted_urls) metaObj.extracted_urls = body.extracted_urls;
 
       await writeMeta(jobId, metaObj);
 
@@ -2290,6 +2295,30 @@ export default {
       color: #374151;
       margin-bottom: 8px;
     }
+    .form-group .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 10px 12px;
+      background: rgba(196, 181, 253, 0.1);
+      border: 1px solid rgba(196, 181, 253, 0.3);
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .form-group .checkbox-label:hover {
+      background: rgba(196, 181, 253, 0.2);
+    }
+    .form-group .checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #8b5cf6;
+    }
+    .form-group .checkbox-label span {
+      font-size: 13px;
+      color: #5b21b6;
+    }
     .form-group input,
     .form-group select {
       width: 100%;
@@ -2456,6 +2485,64 @@ export default {
       background: #fef2f2;
       border-color: #ef4444;
     }
+    .btn-copy {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #c4b5fd 0%, #ddd6fe 100%);
+      color: #5b21b6;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+    }
+    
+    .extracted-urls {
+      margin-top: 10px;
+      padding: 12px;
+      background: rgba(196, 181, 253, 0.15);
+      border: 1px solid rgba(196, 181, 253, 0.3);
+      border-radius: 10px;
+    }
+    .urls-label {
+      font-size: 12px;
+      color: #7c3aed;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .url-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .url-item:last-child { margin-bottom: 0; }
+    .url-type {
+      font-size: 11px;
+      color: #8b5cf6;
+      font-weight: 500;
+      min-width: 40px;
+    }
+    .url-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 11px;
+      font-family: monospace;
+      border: 1px solid rgba(196, 181, 253, 0.4);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.8);
+      color: #374151;
+      cursor: text;
+    }
+    .url-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
     
     .status-detail {
       font-size: 12px;
@@ -2598,12 +2685,19 @@ export default {
               <option value="bestaudio">音声のみ</option>
             </select>
           </div>
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="extract-url-only">
+              <span>URL抽出のみ（ダウンロードせずgooglevideo.comのURLを取得）</span>
+            </label>
+          </div>
           <button type="submit" class="btn btn-primary btn-full" id="submit-btn">
             ダウンロード開始
           </button>
         </form>
         <div class="hint">
-          720p以下の画質に制限しています。処理には2〜5分かかります。
+          720p以下の画質に制限しています。処理には2〜5分かかります。<br>
+          「URL抽出のみ」を選択すると、直接ダウンロードURLを取得できます（有効期限あり）。
         </div>
       </div>
     </div>
@@ -2634,21 +2728,28 @@ export default {
       e.preventDefault();
       formMsg.innerHTML = '';
       submitBtn.disabled = true;
-      submitBtn.textContent = '⏳ 送信中...';
+      submitBtn.textContent = '送信中...';
       
       const url = document.getElementById('video-url').value.trim();
       const format = document.getElementById('format').value;
+      const extractUrlOnly = document.getElementById('extract-url-only').checked;
       
       try {
         const resp = await fetch('/api/download/request', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'same-origin',
-          body: JSON.stringify({ url, format, audio_only: format === 'bestaudio' })
+          body: JSON.stringify({ 
+            url, 
+            format, 
+            audio_only: format === 'bestaudio',
+            extract_url_only: extractUrlOnly
+          })
         });
         const data = await resp.json();
         if (resp.ok && data.job_id) {
-          formMsg.innerHTML = '<div class="msg success">リクエストを送信しました。Job ID: <code>' + data.job_id + '</code></div>';
+          const modeText = extractUrlOnly ? 'URL抽出' : 'ダウンロード';
+          formMsg.innerHTML = '<div class="msg success">' + modeText + 'リクエストを送信しました。Job ID: <code>' + data.job_id + '</code></div>';
           document.getElementById('video-url').value = '';
           loadJobs();
           startAutoRefresh();
@@ -2659,7 +2760,7 @@ export default {
         formMsg.innerHTML = '<div class="msg error">通信エラー: ' + err.message + '</div>';
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = '🚀 ダウンロード開始';
+        submitBtn.textContent = 'ダウンロード開始';
       }
     });
     
@@ -2706,7 +2807,19 @@ export default {
           // Delete button for all jobs
           const deleteBtn = '<button class="btn-delete" onclick="deleteJob(\\'' + job.job_id + '\\')" title="削除">削除</button>';
           
-          if (job.status === 'completed' && job.filename) {
+          if (job.status === 'completed' && job.extract_url_only && job.extracted_urls) {
+            // URL extraction mode - show extracted URLs
+            const urls = job.extracted_urls.split('\\n').filter(u => u.trim());
+            let urlsHtml = '<div class="extracted-urls">';
+            urlsHtml += '<div class="urls-label">抽出されたURL:</div>';
+            urls.forEach((url, idx) => {
+              const label = urls.length > 1 ? (idx === 0 ? '動画' : '音声') : 'URL';
+              urlsHtml += '<div class="url-item"><span class="url-type">' + label + ':</span><input type="text" value="' + escapeHtml(url) + '" readonly onclick="this.select();" class="url-input"></div>';
+            });
+            urlsHtml += '</div>';
+            statusDetailHtml = urlsHtml;
+            actionsHtml = '<div class="job-actions"><button onclick="copyUrls(\\'' + job.job_id + '\\')" class="btn-copy">URLをコピー</button>' + deleteBtn + '</div>';
+          } else if (job.status === 'completed' && job.filename) {
             actionsHtml = '<div class="job-actions"><a href="/video/' + job.job_id + '/' + encodeURIComponent(job.filename) + '" target="_blank" class="btn-download">ダウンロード</a>' + deleteBtn + '</div>';
           } else if (job.status === 'failed') {
             statusDetailHtml = '<div class="status-detail error">' + escapeHtml(job.error || '処理中にエラーが発生しました') + '</div>';
@@ -2790,6 +2903,35 @@ export default {
       const sizes = ['B', 'KB', 'MB', 'GB'];
       const i = Math.floor(Math.log(bytes) / Math.log(k));
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Store extracted URLs for copy function
+    const extractedUrlsCache = {};
+    
+    async function copyUrls(jobId) {
+      // Find the job and copy URLs
+      try {
+        const resp = await fetch('/api/download/status/' + jobId);
+        const job = await resp.json();
+        if (job.extracted_urls) {
+          await navigator.clipboard.writeText(job.extracted_urls.replace(/\\\\n/g, '\\n'));
+          alert('URLをクリップボードにコピーしました');
+        } else {
+          alert('URLが見つかりません');
+        }
+      } catch (err) {
+        // Fallback: select the input
+        const inputs = document.querySelectorAll('.url-input');
+        if (inputs.length > 0) {
+          const urls = Array.from(inputs).map(i => i.value).join('\\n');
+          try {
+            await navigator.clipboard.writeText(urls);
+            alert('URLをクリップボードにコピーしました');
+          } catch (e) {
+            alert('クリップボードへのコピーに失敗しました。手動でコピーしてください。');
+          }
+        }
+      }
     }
     
     async function deleteJob(jobId) {
